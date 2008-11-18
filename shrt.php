@@ -15,16 +15,22 @@
                       'term' => $args[1]);
         return $args;
     }
-
-    function get_shrts($file)
+    
+    function get_file($url)
     {
-        $file = fopen($_GET['s'], "r");
+        $file = fopen($url, "r");
         if (!$file) return False;
         $headers = get_headers($_GET['s'], 1);
         if ($headers['Content-Type'] != "text/plain")
         {
             die("<p>Remote file was not a text file!</p>");
         }
+        return $file;
+    }
+
+    function get_shrts($file)
+    {
+        $file = get_file($file);
         while (!feof($file))
         {
             $line = fgets($file, 4096);
@@ -54,10 +60,9 @@
 
     function get_shrt($file, $args)
     {
-        $args = get_args($args);
+        $shrts = get_shrts($file);
         $trigger = $args['trigger'];
         $term = $args['term'];
-        $shrts = get_shrts($file);
         foreach ($shrts as $shrt) 
         {
             if ($shrt['trigger'] == $trigger)
@@ -71,16 +76,8 @@
     function go($file, $args)
     {
         $args = get_args($args);
-        $shrt = get_shrt($file, $args['trigger']);
-        if (!$shrt) 
-        {
-            $shrt = get_shirt($file, "*");
-            $url = preg_replace("/%s/", $args['term'], $shrt['url']);
-        }
-        else
-        {
-            $url = preg_replace("/%s/", $args['term'], $shrt['url']);   
-        }
+        $shrt = get_shrt($file, $args);
+        $url = preg_replace("/%s/", $args['term'], $shrt['url']);
         header('Location: ' . $url);
     }
 ?>
@@ -120,25 +117,29 @@
 <body>
     <div>
         <h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em>Shortwave for the paranoid</em></h1>
-        <?php if ($_GET['c'] == help): ?>
-            <?php if (get_shrts($_GET['s'])): ?>
-                <p class="help">Triggers in red means that a trigger takes a search term.</p>
-                <h2 class="out">Available triggers: </h2>
-                <table>
-                <?php foreach(get_shrts($_GET['s']) as $shrt): ?>
-                    <tr<?php if ($shrt['takes_search']): ?> class="red"<?php endif; ?>>
-                        <td class="right"><strong><?php echo $shrt['trigger'] ?></strong></td>
-                        <td><?php echo $shrt['title'] ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-            </table>
+        <?php if ($_GET['c'] and $_GET['c'] !== "help"):?>
+            <?php go($_GET['s'], $_GET['c'])?>
         <?php else: ?>
-            <form action="." method="get">
-                <label for="custom" id="label" class="out">Shortwave file URL:</label><input type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&s=(.*?)\;/,'&s='+this.value+'\';')">
-            </form>
-            <h2> <span class="out">bookmarklet:</span><a id="link" href="javascript:goGoGadgetTrigger();function%20goGoGadgetTrigger(){var%20c=window.prompt('Type `help` to see your commands');if(c){var%20u='<?php echo full_url(); ?>?c='+c+'&s=';if(c.substring(0,1)=='%20'){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></h2>
-        <?php endif; ?>
+            <?php if ($_GET['c'] == help): ?>
+                <?php if (get_shrts($_GET['s'])): ?>
+                    <p class="help">Triggers in red means that a trigger takes a search term.</p>
+                    <h2 class="out">Available triggers: </h2>
+                    <table>
+                    <?php foreach(get_shrts($_GET['s']) as $shrt): ?>
+                        <tr<?php if ($shrt['takes_search']): ?> class="red"<?php endif; ?>>
+                            <td class="right"><strong><?php echo $shrt['trigger'] ?></strong></td>
+                            <td><?php echo $shrt['title'] ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                </table>
+            <?php else: ?>
+                <form action="." method="get">
+                    <label for="custom" id="label" class="out">Shortwave file URL:</label><input type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&s=(.*?)\;/,'&s='+this.value+'\';')">
+                </form>
+                <h2> <span class="out">bookmarklet:</span><a id="link" href="javascript:goGoGadgetTrigger();function%20goGoGadgetTrigger(){var%20c=window.prompt('Type `help` to see your commands');if(c){var%20u='<?php echo full_url(); ?>?c='+c+'&s=';if(c.substring(0,1)=='%20'){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></h2>
+            <?php endif; ?>
+        <?php endif;?>
         <p class="note">Based on <a href="http://shortwaveapp.com/">Shortwave</a> by <a href="http://shauninman.com">Shaun Inman</a></p>
     </div>
 </body>
