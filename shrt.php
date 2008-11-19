@@ -18,19 +18,18 @@
     
     function get_file($url)
     {
-        $file = fopen($url, "r");
-        if (!$file) return False;
-        $headers = get_headers($_GET['s'], 1);
+        $headers = get_headers($url, 1);
         if ($headers['Content-Type'] != "text/plain")
         {
             die("<p>Remote file was not a text file!</p>");
         }
+        $file = file_get_contents($url);
         return $file;
     }
 
     function get_shrts($file)
     {
-        $file = file_get_contents($file);
+        $file = get_file($file);
         $lines = explode("\n", $file);
         $shrts = array();
         foreach ($lines as $line) 
@@ -39,7 +38,7 @@
             // Kill blank lines, comments
             if ($line != '' && (substr($line, 0, 1) != ">"))
             {
-                $segments = explode(' ', $line);
+                $segments = split('[ ]+', $line, 3);
                 $takes_search = False;
                 if (strstr($segments[1], "%s")) 
                 { 
@@ -87,34 +86,32 @@
     <style type="text/css">
     *{margin:0;padding:0;}
     body{background:#fff;border-top:4px solid #c86f4d;color:black;font:62.5% Helvetica,sans-serif;margin:0;padding:0;}
-    div{background:#fff;margin:40px auto;width:400px;}
-    .help{margin:0 0 3em;}
-    pre{background:#eee;color:#000;font:10px/16px 'Monaco','Courier New',Courier,monospace;padding:1em;}
-    code{font:10px/16px 'Monaco','Courier New',Courier,monospace;}
-    h1{font-size:20px;line-height:6em;}
+    div{background:#fff;margin:40px auto;width:500px;}
+    .help{margin:0 0 3em;text-align:center;}
+    h1{font-size:20px;line-height:6em;text-align:center;}
     h1 a:link,h1 a:visited{color:black;text-decoration:none;}
     h1 a:hover,h1 a:active,h1 a:focus{color:#c86f4d;}
-    h2{font-size:1.4em;font-weight:normal;}
+    h2{font-size:1.4em;font-weight:normal;line-height:1.6em !important;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
     label{font-size:1.4em;line-height:1.8em !important;}
-    em{color:#bbb;font-style:normal;}
+    em{color:#bbb;font-style:normal;font-weight:normal;}
     p{font-size:1.4em;line-height:2em;}
     p.note{background:#f4f4f4;font-size:0.8em;margin-top:10em;padding:1em;text-align:center;}
     a{color:#c86f4d;}
     a:hover{color:black;}
     a#link{background:#c86f4d;color:#fff;padding:4px;text-shadow:#c86f4d 1px 1px 1px;text-decoration:none;}
     a#link:hover{background:black;text-shadow:black 1px 1px 1px;}
-    .out{color:#aaa;float:left;font-weight:bold;line-height:1.4em;margin-left:-205px;width:200px;text-align:right;}
-    .red{color:#c86f4d;}
-    table{font-size:1.4em;}
+    table{font-size:1.4em;margin:0 auto;}
     td{padding:0.2em;width:50%;}
+    .out{color:#aaa;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
+    .red{color:#c86f4d;}
     .right{text-align:right;}
     </style>
     <script type="text/javascript">function $(id){return document.getElementById(id)};</script>
 </head>
 <body>
     <div>
-        <h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em>Shortwave for the paranoid</em></h1>
+        <h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em>...because Saft is broken in the WebKit nightlies</em></h1>
         <?php if ($_GET['c'] and $_GET['c'] !== "help"):?>
             <?php go($_GET['s'], $_GET['c'])?>
         <?php else: ?>
@@ -126,7 +123,7 @@
                     <?php $shrts = get_shrts($_GET['s']); ?>
                     <?php foreach($shrts as $shrt): ?>
                         <tr<?php if ($shrt['takes_search']): ?> class="red"<?php endif; ?>>
-                            <td class="right"><strong><?php echo $shrt['trigger'] ?></strong></td>
+                            <td><strong><?php echo $shrt['trigger'] ?></strong></td>
                             <td><?php echo $shrt['title'] ?></td>
                         </tr>
                     <?php endforeach; ?>
