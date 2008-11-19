@@ -55,6 +55,7 @@
                 }   
             }
         }
+        fclose($file);
         return $shrts;
     }
 
