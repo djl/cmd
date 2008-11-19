@@ -30,32 +30,28 @@
 
     function get_shrts($file)
     {
-        $file = get_file($file);
-        while (!feof($file))
+        $file = file_get_contents($file);
+        $lines = explode("\n", $file);
+        $shrts = array();
+        foreach ($lines as $line) 
         {
-            $line = fgets($file, 4096);
-            $line = trim($line);
             $line = preg_replace('/\s\s+/', ' ', trim($line));
-            if ($line != "")
+            // Kill blank lines, comments
+            if ($line != '' && (substr($line, 0, 1) != ">"))
             {
-                 // Ignore comments
-                if (substr($line, 0, 1) != ">")
-                {
-                    // Break out wave into trigger, URL, title
-                    $shrt = explode(" ", $line);
-                    $takes_search = False;
-                    if (strstr($shrt[1], "%s")) 
-                    { 
-                        $takes_search = True;
-                    }
-                    $shrts[] = array('trigger' => $shrt[0],
-                                     'url' => $shrt[1],
-                                     'title' => $shrt[2],
-                                     'takes_search' => $takes_search);
-                }   
+                $segments = explode(' ', $line);
+                $takes_search = False;
+                if (strstr($segments[1], "%s")) 
+                { 
+                    $takes_search = True;
+                }
+                $shrt = array('trigger' => $segments[0],
+                              'url' => $segments[1],
+                              'title' => $segments[2],
+                              'takes_search' => $takes_search);
+                array_push($shrts,$shrt);
             }
         }
-        fclose($file);
         return $shrts;
     }
 
@@ -81,6 +77,7 @@
         $url = preg_replace("/%s/", $args['term'], $shrt['url']);
         header('Location: ' . $url);
     }
+    
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -122,11 +119,12 @@
             <?php go($_GET['s'], $_GET['c'])?>
         <?php else: ?>
             <?php if ($_GET['c'] == help): ?>
-                <?php if (get_shrts($_GET['s'])): ?>
-                    <p class="help">Triggers in red means that a trigger takes a search term.</p>
+                <?php if ($_GET['s']): ?>
+                    <p class="help">Lines in red indicate that a trigger is capable of taking a search&nbsp;term.</p>
                     <h2 class="out">Available triggers: </h2>
                     <table>
-                    <?php foreach(get_shrts($_GET['s']) as $shrt): ?>
+                    <?php $shrts = get_shrts($_GET['s']); ?>
+                    <?php foreach($shrts as $shrt): ?>
                         <tr<?php if ($shrt['takes_search']): ?> class="red"<?php endif; ?>>
                             <td class="right"><strong><?php echo $shrt['trigger'] ?></strong></td>
                             <td><?php echo $shrt['title'] ?></td>
