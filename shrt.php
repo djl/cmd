@@ -44,11 +44,9 @@
                 { 
                     $takes_search = True;
                 }
-                $shrt = array('trigger' => $segments[0],
-                              'url' => $segments[1],
-                              'title' => $segments[2],
-                              'takes_search' => $takes_search);
-                array_push($shrts,$shrt);
+                $shrts[$segments[0]] = array('url' => $segments[1],
+                                             'title' => $segments[2],
+                                             'takes_search' => $takes_search);
             }
         }
         return $shrts;
@@ -58,22 +56,44 @@
     {
         $shrts = get_shrts($file);
         $trigger = $args['trigger'];
-        $term = $args['term'];
-        foreach ($shrts as $shrt) 
-        {
-            if ($shrt['trigger'] == $trigger)
-            {
-                return $shrt;
-            }
-        }
+        $shrt = $shrts[$trigger];
+        if ($shrt)
+            return $shrt;
         return False;
+    }
+    
+    function parse_location($url, $args)
+    {
+        $ref = $_SERVER['HTTP_REFERER'];
+        $parsed = parse_url($ref);
+        $domain = $parsed['host'];
+        $args = get_args($args);
+        $url = preg_replace("/%s/", $args['term'], $url);
+        $url = preg_replace("/%d/", $domain, $url);
+        $url = preg_replace("/%r/", $ref, $url);
+        return $url;
     }
 
     function go($file, $args)
     {
-        $args = get_args($args);
-        $shrt = get_shrt($file, $args);
-        $url = preg_replace("/%s/", $args['term'], $shrt['url']);
+        $args_array = get_args($args);
+        $shrt = get_shrt($file, $args_array);
+        if ($shrt)
+        {
+            $url = parse_location($shrt['url'], $args);
+        }
+        else
+        {
+            $shrts = get_shrts($file);
+            $shrt = $shrts['*']; // Untriggered search
+            if (!$shrt)
+            {
+                // Pass off to google if we don't even have an
+                // untriggered search
+                $url = "http://www.google.com/search?q=" . $args;
+            }
+            $url = parse_location($shrt['url'], $args);
+        }
         header('Location: ' . $url);
     }
     
@@ -133,7 +153,7 @@
                 <form action="." method="get">
                     <label for="custom" id="label" class="out">Shortwave file URL:</label><input type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&s=(.*?)\;/,'&s='+this.value+'\';')">
                 </form>
-                <h2> <span class="out">bookmarklet:</span><a id="link" href="javascript:goGoGadgetTrigger();function%20goGoGadgetTrigger(){var%20c=window.prompt('Type `help` to see your commands');if(c){var%20u='<?php echo full_url(); ?>?c='+c+'&s=';if(c.substring(0,1)=='%20'){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></h2>
+                <h2> <span class="out">bookmarklet:</span><a id="link" href="javascript:shrt();function%20shrt(){var%20c=window.prompt('Type%20`help`%20for%20a%20list%20of%20commands:');if(c){var%20u='<?php echo full_url(); ?>?c='+c+'&s=';if(c.substring(0,1)=='%20'){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></h2>
             <?php endif; ?>
         <?php endif;?>
         <p class="note">Based on <a href="http://shortwaveapp.com/">Shortwave</a> by <a href="http://shauninman.com">Shaun Inman</a></p>
