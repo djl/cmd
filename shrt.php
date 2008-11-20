@@ -1,102 +1,105 @@
 <?php
-    function full_url()
-    {
-    	$s = empty($_SERVER["HTTPS"]) ? '' : ($_SERVER["HTTPS"] == "on") ? "s" : "";
-    	$protocol = substr(strtolower($_SERVER["SERVER_PROTOCOL"]), 0, strpos(strtolower($_SERVER["SERVER_PROTOCOL"]), "/")) . $s;
-    	$port = ($_SERVER["SERVER_PORT"] == "80") ? "" : (":".$_SERVER["SERVER_PORT"]);
-    	return $protocol . "://" . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI'];
-    }
+define(DEFAULT_URL, 'http://www.google.com/search?q=%s');
+define(USER_AGENT, 'shrt; Just grabbing your Shortwave shortcuts. (http://github.com/xvzf/shrt/tree/master).');
 
-    function get_args($arg)
-    {
-        $args = preg_replace('/\s\s+/', ' ', trim($arg));
-        $args = split('[ ]+', $args, 2);
-        $args = array('trigger' => $args[0],
-                      'term' => $args[1]);
-        return $args;
-    }
-    
-    function get_file($url)
-    {
-        $headers = get_headers($url, 1);
-        if ($headers['Content-Type'] != "text/plain")
-        {
-            die("<p>Remote file was not a text file!</p>");
-        }
-        $file = file_get_contents($url);
-        return $file;
-    }
+@ini_set('user_agent', USER_AGENT);
 
-    function get_shrts($file)
+function full_url()
+{
+	$s = empty($_SERVER["HTTPS"]) ? '' : ($_SERVER["HTTPS"] == "on") ? "s" : "";
+	$protocol = substr(strtolower($_SERVER["SERVER_PROTOCOL"]), 0, strpos(strtolower($_SERVER["SERVER_PROTOCOL"]), "/")) . $s;
+	$port = ($_SERVER["SERVER_PORT"] == "80") ? "" : (":".$_SERVER["SERVER_PORT"]);
+	return $protocol . "://" . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI'];
+}
+
+function get_args($arg)
+{
+    $args = preg_replace('/\s\s+/', ' ', trim($arg));
+    $args = split('[ ]+', $args, 2);
+    $args = array('trigger' => $args[0],
+                  'term' => $args[1]);
+    return $args;
+}
+
+function get_file($url)
+{
+    $headers = get_headers($url, 1);
+    if ($headers['Content-Type'] != "text/plain")
     {
-        $file = get_file($file);
-        $lines = explode("\n", $file);
-        $shrts = array();
-        foreach ($lines as $line) 
+        die("<p>Remote file was not a text file!</p>");
+    }
+    $file = file_get_contents($url);
+    return $file;
+}
+
+function get_shrts($file)
+{
+    $file = get_file($file);
+    $lines = explode("\n", $file);
+    $shrts = array();
+    foreach ($lines as $line)
+    {
+        $line = preg_replace('/\s\s+/', ' ', trim($line));
+        // Kill blank lines, comments
+        if ($line != '' && (substr($line, 0, 1) != ">"))
         {
-            $line = preg_replace('/\s\s+/', ' ', trim($line));
-            // Kill blank lines, comments
-            if ($line != '' && (substr($line, 0, 1) != ">"))
+            $segments = split('[ ]+', $line, 3);
+            $takes_search = False;
+            if (strstr($segments[1], "%s"))
             {
-                $segments = split('[ ]+', $line, 3);
-                $takes_search = False;
-                if (strstr($segments[1], "%s")) 
-                { 
-                    $takes_search = True;
-                }
-                $shrts[$segments[0]] = array('url' => $segments[1],
-                                             'title' => $segments[2],
-                                             'takes_search' => $takes_search);
+                $takes_search = True;
             }
+            $shrts[$segments[0]] = array('trigger' => $segments[0],
+                                         'url' => $segments[1],
+                                         'title' => $segments[2],
+                                         'takes_search' => $takes_search);
         }
-        return $shrts;
     }
+    return $shrts;
+}
 
-    function get_shrt($file, $args)
+function parse_location($url, $args)
+{
+    $ref = $_SERVER['HTTP_REFERER'];
+    $parsed = parse_url($ref);
+    $domain = $parsed['host'];
+    echo $args;
+    if (is_array($args))
     {
-        $shrts = get_shrts($file);
-        $trigger = $args['trigger'];
-        $shrt = $shrts[$trigger];
-        if ($shrt)
-            return $shrt;
-        return False;
-    }
-    
-    function parse_location($url, $args)
-    {
-        $ref = $_SERVER['HTTP_REFERER'];
-        $parsed = parse_url($ref);
-        $domain = $parsed['host'];
-        $args = get_args($args);
         $url = preg_replace("/%s/", $args['term'], $url);
-        $url = preg_replace("/%d/", $domain, $url);
-        $url = preg_replace("/%r/", $ref, $url);
-        return $url;
     }
-
-    function go($file, $args)
+    else
     {
-        $args_array = get_args($args);
-        $shrt = get_shrt($file, $args_array);
+        $url = preg_replace("/%s/", $args, $url);
+    }
+    $url = preg_replace("/%d/", $domain, $url);
+    $url = preg_replace("/%r/", $ref, $url);
+    return $url;
+}
+
+function go($file, $args)
+{
+    $args_array = get_args($args);
+    $shrts = get_shrts($file);
+    $shrt = $shrts[$args_array['trigger']];
+    if ($shrt)
+    {
+        $url = parse_location($shrt['url'], $args_array);
+    }
+    else
+    {
+        $shrt = $shrts['*'];
         if ($shrt)
         {
             $url = parse_location($shrt['url'], $args);
         }
         else
         {
-            $shrts = get_shrts($file);
-            $shrt = $shrts['*']; // Untriggered search
-            if (!$shrt)
-            {
-                // Pass off to google if we don't even have an
-                // untriggered search
-                $url = "http://www.google.com/search?q=" . $args;
-            }
-            $url = parse_location($shrt['url'], $args);
+            $url = parse_location(DEFAULT_URL, $args);
         }
-        header('Location: ' . $url);
     }
-    
+    header('Location: ' . $url);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -125,7 +128,6 @@
     td{padding:0.2em;width:50%;}
     .out{color:#aaa;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
     .red{color:#c86f4d;}
-    .right{text-align:right;}
     </style>
     <script type="text/javascript">function $(id){return document.getElementById(id)};</script>
 </head>
@@ -143,7 +145,7 @@
                     <?php $shrts = get_shrts($_GET['s']); ?>
                     <?php foreach($shrts as $shrt): ?>
                         <tr<?php if ($shrt['takes_search']): ?> class="red"<?php endif; ?>>
-                            <td><strong><?php echo $shrt['trigger'] ?></strong></td>
+                            <td><?php echo $shrt['trigger'] ?></td>
                             <td><?php echo $shrt['title'] ?></td>
                         </tr>
                     <?php endforeach; ?>
