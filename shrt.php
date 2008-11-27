@@ -21,14 +21,28 @@ function get_args($arg)
     return $args;
 }
 
+function file_get_contents_curl($url) {
+	$ch = curl_init();
+	
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_USERAGENT, USER_AGENT);
+	
+	$data = curl_exec($ch);
+	curl_close($ch);
+	
+	return $data;
+}
+
 function get_file($url)
 {
     $headers = get_headers($url, 1);
     if ($headers['Content-Type'] != "text/plain")
     {
-        die("<p>Remote file was not a text file!</p>");
+        die("<p>Remote file <em>$url</em> was not a text file!</p>");
     }
-    $file = file_get_contents($url);
+    $file = file_get_contents_curl($url);
     return $file;
 }
 
@@ -100,6 +114,11 @@ function go($file, $args)
     }
     header('Location: ' . $url);
 }
+
+if ($_GET['c'] and $_GET['c'] !== "help") 
+{
+    go($_GET['s'], $_GET['c']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -134,30 +153,26 @@ function go($file, $args)
 <body>
     <div>
         <h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em>...because Saft is broken in the WebKit nightlies</em></h1>
-        <?php if ($_GET['c'] and $_GET['c'] !== "help"):?>
-            <?php go($_GET['s'], $_GET['c'])?>
-        <?php else: ?>
-            <?php if ($_GET['c'] == help): ?>
-                <?php if ($_GET['s']): ?>
-                    <p class="help">Lines in red indicate that a trigger is capable of taking a search&nbsp;term.</p>
-                    <h2 class="out">Available triggers: </h2>
-                    <table>
-                    <?php $shrts = get_shrts($_GET['s']); ?>
-                    <?php foreach($shrts as $shrt): ?>
-                        <tr<?php if ($shrt['takes_search']): ?> class="red"<?php endif; ?>>
-                            <td><?php echo $shrt['trigger'] ?></td>
-                            <td><?php echo $shrt['title'] ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-                </table>
-            <?php else: ?>
-                <form action="." method="get">
-                    <label for="custom" id="label" class="out">Shortwave file URL:</label><input type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&s=(.*?)\;/,'&s='+this.value+'\';')">
-                </form>
-                <h2> <span class="out">bookmarklet:</span><a id="link" href="javascript:shrt();function%20shrt(){var%20c=window.prompt('Type%20`help`%20for%20a%20list%20of%20commands:');if(c){var%20u='<?php echo full_url(); ?>?c='+c+'&s=';if(c.substring(0,1)=='%20'){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></h2>
+        <?php if ($_GET['c'] == help): ?>
+            <?php if ($_GET['s']): ?>
+                <p class="help">Lines in red indicate that a trigger is capable of taking a search&nbsp;term.</p>
+                <h2 class="out">Available triggers: </h2>
+                <table>
+                <?php $shrts = get_shrts($_GET['s']); ?>
+                <?php foreach($shrts as $shrt): ?>
+                    <tr<?php if ($shrt['takes_search']): ?> class="red"<?php endif; ?>>
+                        <td><?php echo $shrt['trigger'] ?></td>
+                        <td><?php echo $shrt['title'] ?></td>
+                    </tr>
+                <?php endforeach; ?>
             <?php endif; ?>
-        <?php endif;?>
+            </table>
+        <?php else: ?>
+            <form action="." method="get">
+                <label for="custom" id="label" class="out">Shortwave file URL:</label><input type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&s=(.*?)\;/,'&s='+this.value+'\';')">
+            </form>
+            <h2> <span class="out">bookmarklet:</span><a id="link" href="javascript:shrt();function%20shrt(){var%20c=window.prompt('Type%20`help`%20for%20a%20list%20of%20commands:');if(c){var%20u='<?php echo full_url(); ?>?c='+c+'&s=';if(c.substring(0,1)=='%20'){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></h2>
+        <?php endif; ?>
         <p class="note">Based on <a href="http://shortwaveapp.com/">Shortwave</a> by <a href="http://shauninman.com">Shaun Inman</a></p>
     </div>
 </body>
