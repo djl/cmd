@@ -1,6 +1,6 @@
 <?php
-define(DEFAULT_URL, 'http://www.google.com/search?q=%s');
-define(USER_AGENT, 'shrt; Just grabbing your Shortwave shortcuts. (http://github.com/xvzf/shrt/tree/master).');
+define('DEFAULT_URL', 'http://www.google.com/search?q=%s');
+define('USER_AGENT', 'shrt; Just grabbing your Shortwave shortcuts. (http://github.com/xvzf/shrt/tree/master).');
 
 @ini_set('user_agent', USER_AGENT);
 
@@ -115,7 +115,7 @@ function go($file, $args)
     header('Location: ' . $url);
 }
 
-if ($_GET['c'] and $_GET['c'] !== "help") 
+if (isset($_GET['c']) and $_GET['c'] !== "help") 
 {
     go($_GET['s'], $_GET['c']);
 }
@@ -153,7 +153,7 @@ if ($_GET['c'] and $_GET['c'] !== "help")
 <body>
     <div>
         <h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em>...because Saft is broken in the WebKit nightlies</em></h1>
-        <?php if ($_GET['c'] == help): ?>
+        <?php if (isset($_GET['c']) && $_GET['c'] == 'help'): ?>
             <?php if ($_GET['s']): ?>
                 <p class="help">Lines in red indicate that a trigger is capable of taking a search&nbsp;term.</p>
                 <h2 class="out">Available triggers: </h2>
