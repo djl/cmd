@@ -17,7 +17,7 @@ function get_args($arg)
     $args = preg_replace('/\s\s+/', ' ', trim($arg));
     $args = split('[ ]+', $args, 2);
     $args = array('trigger' => $args[0],
-                  'term' => $args[1]);
+                  'term' => urlencode($args[1]));
     return $args;
 }
 
@@ -77,7 +77,6 @@ function parse_location($url, $args)
     $ref = $_SERVER['HTTP_REFERER'];
     $parsed = parse_url($ref);
     $domain = $parsed['host'];
-    echo $args;
     if (is_array($args))
     {
         $url = preg_replace("/%s/", $args['term'], $url);
