@@ -16,15 +16,6 @@ function full_url()
     return $protocol . "://" . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI'];
 }
 
-function get_args($arg)
-{
-    $args = preg_replace('/\s\s+/', ' ', trim($arg));
-    $args = split('[ ]+', $args, 2);
-    $args = array('trigger' => $args[0],
-                  'term' => urlencode($args[1]));
-    return $args;
-}
-
 function file_get_contents_curl($url) {
     $ch = curl_init();
     
@@ -37,6 +28,15 @@ function file_get_contents_curl($url) {
     curl_close($ch);
     
     return $data;
+}
+
+function get_args($arg)
+{
+    $args = preg_replace('/\s\s+/', ' ', trim($arg));
+    $args = split('[ ]+', $args, 2);
+    $args = array('trigger' => $args[0],
+                  'term' => urlencode($args[1]));
+    return $args;
 }
 
 function get_file($url)
@@ -94,7 +94,19 @@ function parse_location($url, $args)
     return $url;
 }
 
-function go()
+function show_help()
+{
+    return isset($_GET['s']) and isset($_GET['c']) and trim($_GET['c']) == HELP_TRIGGER;
+}
+
+function title()
+{
+    if (show_help()) { return HELP_TITLE; }
+    return TITLE;
+}
+
+// Go go gadget shrt!
+if (isset($_GET['c']) and isset($_GET['s']) and !show_help()) 
 {
     $args_array = get_args(trim($_GET['c']));
     $shrts = get_shrts($_GET['s']);
@@ -116,22 +128,7 @@ function go()
         }
     }
     header('Location: ' . $url);
-}
 
-function show_help()
-{
-    return isset($_GET['s']) and isset($_GET['c']) and trim($_GET['c']) == HELP_TRIGGER;
-}
-
-function title()
-{
-    if (show_help()) { return HELP_TITLE; }
-    return TITLE;
-}
-
-if (isset($_GET['c']) and isset($_GET['s']) and !show_help()) 
-{
-    go();
 }
 ?>
 <!DOCTYPE html>
@@ -141,29 +138,30 @@ if (isset($_GET['c']) and isset($_GET['s']) and !show_help())
     <title>shrt</title>
     <style type="text/css">
     *{margin:0;padding:0;}
-    body{background:#fff;border-top:4px solid #c86f4d;color:black;font:62.5% Helvetica,sans-serif;margin:0;padding:0;text-align:center;}
-    div{background:#fff;margin:40px auto;width:50em;}
-    .help{margin:0 0 3em;text-align:center;}
-    h1{font-size:2em;line-height:6em;text-align:center;}
+    body{background:#fff;border-top:4px solid #c86f4d;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
+    div{background:#fff;margin:4em auto;width:50em;}
+    .help{margin:0 0 3em;}
+    h1{font-size:2em;line-height:6em;}
     h1 a:link,h1 a:visited{color:black;text-decoration:none;}
     h1 a:hover,h1 a:active,h1 a:focus{color:#c86f4d;}
-    h2{color:#bbb;font-size:2em;font-weight:normal;margin:0 0 3em;text-align:center;}
+    h2{color:#bbb;font-size:2em;font-weight:normal;margin:0 0 3em;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
-    label,.out{line-height:1.8em !important;}
+    label,.out{font-size:1.em;line-height:1.8em !important;}
     label{font-size:1.4em;}
     em{color:#bbb;font-style:normal;font-weight:normal;}
-    p{font-size:1.4em;margin:0 0 2em;line-height:2em;text-align:center;}
-    p.note{font-size:9px;margin-top:10em;}
+    p{font-size:1.4em;margin:0 0 2em;line-height:2em;}
+    p.note{font-size:1.1em;margin-top:10em;padding:1em;}
     a{color:#c86f4d;}
     a:hover{color:black;}
     a#link{background:#c86f4d;color:#fff;padding:4px;text-shadow:#c86f4d 1px 1px 1px;text-decoration:none;}
     a#link:hover{background:black;text-shadow:black 1px 1px 1px;}
-    dl{font-size:1.4em;}
-    dt{display:inline;}
-    .out{color:#aaa;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
-    .red{color:#c86f4d;}
-    .left { text-align:left;}
-    code {color:#c86f4d;font-family:"panic sans",consolas,"bitstream vera sans",monaco,"courier new",monospace;}
+    table{font-size:1.4em;margin:3em auto;}
+    tr{margin:0 0 22em;}
+    td{padding:10px;text-align:right;}
+    code {color:#aaa;font: 1.1em monaco,"panic sans",consolas,"bitstream vera sans","courier new",monospace;}
+    .out{color:#aaa;float:left;font-weight:bold;line-height:1.2em;margin-left:-220px;width:200px;text-align:right;}
+    .red{color:#c86f4d !important;}
+    .left{text-align:left;}
     </style>
     <script type="text/javascript">function $(id){return document.getElementById(id)};</script>
 </head>
@@ -171,21 +169,23 @@ if (isset($_GET['c']) and isset($_GET['s']) and !show_help())
     <div>
         <h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em><?php echo title(); ?></em></h1>
         <?php if (show_help()): ?>
-            <p class="center"><span class="red">red lines</span> denote trigger is capable of taking a search term e.g. <code class="red">i stanley kubrick</code></p>
-            <dl>
+            <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p>
+            <table>
             <?php $shrts = get_shrts($_GET['s']); ?>
             <?php foreach($shrts as $shrt): ?>
-                <dt<?php if ($shrt['search']): ?> class="red"<?php endif; ?>><?php echo $shrt['trigger'] ?></dt>
-                <dd<?php if ($shrt['search']): ?> class="red"<?php endif; ?>><?php echo $shrt['title'] ?></dd>
+                <tr>
+                    <td><code><?php echo $shrt['trigger'] ?></code></td>
+                    <td class="left"><?php echo $shrt['title'] ?><?php if ($shrt['search']): ?> <span class="red">*</span><?php endif; ?></td>
+                </tr>
             <?php endforeach; ?>
-            </dl>
+            </table>
         <?php else: ?>
             <form action="<?php echo $_SERVER['SELF'] ?>" method="get">
                 <label for="custom" id="label" class="out">Shortwave file URL:</label><input type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&s=(.*?)\;/,'&s='+this.value+'\';')">
             </form>
             <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo HELP_TRIGGER ?>`%20for%20a%20list%20of%20commands:');if(c){if(c.substring(0,1)=='%20'){c=c.replace(/^\s+|\s+$/g, '');nw=true;}var%20u='<?php echo full_url(); ?>?c='+c+'&s=';if(nw){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></p>
-            <p class="note"><a href="<?php echo SHRT_URL ?>">shrt</a> is an implementation of <a href="http://shortwaveapp.com/">Shortwave</a> by <a href="http://shauninman.com">Shaun Inman</a>.</p>
         <?php endif; ?>
+        <p class="note"><a href="<?php echo SHRT_URL ?>">shrt</a> is an implementation of <a href="http://shortwaveapp.com/">Shortwave</a> by <a href="http://shauninman.com">Shaun Inman</a>.</p>
     </div>
 </body>
 </html>

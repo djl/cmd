@@ -1,5 +1,5 @@
 # shrt
-An implementation of [Shaun Inman](http://shauninman.com/)'s [Shortwave](http://shortwaveapp.com/).
+Pronounced *shirt*, shrt is an implementation of [Shaun Inman](http://shauninman.com/)'s [Shortwave](http://shortwaveapp.com/).
 
 shrt can read your current Shortwave files.
 
