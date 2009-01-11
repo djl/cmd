@@ -110,21 +110,21 @@ if (isset($_GET['c']) and isset($_GET['s']) and !show_help())
 {
     $args_array = get_args(trim($_GET['c']));
     $shrts = get_shrts($_GET['s']);
-    $shrt = $shrts[$args_array['trigger']];
-    if ($shrt)
+    if (array_key_exists($args_array['trigger']))
     {
+	    $shrt = $shrts[$args_array['trigger']];
         $url = parse_location($shrt['url'], $args_array);
     }
     else
     {
-        $shrt = $shrts['*'];
-        if ($shrt)
+        if (array_key_exists('*', $shrts))
         {
-            $url = parse_location($shrt['url'], $args);
+	        $shrt = $shrts['*'];
+            $url = parse_location($shrt['url'], $_GET['c']);
         }
         else
         {
-            $url = parse_location(DEFAULT_URL, $args);
+            $url = parse_location(DEFAULT_URL, $args_array);
         }
     }
     header('Location: ' . $url);
@@ -139,7 +139,7 @@ if (isset($_GET['c']) and isset($_GET['s']) and !show_help())
     <style type="text/css">
     *{margin:0;padding:0;}
     body{background:#fff;border-top:4px solid #c86f4d;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
-    div{background:#fff;margin:4em auto;width:50em;}
+    div{margin:4em auto;width:50em;}
     .help{margin:0 0 3em;}
     h1{font-size:2em;line-height:6em;}
     h1 a:link,h1 a:visited{color:black;text-decoration:none;}
