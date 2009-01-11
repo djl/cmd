@@ -110,7 +110,7 @@ if (isset($_GET['c']) and isset($_GET['s']) and !show_help())
 {
     $args_array = get_args(trim($_GET['c']));
     $shrts = get_shrts($_GET['s']);
-    if (array_key_exists($args_array['trigger']))
+    if (array_key_exists($args_array['trigger'], $shrts))
     {
 	    $shrt = $shrts[$args_array['trigger']];
         $url = parse_location($shrt['url'], $args_array);
