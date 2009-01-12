@@ -16,17 +16,15 @@ function full_url()
     return $protocol . "://" . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI'];
 }
 
-function file_get_contents_curl($url) {
+function file_get_contents_curl($url) 
+{
     $ch = curl_init();
-    
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_USERAGENT, USER_AGENT);
-    
     $data = curl_exec($ch);
     curl_close($ch);
-    
     return $data;
 }
 
@@ -180,7 +178,7 @@ if (isset($_GET['c']) and isset($_GET['s']) and !show_help())
             <?php endforeach; ?>
             </table>
         <?php else: ?>
-            <form action="<?php echo $_SERVER['SELF'] ?>" method="get">
+            <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
                 <label for="custom" id="label" class="out">Shortwave file URL:</label><input type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&s=(.*?)\;/,'&s='+this.value+'\';')">
             </form>
             <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo HELP_TRIGGER ?>`%20for%20a%20list%20of%20commands:');if(c){if(c.substring(0,1)=='%20'){c=c.replace(/^\s+|\s+$/g, '');nw=true;}var%20u='<?php echo full_url(); ?>?c='+c+'&s=';if(nw){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></p>
