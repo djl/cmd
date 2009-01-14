@@ -32,8 +32,10 @@ function get_args($arg)
 {
     $args = preg_replace('/\s\s+/', ' ', trim($arg));
     $args = split('[ ]+', $args, 2);
+	$term = " ";
+	if (count($args) > 1) $term = urlencode($args[1]);
     $args = array('trigger' => $args[0],
-                  'term' => urlencode($args[1]));
+                  'term' => $term);
     return $args;
 }
 
@@ -76,6 +78,7 @@ function get_shrts($file)
 
 function parse_location($url, $args)
 {
+	// if array_key_exists()
     $ref = $_SERVER['HTTP_REFERER'];
     $parsed = parse_url($ref);
     $domain = $parsed['host'];
@@ -126,7 +129,6 @@ if (isset($_GET['c']) and isset($_GET['s']) and !show_help())
         }
     }
     header('Location: ' . $url);
-
 }
 ?>
 <!DOCTYPE html>

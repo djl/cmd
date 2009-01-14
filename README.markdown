@@ -6,4 +6,4 @@ shrt can read your current Shortwave files.
 **Note:** shrt is pretty much untested and probably full of security holes.
 
 # Usage
-Upload shrt.php, point your browser to it and follow the instructions.
+Upload shrt.php, point your browser to it and follow the instructions. See shrts.txt for example usage.
