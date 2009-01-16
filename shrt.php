@@ -13,7 +13,7 @@ function full_url()
     $s = empty($_SERVER["HTTPS"]) ? '' : ($_SERVER["HTTPS"] == "on") ? "s" : "";
     $protocol = substr(strtolower($_SERVER["SERVER_PROTOCOL"]), 0, strpos(strtolower($_SERVER["SERVER_PROTOCOL"]), "/")) . $s;
     $port = ($_SERVER["SERVER_PORT"] == "80") ? "" : (":".$_SERVER["SERVER_PORT"]);
-    return $protocol . "://" . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI'];
+    return $protocol . "://" . $_SERVER['SERVER_NAME'] . $port . $_SERVER['PHP_SELF'];
 }
 
 function file_get_contents_curl($url) 
@@ -32,10 +32,10 @@ function get_args($arg)
 {
     $args = preg_replace('/\s\s+/', ' ', trim($arg));
     $args = split('[ ]+', $args, 2);
-	$term = " ";
-	if (count($args) > 1) $term = urlencode($args[1]);
+    $term = " ";
+    if (count($args) > 1) $term = urlencode($args[1]);
     $args = array('trigger' => $args[0],
-                  'term' => $term);
+                  'term' => urldecode($term));
     return $args;
 }
 
@@ -78,18 +78,12 @@ function get_shrts($file)
 
 function parse_location($url, $args)
 {
-	// if array_key_exists()
-    $ref = $_SERVER['HTTP_REFERER'];
+    $ref = (array_key_exists('HTTP_REFERER', $_SERVER)) ? $_SERVER['HTTP_REFERER'] : "";
+
     $parsed = parse_url($ref);
-    $domain = $parsed['host'];
-    if (is_array($args))
-    {
-        $url = preg_replace("/%s/", $args['term'], $url);
-    }
-    else
-    {
-        $url = preg_replace("/%s/", $args, $url);
-    }
+    $domain = array_key_exists('host', $parsed) ? $parsed['host'] : "";
+    $term = is_array($args) ? $args['term'] : $args;
+    $url = preg_replace("/%s/", $term, $url);
     $url = preg_replace("/%d/", $domain, $url);
     $url = preg_replace("/%r/", $ref, $url);
     return $url;
@@ -113,14 +107,14 @@ if (isset($_GET['c']) and isset($_GET['s']) and !show_help())
     $shrts = get_shrts($_GET['s']);
     if (array_key_exists($args_array['trigger'], $shrts))
     {
-	    $shrt = $shrts[$args_array['trigger']];
+        $shrt = $shrts[$args_array['trigger']];
         $url = parse_location($shrt['url'], $args_array);
     }
     else
     {
         if (array_key_exists('*', $shrts))
         {
-	        $shrt = $shrts['*'];
+            $shrt = $shrts['*'];
             $url = parse_location($shrt['url'], $_GET['c']);
         }
         else
@@ -183,9 +177,8 @@ if (isset($_GET['c']) and isset($_GET['s']) and !show_help())
             <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
                 <label for="custom" id="label" class="out">Shortwave file URL:</label><input type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&s=(.*?)\;/,'&s='+this.value+'\';')">
             </form>
-            <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo HELP_TRIGGER ?>`%20for%20a%20list%20of%20commands:');if(c){if(c.substring(0,1)=='%20'){c=c.replace(/^\s+|\s+$/g, '');nw=true;}var%20u='<?php echo full_url(); ?>?c='+c+'&s=';if(nw){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></p>
+            <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`help`%20for%20a%20list%20of%20commands:');if(c){c=escape(c);if(c.substring(0,1)=='%20'){c=c.replace(/^\s+|\s+$/g,'%20');nw=true;}var%20u='http://shrt.dev/shrt.php?c='+c+'&s=';if(nw){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></p>
         <?php endif; ?>
-        <p class="note"><a href="<?php echo SHRT_URL ?>">shrt</a> is an implementation of <a href="http://shortwaveapp.com/">Shortwave</a> by <a href="http://shauninman.com">Shaun Inman</a>.</p>
     </div>
 </body>
 </html>
