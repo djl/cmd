@@ -3,8 +3,6 @@ Pronounced *shirt*, shrt is an implementation of [Shaun Inman](http://shauninman
 
 shrt can read your current Shortwave files.
 
-**Note:** shrt is pretty much untested and probably full of security holes.
-
 
 # Usage
 Upload shrt.php, point your browser to it and follow the instructions. See shrts.txt for example usage.
@@ -13,3 +11,9 @@ Upload shrt.php, point your browser to it and follow the instructions. See shrts
 # Todo
 * Multiple, positional arguments for search terms.
 * Ability to load `javascript:` urls.
+
+
+# Notes
+* When upgrading to a new version, it's possible you will have to update your bookmarklet again.
+
+* shrt is pretty much untested and probably full of security holes.
