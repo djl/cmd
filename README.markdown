@@ -1,19 +1,20 @@
 # shrt
-Pronounced *shirt*, shrt is an implementation of [Shaun Inman](http://shauninman.com/)'s [Shortwave](http://shortwaveapp.com/).
+shrt is an implementation of [Shaun Inman](http://shauninman.com/)'s [Shortwave](http://shortwaveapp.com/), described thusly:
 
-shrt can read your current Shortwave files.
+> an extensible quick-search and shortcut bookmark.
+
+Yes, quite.
 
 
 # Usage
-Upload shrt.php, point your browser to it and follow the instructions. See shrts.txt for example usage.
+Upload shrt.php, point your browser to it and follow the instructions. See [Shortwave](http://shortwaveapp.com/) for full syntax or shrts.txt for example usage.
 
 
 # Todo
-* Multiple, positional arguments for search terms.
-* Ability to load `javascript:` urls.
+* Multiple/named arguments for search terms.
 
 
 # Notes
-* When upgrading to a new version, it's possible you will have to update your bookmarklet again.
-
+* shrt can read your current Shortwave files, so no porting is necessary.
+* When upgrading to a new version, one may need to update one's bookmarklet.
 * shrt is pretty much untested and probably full of security holes.
