@@ -1,10 +1,11 @@
 <?php
+define('DEFAULT_DELIMITER', ',');
 define('DEFAULT_URL', 'http://www.google.com/search?q=%s');
-define('SHRT_URL', 'http://github.com/xvzf/shrt/tree/master');
-define('USER_AGENT', 'Grabbing your Shortwave shortcuts. (' . SHRT_URL . ')');
-define('HELP_TRIGGER', 'help');
-define('TITLE', '...because Saft is broken in the WebKit nightlies');
 define('HELP_TITLE', '...your commands');
+define('HELP_TRIGGER', 'help');
+define('SHRT_URL', 'http://github.com/xvzf/shrt/tree/master');
+define('TITLE', '...because Saft is broken in the WebKit nightlies');
+define('USER_AGENT', 'Grabbing your Shortwave shortcuts. (' . SHRT_URL . ')');
 
 ini_set('user_agent', USER_AGENT);
 
@@ -37,12 +38,22 @@ function get_file($url)
 function get_args($arg)
 {
     $args = preg_replace('/\s\s+/', ' ', trim($arg));
-    $args = split('[ ]+', $args, 2);
-    $term = " ";
-    if (count($args) > 1) $term = urlencode($args[1]);
-    $args = array('trigger' => $args[0],
-                  'term' => urldecode($term));
-    return $args;
+    preg_match('/^(?<trigger>\w+)(\s+(?<terms>.*))?/', $args, $matches);
+    if (!$matches){ return; }
+    $terms = array();
+    if (array_key_exists('terms', $matches))
+    {
+        $terms = explode(DEFAULT_DELIMITER, $matches['terms']);
+        array_walk($terms, 'encode');
+        debug($terms);
+    }
+    $matches['terms'] = $terms;
+    return $matches;
+}
+
+function encode($val, $key)
+{
+    return urlencode($val);
 }
 
 function get_shrts($file)
@@ -71,17 +82,33 @@ function get_shrts($file)
     return $shrts;
 }
 
-function parse_location($url, $args)
+function get_url($args, $shrts)
 {
+	// Referrer
     $ref = (!empty($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : "";
-
     $parsed = parse_url($ref);
     $domain = !empty($parsed['host']) ? $parsed['host'] : "";
-    $term = is_array($args) ? $args['term'] : $args;
-    $url = preg_replace("/%s/", $term, $url);
-    $url = preg_replace("/%d/", $domain, $url);
-    $url = preg_replace("/%r/", $ref, $url);
-    return $url;
+
+	// Check if shrt exists
+	if (array_key_exists($args['trigger'], $shrts))
+	{
+	    $shrt = $shrts[$args['trigger']];
+		$url = $shrt['url'];
+		$url = preg_replace_array("/%s/", $url, $args['terms']);
+	    $url = preg_replace_array("/%d/", $url, $domain);
+	    $url = preg_replace_array("/%r/", $url, $ref);
+	    return $url;
+	}
+}
+
+function preg_replace_array($pattern, $subject, $array)
+{
+	if (!is_array($array)) { array($array); }
+	$count = preg_match_all($pattern, $subject, $matches);
+	for ($i=0; $i < $count; $i++) { 
+		$subject = preg_replace($pattern, $array[$i], $subject, 1);
+	}
+	return $subject;
 }
 
 function show_help()
@@ -98,27 +125,12 @@ function title()
 // Go go gadget shrt!
 if (isset($_GET['c']) and isset($_GET['f']) and !show_help()) 
 {
-    $args_array = get_args(trim($_GET['c']));
+    $args = get_args(trim(urldecode($_GET['c'])));
     $shrts = get_shrts($_GET['f']);
-    if (!empty($shrts[$args_array['trigger']]))
-    {
-        $shrt = $shrts[$args_array['trigger']];
-        $url = parse_location($shrt['url'], $args_array);
-    }
-    else
-    {
-        if (!empty($shrts['*']))
-        {
-            $shrt = $shrts['*'];
-            $url = parse_location($shrt['url'], $_GET['c']);
-        }
-        else
-        {
-            $url = parse_location(DEFAULT_URL, $args_array);
-        }
-    }
-    echo $url;
-    header('Location: ' . $url);
+	if ($shrts)
+	{
+		header('Location: ' . get_url($args, $shrts));
+	}
 }
 ?>
 <!DOCTYPE html>
@@ -128,15 +140,14 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     <title>shrt</title>
     <style type="text/css">
     *{margin:0;padding:0;}
-    body{background:#fff;border-top:4px solid #c86f4d;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
-    div{margin:4em auto;width:50em;}
-    .help{margin:0 0 3em;}
+    html{background:#fff;border-top:4px solid #c86f4d;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
+    body{margin:4em auto;width:50em;}
     h1{font-size:2em;line-height:6em;}
     h1 a:link,h1 a:visited{color:black;text-decoration:none;}
     h1 a:hover,h1 a:active,h1 a:focus{color:#c86f4d;}
     h2{color:#bbb;font-size:2em;font-weight:normal;margin:0 0 3em;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
-    label,.out{font-size:1.em;line-height:1.8em !important;}
+    label,.out{line-height:1.8em !important;}
     label{font-size:1.4em;}
     em{color:#bbb;font-style:normal;font-weight:normal;}
     p{font-size:1.4em;margin:0 0 2em;line-height:2em;}
@@ -156,25 +167,23 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     <script type="text/javascript">function $(id){return document.getElementById(id)};</script>
 </head>
 <body>
-    <div>
-        <h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em><?php echo title(); ?></em></h1>
-        <?php if (show_help()): ?>
-            <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p>
-            <table>
-            <?php $shrts = get_shrts($_GET['f']); ?>
-            <?php foreach($shrts as $shrt): ?>
-                <tr>
-                    <td><code><?php echo $shrt['trigger'] ?></code></td>
-                    <td class="left"><?php echo $shrt['title'] ?><?php if ($shrt['search']): ?> <span class="red">*</span><?php endif; ?></td>
-                </tr>
-            <?php endforeach; ?>
-            </table>
-        <?php else: ?>
-            <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
-                <label for="custom" id="label" class="out">Shortwave file URL:</label><input type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&f=(.*?)\;/,'&f='+this.value+'\';')">
-            </form>
-            <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`help`%20for%20a%20list%20of%20commands:');if(c){if(c.substring(0,1)=='%20'){c=c.replace(/^\s+|\s+$/g,'%20');nw=true;}c=escape(c);var%20u='http://shrt.dev/shrt.php?c='+c+'&f=';if(nw){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></p>
-        <?php endif; ?>
-    </div>
+    <header><h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em><?php echo title(); ?></em></h1></header>
+    <?php if (show_help()): ?>
+        <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p>
+        <table>
+        <?php $shrts = get_shrts($_GET['f']); ?>
+        <?php foreach($shrts as $shrt): ?>
+            <tr>
+                <td><code><?php echo $shrt['trigger'] ?></code></td>
+                <td class="left"><?php echo $shrt['title'] ?><?php if ($shrt['search']): ?> <span class="red">*</span><?php endif; ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </table>
+    <?php else: ?>
+        <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
+            <label for="custom" id="label" class="out">Shortwave file URL:</label><input type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&f=(.*?)\;/,'&f='+this.value+'\';')">
+        </form>
+        <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`help`%20for%20a%20list%20of%20commands:');if(c){if(c.substring(0,1)=='%20'){c=c.replace(/^\s+|\s+$/g,'%20');nw=true;}c=escape(c);var%20u='http://shrt.dev/shrt.php?c='+c+'&f=';if(nw){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></p>
+    <?php endif; ?>
 </body>
 </html>

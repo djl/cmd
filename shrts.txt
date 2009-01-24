@@ -14,7 +14,7 @@ f     http://flickr.com/search/?q=%s                                            
 g     https://mail.google.com/                                                         Google Mail
 gc    http://code.google.com/hosting/search?q=%s&btn=Search+Projects                   Google Code Projects
 gcc   http://code.google.com/search/#q=%s                                              Google Code Search
-gf    http://www.gamefaqs.com/search/index.html?game=%s&platform=0                     GameFAQs
+gf    http://www.gamefaqs.com/search/index.html?game=%s&platform=%s                    GameFAQs
 gh    http://github.com/search?q=%s                                                    GitHub
 ghc   http://github.com/codesearch?q=%s&repo=&langOverride=&language=&x=0&y=0          GitHub Code Search
 kv    http://keepvid.com/?url=%s                                                       KeepVid

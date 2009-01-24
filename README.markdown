@@ -6,15 +6,26 @@ shrt is an implementation of [Shaun Inman](http://shauninman.com/)'s [Shortwave]
 Yes, quite.
 
 
-# Usage
-Upload shrt.php, point your browser to it and follow the instructions. See [Shortwave](http://shortwaveapp.com/) for full syntax or shrts.txt for example usage.
+## Usage
+* Upload shrt.php and point your browser to it.  
+* Put the full URL to your shrt/Shortwave text file.
+* Drag the bookmarklet onto your bookmarks bar.
+* Click bookmarklet.
+
+shrt has all the features of Shortwave plus a few extras:
 
 
-# Todo
-* Multiple/named arguments for search terms.
+## Syntax
+* `%s` - will be replaced by any arguments you provide, or blank if none are provided.
+* `%d` - the domain of the current site.
+* `%r` - the full url of the current site.
+* %{kittens} - a default argument, to be optionally overridden.
 
 
-# Notes
-* shrt can read your current Shortwave files, so no porting is necessary.
+## Examples
+See shrts.txt.
+
+## Notes
+* shrt can read your current Shortwave files, although Shortwave may not be able to read some of your shrt file, due to the extra features shrt provides.
 * When upgrading to a new version, one may need to update one's bookmarklet.
-* shrt is pretty much untested and probably full of security holes.
+* JavaScript is required.
