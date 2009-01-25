@@ -30,7 +30,6 @@ function title()
 
 function get_file($url) 
 {
-    $url = urldecode($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -61,7 +60,7 @@ function get_args($arg)
     return $matches;
 }
 
-function encode($val, $key)
+function encode(&$val, $key)
 {
     return urlencode($val);
 }
@@ -111,7 +110,7 @@ function get_url($args, $shrts)
 		}
 		// Any left over arguments?
 		$url = str_replace('%s', '', $url);
-        preg_match_all("/(?<wrap>%{(?<arg>\w+)})/", $url, $defaults);
+        preg_match_all("/(?<wrap>%{(?<arg>.*)}$)/", $url, $defaults);
         $url = str_replace($defaults['wrap'], $defaults['arg'], $url);
 	    $url = preg_replace("/%d/", $domain, $url);
 	    $url = preg_replace("/%r/", $ref, $url);

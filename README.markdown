@@ -17,19 +17,18 @@ shrt has all the features of Shortwave plus a few extras:
 * `%s` - will be replaced by any arguments you provide, or blank if none are provided.
 * `%d` - the domain of the current site.
 * `%r` - the full url of the current site.
-* %{kittens} - a default argument, to be optionally overridden.
+* `%{kittens}` - a default argument, to be optionally overridden.
+
+Arguments can also be nested inside of one another:
+* `%{%d}` - `%d` argument nested inside of default argument.
 
 
 ## Examples
 See shrts.txt.
+
 
 ## Notes
 * shrt can read your current Shortwave files, although Shortwave may not be able to read some of your shrt file, due to the extra features shrt provides.
 * When upgrading to a new version or changing settings, an update to your bookmarklet may be required.
 * shrt is not optimized at all, probably nowhere near the speed it could be.
 * JavaScript is required.
-
-
-## Todo
-* Multiple named arguments.
-* Nested arguments.
