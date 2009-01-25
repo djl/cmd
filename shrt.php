@@ -17,6 +17,17 @@ function full_url()
     return $protocol . "://" . $_SERVER['SERVER_NAME'] . $port . $_SERVER['PHP_SELF'];
 }
 
+function show_help()
+{
+    return isset($_GET['f']) and isset($_GET['c']) and trim($_GET['c']) == HELP_TRIGGER;
+}
+
+function title()
+{
+    if (show_help()) { return HELP_TITLE; }
+    return TITLE;
+}
+
 function get_file($url) 
 {
     $url = urldecode($url);
@@ -45,7 +56,6 @@ function get_args($arg)
     {
         $terms = explode(DEFAULT_DELIMITER, $matches['terms']);
         array_walk($terms, 'encode');
-        debug($terms);
     }
     $matches['terms'] = $terms;
     return $matches;
@@ -94,32 +104,19 @@ function get_url($args, $shrts)
 	{
 	    $shrt = $shrts[$args['trigger']];
 		$url = $shrt['url'];
-		$url = preg_replace_array("/%s/", $url, $args['terms']);
-	    $url = preg_replace_array("/%d/", $url, $domain);
-	    $url = preg_replace_array("/%r/", $url, $ref);
+		$pattern = "/(%s)|(%{.*})/";
+		foreach ($args['terms'] as $term)
+		{
+			$url = preg_replace($pattern, $term, $url, 1);
+		}
+		// Any left over arguments?
+		$url = str_replace('%s', '', $url);
+        preg_match_all("/(?<wrap>%{(?<arg>\w+)})/", $url, $defaults);
+        $url = str_replace($defaults['wrap'], $defaults['arg'], $url);
+	    $url = preg_replace("/%d/", $domain, $url);
+	    $url = preg_replace("/%r/", $ref, $url);
 	    return $url;
 	}
-}
-
-function preg_replace_array($pattern, $subject, $array)
-{
-	if (!is_array($array)) { array($array); }
-	$count = preg_match_all($pattern, $subject, $matches);
-	for ($i=0; $i < $count; $i++) { 
-		$subject = preg_replace($pattern, $array[$i], $subject, 1);
-	}
-	return $subject;
-}
-
-function show_help()
-{
-    return isset($_GET['f']) and isset($_GET['c']) and trim($_GET['c']) == HELP_TRIGGER;
-}
-
-function title()
-{
-    if (show_help()) { return HELP_TITLE; }
-    return TITLE;
 }
 
 // Go go gadget shrt!
@@ -129,7 +126,7 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     $shrts = get_shrts($_GET['f']);
 	if ($shrts)
 	{
-		header('Location: ' . get_url($args, $shrts));
+        header('Location: ' . get_url($args, $shrts));
 	}
 }
 ?>

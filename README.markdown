@@ -3,8 +3,6 @@ shrt is an implementation of [Shaun Inman](http://shauninman.com/)'s [Shortwave]
 
 > an extensible quick-search and shortcut bookmark.
 
-Yes, quite.
-
 
 ## Usage
 * Upload shrt.php and point your browser to it.  
@@ -27,5 +25,11 @@ See shrts.txt.
 
 ## Notes
 * shrt can read your current Shortwave files, although Shortwave may not be able to read some of your shrt file, due to the extra features shrt provides.
-* When upgrading to a new version, one may need to update one's bookmarklet.
+* When upgrading to a new version or changing settings, an update to your bookmarklet may be required.
+* shrt is not optimized at all, probably nowhere near the speed it could be.
 * JavaScript is required.
+
+
+## Todo
+* Multiple named arguments.
+* Nested arguments.
