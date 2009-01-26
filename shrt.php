@@ -146,16 +146,16 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     label,.out{line-height:1.8em !important;}
     label{font-size:1.4em;}
     em{color:#bbb;font-style:normal;font-weight:normal;}
-    p{font-size:1.4em;margin:0 0 2em;line-height:2em;}
+    p{font-size:1.2em;margin:0 0 2em;line-height:2em;}
     p.note{font-size:1.1em;margin-top:10em;padding:1em;}
     a{color:#c86f4d;}
     a:hover{color:black;}
     a#link{background:#c86f4d;color:#fff;padding:4px;text-shadow:#c86f4d 1px 1px 1px;text-decoration:none;}
     a#link:hover{background:black;text-shadow:black 1px 1px 1px;}
-    table{font-size:1.4em;margin:3em auto;}
+    table{font-size:1.2em;margin:3em auto;}
     tr{margin:0 0 22em;}
     td{padding:10px;text-align:right;}
-    code {color:#aaa;font: 1.1em monaco,"panic sans",consolas,"bitstream vera sans","courier new",monospace;}
+    code {color:#c86f4d;font: 1.1em monaco,"panic sans",consolas,"bitstream vera sans","courier new",monospace;}
     .out{color:#aaa;float:left;font-weight:bold;line-height:1.2em;margin-left:-220px;width:200px;text-align:right;}
     .red{color:#c86f4d !important;}
     .left{text-align:left;}

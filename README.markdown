@@ -32,3 +32,7 @@ See shrts.txt.
 * When upgrading to a new version or changing settings, an update to your bookmarklet may be required.
 * shrt is not optimized at all, probably nowhere near the speed it could be.
 * JavaScript is required.
+
+
+## Todo
+* Update help page to better show search arguments.
