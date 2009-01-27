@@ -1,5 +1,3 @@
-> #kill-defaults
-
 > No shrt. No shoes. No service.
 > http://github.com/xvzf/shrt/tree/
 
@@ -16,7 +14,6 @@ gc    http://code.google.com/hosting/search?q=%s&btn=Search+Projects            
 gcc   http://code.google.com/search/#q=%s                                               Google Code Search
 gf    http://www.gamefaqs.com/search/index.html?game=%s&platform=%{0}                   GameFAQs
 gh    http://github.com/search?q=%s                                                     GitHub
-ghc   http://github.com/codesearch?q=%s&repo=&langOverride=&language=&x=0&y=0           GitHub Code Search
 kv    http://keepvid.com/?url=%s                                                        KeepVid
 i     http://www.imdb.com/Find?select=All&for=%s                                        IMDb
 ip    http://www.whatismyip.org/                                                        IP
