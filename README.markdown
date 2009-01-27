@@ -6,7 +6,7 @@ shrt is an implementation of [Shaun Inman](http://shauninman.com/)'s [Shortwave]
 
 ## Usage
 * Upload shrt.php and point your browser to it.  
-* Put the full URL to your shrt/Shortwave text file.
+* Enter URL to your shrt/Shortwave text file.
 * Drag the bookmarklet onto your bookmarks bar.
 * Click bookmarklet.
 
@@ -20,7 +20,9 @@ shrt has all the features of Shortwave plus a few extras:
 * `%{kittens}` - a default argument, to be optionally overridden.
 
 Arguments can also be nested inside of one another:
-* `%{%d}` - `%d` argument nested inside of default argument.
+
+*`%{%d}` - `%d` argument nested inside of default argument.
+* `%{%r}` - `%r` argument nested inside of default argument.
 
 
 ## Examples
@@ -36,3 +38,4 @@ See shrts.txt.
 
 ## Todo
 * Update help page to better show search arguments.
+* Make `help` an optional trigger.
