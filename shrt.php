@@ -140,8 +140,7 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     $shrts = get_shrts($_GET['f']);
 	if ($shrts)
 	{
-	    echo get_url($args, $shrts);
-        // header('Location: ' . get_url($args, $shrts));
+        header('Location: ' . get_url($args, $shrts));
 	}
 }
 ?>

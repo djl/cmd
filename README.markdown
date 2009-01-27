@@ -21,7 +21,7 @@ shrt has all the features of Shortwave plus a few extras:
 
 Arguments can also be nested inside of one another:
 
-*`%{%d}` - `%d` argument nested inside of default argument.
+* `%{%d}` - `%d` argument nested inside of default argument.
 * `%{%r}` - `%r` argument nested inside of default argument.
 
 
