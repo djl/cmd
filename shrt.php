@@ -9,12 +9,20 @@ define('USER_AGENT', 'Grabbing your Shortwave shortcuts. (' . SHRT_URL . ')');
 
 ini_set('user_agent', USER_AGENT);
 
-function full_url()
+function encode(&$val, $key)
 {
-    $s = empty($_SERVER["HTTPS"]) ? '' : ($_SERVER["HTTPS"] == "on") ? "s" : "";
-    $protocol = substr(strtolower($_SERVER["SERVER_PROTOCOL"]), 0, strpos(strtolower($_SERVER["SERVER_PROTOCOL"]), "/")) . $s;
-    $port = ($_SERVER["SERVER_PORT"] == "80") ? "" : (":".$_SERVER["SERVER_PORT"]);
-    return $protocol . "://" . $_SERVER['SERVER_NAME'] . $port . $_SERVER['PHP_SELF'];
+    return urlencode($val);
+}
+
+function array_implode($arrays, &$target = array()) {
+    foreach ($arrays as $item) {
+        if (is_array($item)) {
+            array_implode($item, $target);
+        } else {
+            $target[] = $item;
+        }
+    }
+    return $target;
 }
 
 function show_help()
@@ -60,11 +68,6 @@ function get_args($arg)
     return $matches;
 }
 
-function encode(&$val, $key)
-{
-    return urlencode($val);
-}
-
 function get_shrts($file)
 {
     $file = get_file($file);
@@ -98,24 +101,36 @@ function get_url($args, $shrts)
     $parsed = parse_url($ref);
     $domain = !empty($parsed['host']) ? $parsed['host'] : "";
 
+	$pattern = "/(%s)|(%{.*})/";
 	// Check if shrt exists
 	if (array_key_exists($args['trigger'], $shrts))
 	{
 	    $shrt = $shrts[$args['trigger']];
 		$url = $shrt['url'];
-		$pattern = "/(%s)|(%{.*})/";
 		foreach ($args['terms'] as $term)
 		{
 			$url = preg_replace($pattern, $term, $url, 1);
 		}
-		// Any left over arguments?
-		$url = str_replace('%s', '', $url);
-        preg_match_all("/(?<wrap>%{(?<arg>.*)}$)/", $url, $defaults);
-        $url = str_replace($defaults['wrap'], $defaults['arg'], $url);
-	    $url = preg_replace("/%d/", $domain, $url);
-	    $url = preg_replace("/%r/", $ref, $url);
-	    return $url;
 	}
+	elseif (array_key_exists('*', $shrts))
+	{
+	    $array = array($args['trigger'], $args['terms']);
+	    $term = join(" ", array_implode($array));
+	    $url = preg_replace($pattern, $term, $shrts['*']);
+        $url = $url['url'];
+	}
+	else
+	{
+	    return;
+	}
+	// Any left over arguments?
+	$url = str_replace('%s', '', $url);
+    preg_match_all("/(?<wrap>%{(?<arg>.*)}$)/", $url, $defaults);
+    $url = str_replace($defaults['wrap'], $defaults['arg'], $url);
+    $url = preg_replace("/%d/", $domain, $url);
+    $url = preg_replace("/%r/", $ref, $url);
+    return $url;
+
 }
 
 // Go go gadget shrt!
@@ -125,7 +140,8 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     $shrts = get_shrts($_GET['f']);
 	if ($shrts)
 	{
-        header('Location: ' . get_url($args, $shrts));
+	    echo get_url($args, $shrts);
+        // header('Location: ' . get_url($args, $shrts));
 	}
 }
 ?>
@@ -146,19 +162,19 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     label,.out{line-height:1.8em !important;}
     label{font-size:1.4em;}
     em{color:#bbb;font-style:normal;font-weight:normal;}
-    p{font-size:1.2em;margin:0 0 2em;line-height:2em;}
+    p{font-size:1.4em;margin:0 0 2em;line-height:2em;}
     p.note{font-size:1.1em;margin-top:10em;padding:1em;}
     a{color:#c86f4d;}
     a:hover{color:black;}
     a#link{background:#c86f4d;color:#fff;padding:4px;text-shadow:#c86f4d 1px 1px 1px;text-decoration:none;}
     a#link:hover{background:black;text-shadow:black 1px 1px 1px;}
-    table{font-size:1.2em;margin:3em auto;}
-    tr{margin:0 0 22em;}
-    td{padding:10px;text-align:right;}
-    code {color:#c86f4d;font: 1.1em monaco,"panic sans",consolas,"bitstream vera sans","courier new",monospace;}
-    .out{color:#aaa;float:left;font-weight:bold;line-height:1.2em;margin-left:-220px;width:200px;text-align:right;}
+    table{font-size:1.4em;margin:4em auto;width:100%;}
+    td{padding:10px;}
+    code {color:#777;font: 1.1em monaco,"panic sans",consolas,"bitstream vera sans","courier new",monospace;}
+    .out{color:#aaa;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
     .red{color:#c86f4d !important;}
     .left{text-align:left;}
+    .alt{background:#eee;}
     </style>
     <script type="text/javascript">function $(id){return document.getElementById(id)};</script>
 </head>
@@ -166,13 +182,21 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     <header><h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em><?php echo title(); ?></em></h1></header>
     <?php if (show_help()): ?>
         <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p>
-        <table>
+        <table cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Trigger</th>
+                    <th>Title</th>
+                </tr>
+            </thead>
+        <?php $count=0;?>
         <?php $shrts = get_shrts($_GET['f']); ?>
         <?php foreach($shrts as $shrt): ?>
-            <tr>
+            <tr<?php if ($count % 2): ?> class="alt"<?php endif; ?>>
                 <td><code><?php echo $shrt['trigger'] ?></code></td>
-                <td class="left"><?php echo $shrt['title'] ?><?php if ($shrt['search']): ?> <span class="red">*</span><?php endif; ?></td>
+                <td><?php echo $shrt['title'] ?><?php if ($shrt['search']): ?> <span class="red">*</span><?php endif; ?></td>
             </tr>
+            <?php $count++; ?>
         <?php endforeach; ?>
         </table>
     <?php else: ?>
