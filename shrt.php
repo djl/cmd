@@ -49,7 +49,6 @@ function get_args($arg)
     if (!$matches){ return; }
 
     $terms = explode(DEFAULT_DELIMITER, $matches['terms']);
-	print_r($terms);
     array_walk($terms, 'encode');
 
 	$matches['command'] = $arg;
@@ -128,8 +127,7 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     $shrts = get_shrts($_GET['f']);
 	if ($shrts)
 	{
-		echo get_url($args, $shrts);
-        // header('Location: ' . get_url($args, $shrts));
+        header('Location: ' . get_url($args, $shrts));
 	}
 }
 ?>
