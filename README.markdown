@@ -30,12 +30,13 @@ See shrts.txt.
 
 
 ## Notes
-* shrt can read your current Shortwave files, although Shortwave may not be able to read some of your shrt file, due to the extra features shrt provides.
+* shrt can read your current Shortwave files, but Shortwave may not be able to read some of your shrt file, due to the extra features shrt provides.
 * When upgrading to a new version or changing settings, an update to your bookmarklet may be required.
 * shrt is not optimized at all, probably nowhere near the speed it could be.
 * JavaScript is required.
 
-
 ## Todo
+* Process incoming shrt as file is parsed.
 * Update help page to better show search arguments.
 * Make `help` an optional trigger.
+* Allow punctuation in triggers: `ip?` `down?` `!!`

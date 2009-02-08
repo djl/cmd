@@ -11,18 +11,7 @@ ini_set('user_agent', USER_AGENT);
 
 function encode(&$val, $key)
 {
-    return urlencode($val);
-}
-
-function array_implode($arrays, &$target = array()) {
-    foreach ($arrays as $item) {
-        if (is_array($item)) {
-            array_implode($item, $target);
-        } else {
-            $target[] = $item;
-        }
-    }
-    return $target;
+    return $val = urlencode($val);
 }
 
 function show_help()
@@ -48,7 +37,7 @@ function get_file($url)
     curl_close($ch);
     if ($content_type != "text/plain")
     {
-        die("<p>Remote file <strong>{$url}</strong> was not a text file.</p>");
+        die("<p><strong class=\"red\">Error:</strong> Remote file <strong>{$url}</strong> was not a text file.</p>");
     }
     return $data;
 }
@@ -58,12 +47,12 @@ function get_args($arg)
     $args = preg_replace('/\s\s+/', ' ', trim($arg));
     preg_match('/^(?<trigger>\w+)(\s+(?<terms>.*))?/', $args, $matches);
     if (!$matches){ return; }
-    $terms = array();
-    if (array_key_exists('terms', $matches))
-    {
-        $terms = explode(DEFAULT_DELIMITER, $matches['terms']);
-        array_walk($terms, 'encode');
-    }
+
+    $terms = explode(DEFAULT_DELIMITER, $matches['terms']);
+	print_r($terms);
+    array_walk($terms, 'encode');
+
+	$matches['command'] = $arg;
     $matches['terms'] = $terms;
     return $matches;
 }
@@ -112,16 +101,15 @@ function get_url($args, $shrts)
 			$url = preg_replace($pattern, $term, $url, 1);
 		}
 	}
-	elseif (array_key_exists('*', $shrts))
+	// Doesn't exist, check for untriggered command
+	else if (array_key_exists('*', $shrts))
 	{
-	    $array = array($args['trigger'], $args['terms']);
-	    $term = join(" ", array_implode($array));
-	    $url = preg_replace($pattern, $term, $shrts['*']);
+	    $url = preg_replace($pattern, $args['command'], $shrts['*']);
         $url = $url['url'];
 	}
 	else
 	{
-	    return;
+	    $url = preg_replace($pattern, $args['command'], DEFAULT_URL);
 	}
 	// Any left over arguments?
 	$url = str_replace('%s', '', $url);
@@ -136,11 +124,12 @@ function get_url($args, $shrts)
 // Go go gadget shrt!
 if (isset($_GET['c']) and isset($_GET['f']) and !show_help()) 
 {
-    $args = get_args(trim(urldecode($_GET['c'])));
+    $args = get_args($_GET['c']);
     $shrts = get_shrts($_GET['f']);
 	if ($shrts)
 	{
-        header('Location: ' . get_url($args, $shrts));
+		echo get_url($args, $shrts);
+        // header('Location: ' . get_url($args, $shrts));
 	}
 }
 ?>
@@ -150,12 +139,13 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     <meta charset="UTF-8">
     <title>shrt</title>
     <style type="text/css">
+	<?php $color = "#c86f4d"; ?>
     *{margin:0;padding:0;}
-    html{background:#fff;border-top:4px solid #c86f4d;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
+    html{background:#fff;border-top:4px solid <?php echo $color; ?>;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
     body{margin:4em auto;width:50em;}
     h1{font-size:2em;line-height:6em;}
     h1 a:link,h1 a:visited{color:black;text-decoration:none;}
-    h1 a:hover,h1 a:active,h1 a:focus{color:#c86f4d;}
+    h1 a:hover,h1 a:active,h1 a:focus{color:<?php echo $color; ?>;}
     h2{color:#bbb;font-size:2em;font-weight:normal;margin:0 0 3em;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
     label,.out{line-height:1.8em !important;}
@@ -163,15 +153,15 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     em{color:#bbb;font-style:normal;font-weight:normal;}
     p{font-size:1.4em;margin:0 0 2em;line-height:2em;}
     p.note{font-size:1.1em;margin-top:10em;padding:1em;}
-    a{color:#c86f4d;}
+    a{color:<?php echo $color; ?>;}
     a:hover{color:black;}
-    a#link{background:#c86f4d;color:#fff;padding:4px;text-shadow:#c86f4d 1px 1px 1px;text-decoration:none;}
+    a#link{background:<?php echo $color; ?>;color:#fff;padding:4px;text-shadow:<?php echo $color; ?> 1px 1px 1px;text-decoration:none;}
     a#link:hover{background:black;text-shadow:black 1px 1px 1px;}
     table{font-size:1.4em;margin:4em auto;width:100%;}
     td{padding:10px;}
     code {color:#777;font: 1.1em monaco,"panic sans",consolas,"bitstream vera sans","courier new",monospace;}
     .out{color:#aaa;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
-    .red{color:#c86f4d !important;}
+    .red{color:<?php echo $color; ?> !important;}
     .left{text-align:left;}
     .alt{background:#eee;}
     </style>
@@ -180,6 +170,7 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
 <body>
     <header><h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em><?php echo title(); ?></em></h1></header>
     <?php if (show_help()): ?>
+        <?php $shrts = get_shrts($_GET['f']); ?>
         <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p>
         <table cellspacing="0">
             <thead>
@@ -189,7 +180,6 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
                 </tr>
             </thead>
         <?php $count=0;?>
-        <?php $shrts = get_shrts($_GET['f']); ?>
         <?php foreach($shrts as $shrt): ?>
             <tr<?php if ($count % 2): ?> class="alt"<?php endif; ?>>
                 <td><code><?php echo $shrt['trigger'] ?></code></td>

@@ -8,20 +8,23 @@ c     https://www.google.com/calendar/render                                    
 d     http://dictionary.reference.com/browse/%s                                         Dictionary.com
 dj    http://www.google.com/search?as_q=%s&as_sitesearch=docs.djangoproject.com         Django Documentaion
 down  http://downforeveryoneorjustme.com/%s                                             Down for everyone or just me?
+e     http://www.encyclopediadramatica.com/Special:Search?search=%s&go=Go               Encyclopedia Dramatica
 f     http://flickr.com/search/?q=%s                                                    Flickr Search
 g     https://mail.google.com/                                                          Google Mail
 gc    http://code.google.com/hosting/search?q=%s&btn=Search+Projects                    Google Code Projects
 gcc   http://code.google.com/search/#q=%s                                               Google Code Search
 gf    http://www.gamefaqs.com/search/index.html?game=%s&platform=%{0}                   GameFAQs
 gh    http://github.com/search?q=%s                                                     GitHub
-kv    http://keepvid.com/?url=%s                                                        KeepVid
+h     http://www.hulu.com/videos/search?query=%s                                        Hulu
 i     http://www.imdb.com/Find?select=All&for=%s                                        IMDb
-ip    http://www.whatismyip.org/                                                        IP
+ip   http://www.whatismyip.org/                                                         IP
 j     http://docs.jquery.com/Special:Search?ns0=1&search=%s&go=G                        jQuery Documentation
+kv    http://keepvid.com/?url=%s                                                        KeepVid
 l     http://www.last.fm/search?m=all&q=%s                                              Last.fm
 m     http://www.google.co.uk/maps?q=%s                                                 Google Maps
 n     http://www.newzleech.com/?group=&minage=&age=&min=min&max=max&q=%s&m=search&adv=  Newzleech
 php   http://php.net/search.php?show=quickref&pattern=%s                                PHP Function Search
+pl    http://www.bbc.co.uk/iplayer/search/?q=%s                                         iPlayer Search
 rt    http://uk.rottentomatoes.com/search/full_search.php?search=%s                     Rotten Tomatoes Search
 s     http://www.google.com/search?q=site:%d%20%s                                       Search the current site
 sl    http://www.slideshare.net/search/slideshow?q=%s                                   Slideshare search
