@@ -11,6 +11,7 @@ down  http://downforeveryoneorjustme.com/%s                                     
 e     http://www.encyclopediadramatica.com/Special:Search?search=%s&go=Go               Encyclopedia Dramatica
 f     http://flickr.com/search/?q=%s                                                    Flickr Search
 g     https://mail.google.com/                                                          Google Mail
+gb    http://books.google.com/books?q=%s&btnG=Search+Books								Google Books
 gc    http://code.google.com/hosting/search?q=%s&btn=Search+Projects                    Google Code Projects
 gcc   http://code.google.com/search/#q=%s                                               Google Code Search
 gf    http://www.gamefaqs.com/search/index.html?game=%s&platform=%{0}                   GameFAQs
