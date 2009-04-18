@@ -27,7 +27,7 @@ Plus some extras:
 
 
 ## Examples
-See shrts.txt.
+See examples.txt.
 
 
 ## Notes

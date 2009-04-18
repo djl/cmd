@@ -5,7 +5,7 @@ define('HELP_TITLE', '...your commands');
 define('HELP_TRIGGER', 'help');
 define('SHRT_URL', 'http://github.com/xvzf/shrt/tree/master');
 define('TITLE', '...because Saft is broken in the WebKit nightlies');
-define('USER_AGENT', 'Grabbing your Shortwave shortcuts. (' . SHRT_URL . ')');
+define('USERAGENT', 'Grabbing your Shortwave shortcuts. (' . SHRT_URL . '); Allow like Gecko');
 
 ini_set('user_agent', USER_AGENT);
 
@@ -37,14 +37,13 @@ function get_file($url)
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_USERAGENT, USER_AGENT);
+    curl_setopt($ch, CURLOPT_USERAGENT, USERAGENT);
     $data = curl_exec($ch);
-    $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-    curl_close($ch);
-    if ($content_type != "text/plain")
+    if(curl_error($ch))
     {
-        die("<p><strong class=\"red\">Error:</strong> Remote file <strong>{$url}</strong> was not a text file.</p>");
+        echo curl_error($ch);
     }
+    curl_close($ch);
     return $data;
 }
 

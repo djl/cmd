@@ -1,0 +1,26 @@
+> No shrt. No shoes. No service.
+> http://github.com/xvzf/shrt/tree/
+
+g     http://www.google.com/search?q=%s                               Google Search
+gf    http://www.gamefaqs.com/search/index.html?game=%s&platform=%{0} GameFAQs
+gh    http://github.com/search?q=%s&language=%s                       GitHub
+h     http://www.hulu.com/videos/search?query=%s                      Hulu
+i     http://www.imdb.com/Find?select=All&for=%s                      IMDb
+ip    http://www.whatismyip.org/                                      IP
+l     http://www.last.fm/search?m=all&q=%s                            Last.fm
+m     http://www.google.co.uk/maps?q=%s                               Google Maps
+rt    http://uk.rottentomatoes.com/search/full_search.php?search=%s   Rotten Tomatoes Search
+s     http://www.google.com/search?q=site:%d%20%s                     Search the current site
+sl    http://www.slideshare.net/search/slideshow?q=%s                 Slideshare search
+so    http://stackoverflow.com/search?q=%s                            Stack Overflow
+t     http://thesaurus.reference.com/browse/%s                        Thesaurus
+tw    http://search.twitter.com/search?q=%s                           Twitter Search
+u     http://www.urbandictionary.com/define.php?term=%s               Urban Dictionary
+v     http://vimeo.com/videos/search:%s                               Vimeo
+w     http://en.wikipedia.org/wiki/Special:Search?search=%s           Wikipedia Search
+wb    http://web.archive.org/web/*/http://%{%d}                       Wayback Machine
+whois http://whois.domaintools.com/%s                                 Whois
+wq    http://en.wikiquote.org/wiki/Special:Search?search=%s           Wikiquote Search
+y     http://www.youtube.com/results.php?search_query=%s              YouTube Search
+/.    http://slashdot.org                                             Slashdot
+*     http://www.google.com/search?q=%s                               Untriggered search
