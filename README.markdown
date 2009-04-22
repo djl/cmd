@@ -38,6 +38,7 @@ See examples.txt.
 
 
 ## Todo
+* Ability to use HTTP methods (GET, POST, PUT, DELETE)
 * Update help page to better show search arguments.
 * Make `help` an optional trigger.
 * Allow punctuation in triggers: `ip?` `down?` `!!`
