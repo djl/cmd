@@ -162,7 +162,7 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     a#link:hover{background:black;text-shadow:black 1px 1px 1px;}
     table{font-size:1.4em;margin:4em auto;width:100%;}
     td{padding:10px;}
-    code {color:#777;font: 1.1em monaco,"panic sans",consolas,"bitstream vera sans","courier new",monospace;}
+    code {color:#777;font: 1.1em consolas,"panic sans","bitstream vera sans","courier new",monaco,monospace;}
     .out{color:#aaa;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
     .red{color:<?php echo $color; ?> !important;}
     .left{text-align:left;}
