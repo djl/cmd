@@ -52,7 +52,11 @@ function get_args($arg)
     $args = preg_replace('/\s\s+/', ' ', trim($arg));
     preg_match('/^(?<trigger>\w+)(\s+(?<terms>.*))?/', $args, $matches);
     if (!$matches){ return; }
-
+    
+    if (!array_key_exists('terms', $matches))
+    {
+        $matches['terms'] = "";
+    }
     $terms = explode(DEFAULT_DELIMITER, $matches['terms']);
     array_walk($terms, 'encode');
 
@@ -128,8 +132,8 @@ function get_url($args, $shrts)
 // Go go gadget shrt!
 if (isset($_GET['c']) and isset($_GET['f']) and !show_help()) 
 {
-    $args = get_args($_GET['c']);
-    $shrts = get_shrts($_GET['f']);
+    $args = get_args(urldecode($_GET['c']));
+    $shrts = get_shrts(urldecode($_GET['f']));
 	if ($shrts)
 	{
         header('Location: ' . get_url($args, $shrts));
