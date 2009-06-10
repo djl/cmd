@@ -1,7 +1,7 @@
 shrt
 ====
 
-shrt is an implementation of [Shaun Inman](http://shauninman.com/)'s [Shortwave](http://shortwaveapp.com/), described thusly:
+shrt is an implementation of `Shaun Inman <http://shauninman.com/>`__'s `Shortwave <http://shortwaveapp.com/>`__, described thusly:
 
     an extensible quick-search and shortcut bookmark.
 
@@ -9,10 +9,10 @@ shrt is an implementation of [Shaun Inman](http://shauninman.com/)'s [Shortwave]
 Usage
 -----
 
-* Upload shrt.php and point your browser to it.  
-* Enter URL to your shrt/Shortwave text file.
-* Drag the bookmarklet onto your bookmarks bar.
-* Click bookmarklet.
+1. Upload shrt.php and point your browser to it.  
+2. Enter URL to your shrt/Shortwave text file.
+3. Drag the bookmarklet onto your bookmarks bar.
+4. Click bookmarklet.
 
 
 Syntax
