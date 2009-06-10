@@ -7,7 +7,7 @@ define('SHRT_URL', 'http://github.com/xvzf/shrt/tree/master');
 define('TITLE', '...because Saft is broken in the WebKit nightlies');
 define('USERAGENT', 'Grabbing your Shortwave shortcuts. (' . SHRT_URL . '); Allow like Gecko');
 
-ini_set('user_agent', USER_AGENT);
+ini_set('user_agent', USERAGENT);
 
 function encode(&$val, $key)
 {
@@ -16,7 +16,7 @@ function encode(&$val, $key)
 
 function url()
 {
-    $protocol = $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
+    $protocol = array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
     return $protocol.'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 }
 
