@@ -76,7 +76,7 @@ function get_shrts($file)
         // Kill blank lines, comments
         if (!preg_match('/^>|\n+/i', $line) && $line != "")
         {
-            $segments = split('[ ]+', $line, 3);
+            $segments = preg_split('/[ ]+/', $line, 3);
             $takes_search = False;
             if (strstr($segments[1], "%s") && $segments[0] != "*")
             {
