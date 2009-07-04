@@ -38,6 +38,12 @@ Examples
 See examples.txt.
 
 
+Lockdown
+--------
+
+To disable shrt from generating new bookmarklets, simply set the ``IS_LOCKED`` constant to ``true``.
+
+
 Notes
 -----
 
