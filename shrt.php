@@ -5,8 +5,8 @@ define('HELP_TITLE', '...your commands');
 define('HELP_TRIGGER', 'help');
 define('SHRT_URL', 'http://github.com/xvzf/shrt/tree/master');
 define('TITLE', '...because Saft is broken in the WebKit nightlies');
-define('USERAGENT', 'Grabbing your Shortwave shortcuts. (' . SHRT_URL . '); Allow like Gecko');
-define('IS_LOCKED', false);
+define('USERAGENT', 'Grabbing your shrtcuts. (' . SHRT_URL . '); Allow like Gecko');
+define('IS_LOCKED', FALSE);
 
 ini_set('user_agent', USERAGENT);
 
@@ -78,11 +78,7 @@ function get_shrts($file)
         if (!preg_match('/^>|\n+/i', $line) && $line != "")
         {
             $segments = preg_split('/[ ]+/', $line, 3);
-            $takes_search = False;
-            if (strstr($segments[1], "%s") && $segments[0] != "*")
-            {
-                $takes_search = True;
-            }
+            $takes_search = (strstr($segments[1], "%s") && $segments[0] != "*");
             $shrts[$segments[0]] = array('trigger' => $segments[0],
                                          'url' => $segments[1],
                                          'title' => $segments[2],
