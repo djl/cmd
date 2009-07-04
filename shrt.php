@@ -7,6 +7,7 @@ define('SHRT_URL', 'http://github.com/xvzf/shrt/tree/master');
 define('TITLE', '...because Saft is broken in the WebKit nightlies');
 define('USERAGENT', 'Grabbing your shrtcuts. (' . SHRT_URL . '); Allow like Gecko');
 define('IS_LOCKED', FALSE);
+define('FILE_MATCH', '');
 
 ini_set('user_agent', USERAGENT);
 
@@ -34,6 +35,13 @@ function title()
 
 function get_file($url) 
 {
+    if (FILE_MATCH != '')
+    {
+        if (preg_match(FILE_MATCH, $url) == FALSE)
+        {
+            die("<p><strong class=\"error\">Warning:</strong> The URL <strong>$url</strong> did not match the required pattern.</p>");
+        }
+    }
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -168,6 +176,7 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     .red{color:<?php echo $color; ?> !important;}
     .left{text-align:left;}
     .alt{background:#eee;}
+    .error{color:red;font-weight:bold;}
     </style>
     <script type="text/javascript">function $(id){return document.getElementById(id)};</script>
 </head>

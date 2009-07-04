@@ -32,10 +32,11 @@ Plus some extras:
 * ``%{%r}`` - ``%r`` argument nested inside of default argument.
 
 
-Examples
------------
+Pattern matching for your shrts file
+------------------------------------
 
-See examples.txt.
+Define a PCRE-compatible pattern in the ``FILE_MATCH`` constant to have shrt match against it when loading your file.
+
 
 
 Lockdown
@@ -44,11 +45,18 @@ Lockdown
 To disable shrt from generating new bookmarklets, simply set the ``IS_LOCKED`` constant to ``true``.
 
 
+Examples
+-----------
+
+See examples.txt.
+
+
 Notes
 -----
 
+* PHP must be compiled --with-curl
 * JavaScript is required.
-* shrt can read your current Shortwave file, but Shortwave may not be able to read your shrt file.
+* shrt can read your current Shortwave file, but Shortwave probably can't read your shrt file.
 * When upgrading to a new version or changing settings, an update to your bookmarklet may be required.
 * shrt is not optimized at all, probably nowhere near the speed it could be.
 
