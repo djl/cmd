@@ -6,6 +6,7 @@ define('HELP_TRIGGER', 'help');
 define('SHRT_URL', 'http://github.com/xvzf/shrt/tree/master');
 define('TITLE', '...because Saft is broken in the WebKit nightlies');
 define('USERAGENT', 'Grabbing your Shortwave shortcuts. (' . SHRT_URL . '); Allow like Gecko');
+define('IS_LOCKED', true);
 
 ini_set('user_agent', USERAGENT);
 
@@ -197,7 +198,7 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
         </table>
     <?php else: ?>
         <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
-            <label for="custom" id="label" class="out">Shortwave file URL:</label><input type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&f=(.*?)\;/,'&f='+this.value+'\';')">
+            <label for="custom" id="label" class="out">Shortwave file URL:</label><input<?php if (IS_LOCKED): ?> disabled="disabled" <?php endif; ?> type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&f=(.*?)\;/,'&f='+this.value+'\';')">
         </form>
         <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`help`%20for%20a%20list%20of%20commands:');if(c){if(c.substring(0,1)=='%20'){c=c.replace(/^\s+|\s+$/g,'%20');nw=true;}c=escape(c);var%20u='<?php echo url() ?>?c='+c+'&f=';if(nw){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></p>
     <?php endif; ?>
