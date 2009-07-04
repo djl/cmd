@@ -6,7 +6,7 @@ define('HELP_TRIGGER', 'help');
 define('SHRT_URL', 'http://github.com/xvzf/shrt/tree/master');
 define('TITLE', '...because Saft is broken in the WebKit nightlies');
 define('USERAGENT', 'Grabbing your Shortwave shortcuts. (' . SHRT_URL . '); Allow like Gecko');
-define('IS_LOCKED', true);
+define('IS_LOCKED', false);
 
 ini_set('user_agent', USERAGENT);
 
