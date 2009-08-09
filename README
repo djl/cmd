@@ -66,6 +66,5 @@ Todo
 
 * Ability to use HTTP methods (GET, POST, PUT, DELETE)
 * Update help page to better show search arguments.
-* Allow punctuation in triggers: ``ip?`` ``down?`` ``!!``
 * Make ``help`` an optional trigger.
 * Basic logic based on given arguments. e.g. If  ``foo`` is given an argument, do ``x``, otherwise do ``y``
