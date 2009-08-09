@@ -59,7 +59,7 @@ function get_file($url)
 function get_args($arg)
 {
     $args = preg_replace('/\s\s+/', ' ', trim($arg));
-    preg_match('/^(?<trigger>\w+)(\s+(?<terms>.*))?/', $args, $matches);
+    preg_match('/^(?<trigger>(\w|\p{P})+)(\s+(?<terms>.*))?/', $args, $matches);
     if (!$matches){ return; }
     
     if (!array_key_exists('terms', $matches))
