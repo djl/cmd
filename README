@@ -67,5 +67,5 @@ Todo
 * Ability to use HTTP methods (GET, POST, PUT, DELETE) -- need to figure out syntax first.
 * Update help page to better show search arguments.
 * Make ``help`` an optional trigger.
-* Basic logic based on given arguments. e.g. If  ``foo`` is given an argument, do ``x``, otherwise do ``y``
 * Allow definition of constants in shrts.txt file (ties into the ``help`` trigger?)
+* Trigger overloading: use the same triggers for multiple shortcuts, differing only on given arguments
