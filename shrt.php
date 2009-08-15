@@ -74,7 +74,7 @@ function get_file($url)
     $data = curl_exec($ch);
     if(curl_error($ch))
     {
-        echo curl_error($ch);
+        die(curl_error($ch));
     }
     curl_close($ch);
     return $data;
@@ -167,7 +167,7 @@ function get_url($shortcut_url, $command_args)
     
     // all patterns
     $patterns = array('simple'   => '%[s|d|r]+',
-                      'optional' => '%{.*}',
+                      'optional' => '(%s)|(%{.*})',
                       'kwarg'    => '%{[\w|\p{P}]+:.*}');
 
     // build final pattern
@@ -193,7 +193,6 @@ function get_url($shortcut_url, $command_args)
     {
         if (preg_match('/' . $patterns['kwarg'] . '/', $part))
         {
-            print "<p>got a kwarg: <code>" . $part . "</p>";
             if (preg_match_named('/%{(?<key>[\w|\p{P}]+):(?<value>.*)}/', $part, $matches))
             {
                 $pattern = "/(%s)|(%{.*?})/";
@@ -208,8 +207,14 @@ function get_url($shortcut_url, $command_args)
         else if (!preg_match('/%{[\w|\p{P}]+:.*}/', $part))
         {
             $shortcut_url .= str_replace('%s', $command_args['args'][$count], $part);
+        }
+        else
+        {
             $count++;
         }
+
+        // parse optional args
+        $shortcut_url .= preg_replace($patterns['optional'], $command_args['args'][$count], $part, 1);;
     }
     
     // replace leftover args
