@@ -264,20 +264,20 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     *{margin:0;padding:0;}
     html{background:#fff;border-top:4px solid <?php echo $color; ?>;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
     body{margin:4em auto;width:50em;}
-    h1{font-size:2em;line-height:6em;}
+    h1{font-size:2em;line-height:6em;text-shadow: 0 -1px 1px #FFF;}
     h1 a:link,h1 a:visited{color:black;text-decoration:none;}
     h1 a:hover,h1 a:active,h1 a:focus{color:<?php echo $color; ?>;}
     h2{color:#bbb;font-size:2em;font-weight:normal;margin:0 0 3em;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
-    label,.out{line-height:1.8em !important;}
+    label,.out{line-height:1.8em !important;text-shadow: 0 -1px 1px #FFF;}
     label{font-size:1.4em;}
     em{color:#bbb;font-style:normal;font-weight:normal;}
     p{font-size:1.4em;margin:0 0 2em;line-height:2em;}
     p.note{font-size:1.1em;margin-top:10em;padding:1em;}
     a{color:<?php echo $color; ?>;}
     a:hover{color:black;}
-    a#link{background:<?php echo $color; ?>;color:#fff;padding:4px;text-shadow:<?php echo $color; ?> 1px 1px 1px;text-decoration:none;}
-    a#link:hover{background:black;text-shadow:black 1px 1px 1px;}
+    a#link{background:<?php echo $color; ?>;color:#fff;padding:4px;text-shadow: 1px 1px 1px <?php echo $color; ?>;text-decoration:none;}
+    a#link:hover{background:black;text-shadow:1px 1px 1px black;}
     table{font-size:1.4em;margin:4em auto;width:100%;}
     td{padding:10px;}
     code {color:#777;font: 1.1em consolas,"panic sans","bitstream vera sans","courier new",monaco,monospace;}
