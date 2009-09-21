@@ -22,7 +22,8 @@ shrt features the standard Shortwave syntax:
 
 * ``%s`` - will be replaced by any arguments you provide, or blank if none are provided.
 * ``%d`` - the domain of the current site.
-* ``%r`` - the full url of the current site.
+* ``%r`` - the full URL of the current site.
+* ``%t`` - the title of the current page
 * ``>`` - comment to the end of the line.
 
 Plus some extras:
@@ -59,6 +60,7 @@ Notes
 * shrt can read your current Shortwave file, but Shortwave probably can't read your shrt file.
 * When upgrading to a new version or changing settings, an update to your bookmarklet may be required.
 * shrt is not optimized at all, probably nowhere near the speed it could be.
+* shrt has **no** XSS/CSRF protection -- eventually, it might
 
 
 Todo
