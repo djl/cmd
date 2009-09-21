@@ -246,8 +246,7 @@ function go($command, $file)
 {
     $args = get_args_from_command($command);
     $shortcut = get_shortcut($file, $args['trigger']);
-    // header('Location: ' . get_url($shortcut, $args));
-    echo get_url($shortcut, $args);
+    header('Location: ' . get_url($shortcut, $args));
 }
 
 // Go go gadget shortcut!
