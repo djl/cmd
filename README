@@ -21,9 +21,10 @@ Syntax
 shrt features the standard Shortwave syntax:
 
 * ``%s`` - will be replaced by any arguments you provide, or blank if none are provided.
-* ``%d`` - the domain of the current site.
-* ``%r`` - the full URL of the current site.
+* ``%d`` - the domain of the current site. (See notes)
+* ``%r`` - the full URL of the current site. (See notes)
 * ``%t`` - the title of the current page
+* ``%c`` - the full given command
 * ``>`` - comment to the end of the line.
 
 Plus some extras:
@@ -61,11 +62,13 @@ Notes
 * When upgrading to a new version or changing settings, an update to your bookmarklet may be required.
 * shrt is not optimized at all, probably nowhere near the speed it could be.
 * shrt has **no** XSS/CSRF protection -- eventually, it might
+* The ``%d`` and ``%r`` arguments currently don't work with sites served over HTTPS
 
 
 Todo
 ----
 
+* Move referrer/domains into the bookmarklet
 * Ability to use HTTP methods (GET, POST, PUT, DELETE) -- need to figure out syntax first.
 * Update help page to better show search arguments.
 * Allow definition of constants in shrts.txt file (ties into the ``help`` trigger?)
