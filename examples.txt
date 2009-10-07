@@ -23,4 +23,4 @@ whois http://whois.domaintools.com/%s                                 Whois
 wq    http://en.wikiquote.org/wiki/Special:Search?search=%s           Wikiquote Search
 y     http://www.youtube.com/results.php?search_query=%s              YouTube Search
 /.    http://slashdot.org                                             Slashdot
-*     http://www.google.com/search?q=%s                               Untriggered search
+*     http://www.google.com/search?q=%c                               Untriggered search
