@@ -1,6 +1,6 @@
 <?php
 define('ARGUMENT_DELIMITER', ',');
-define('DEFAULT_URL', 'http://www.google.com/search?q=%s');
+define('DEFAULT_URL', 'http://www.google.com/search?q=%c');
 define('HELP_TITLE', '...your commands');
 define('HELP_TRIGGER', 'help');
 define('SHRT_URL', 'http://github.com/xvzf/shrt/tree/master');
@@ -171,82 +171,85 @@ function get_shortcuts($file)
     return $shortcuts;
 }
 
-function get_url($shortcut_url, $command_args)
+function get_url($shortcut_url, $args, $kwargs, $command)
+{
+    $filters = array('parse_kwargs',
+                     'parse_simple',
+                     'parse_optional');
+    
+    foreach ($filters as $filter)
+    {
+        $shortcut_url = $filter($shortcut_url, $args, $kwargs, $command);
+    }
+    return $shortcut_url;
+}
+
+function parse_simple($url, $args, $kwargs, $command)
 {
     // Referrer
     $ref = (!empty($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : "";
     $parsed = parse_url($ref);
     $domain = !empty($parsed['host']) ? $parsed['host'] : "";
     
-    // all patterns
-    $patterns = array('simple'   => '%[s|d|r|t]+',
-                      'optional' => '(%s)|(%{.*})',
-                      'kwarg'    => '%{[\w|\p{P}]+:.*}');
+    $url = preg_replace("/%d/", $domain, $url);
+    $url = preg_replace("/%r/", $ref, $url);
+    $url = preg_replace("/%t/", urldecode($_GET['t']), $url);
+    $url = preg_replace("/%c/", urldecode($_GET['c']), $url);
+    return $url;
+}
 
-    // build final pattern
-    $pattern = '/';
-    $count = 1;
-    $length = count($patterns);
-    foreach ($patterns as $name => $regex)
-    {
-        $pattern .= '(' . $regex . ')';
-        if ($count != $length)
-        {
-            $pattern .= "|";
-        }
-        $count++;
-    }
-    $pattern .= '/';
-    
-    $parts = preg_split($pattern, $shortcut_url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-    $shortcut_url = array_shift($parts);
-    
+function parse_optional($url, $args, $kwargs, $command)
+{
+    $parts = preg_split('/(%s)/', $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $count = 0;
-    foreach ($parts as $part)
+    $url = "";
+    foreach($parts as $part)
     {
-        if (preg_match('/' . $patterns['kwarg'] . '/', $part))
+        $url .= str_replace('%s', $args[$count], $part);
+    }
+    return $url;
+}
+
+function parse_kwargs($url, $args, $kwargs, $command)
+{
+    if (preg_match('/%{[\w|\p{P}]+:(.*)}/', $url))
+    {
+        $parts = preg_split('/%{([\w|\p{P}]+:.*)}/', $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $furl = array_shift($parts);
+        $count = 0;
+        foreach ($parts as $part)
         {
-            if (preg_match_named('/%{(?<key>[\w|\p{P}]+):(?<value>.*)}/', $part, $matches))
+            if (preg_match('/[\w|\p{P}]+:(.*)/', $part))
             {
-                $pattern = "/(%s)|(%{.*?})/";
-                if (array_key_exists($matches['key'], $command_args['kwargs']))
+
+                if (preg_match_named('/(?<wrap>(?<key>[\w|\p{P}]+):(?<value>.*))/', $part, $matches))
                 {
-                    $part = preg_replace($pattern, $command_args['kwargs'][$matches['key']], $matches['value']);
-                    $part = parse_static_args($part, $domain, $ref);
-                    $shortcut_url .= $part;
+                    if (array_key_exists($matches['key'], $kwargs))
+                    {
+                        $pattern = "/(%s)|(%{.*?})/";
+                        $part = str_replace($matches['wrap'], $kwargs[$matches['key']], $matches['value']);
+                        $part = preg_replace($pattern, $kwargs[$matches['key']], $part);
+                        $furl .= $part;
+                    }
                 }
             }
+            else
+            {
+                $url = str_replace('%s', $args[$count], $part);
+                $count++;
+            }
         }
-        else if (!preg_match('/%{[\w|\p{P}]+:.*}/', $part))
-        {
-            $shortcut_url .= str_replace('%s', $command_args['args'][$count], $part);
-        }
-        else
-        {
-            $count++;
-        }
+        $url = $furl;
     }
-    
-    // replace leftover args
-    preg_match_all_named("/(?<wrap>%{(?<arg>.*)}$)/", $shortcut_url, $defaults);
-    $shortcut_url = str_replace($defaults['wrap'], $defaults['arg'], $shortcut_url);
-    $shortcut_url = parse_static_args($shortcut_url, $domain, $ref);
-    return $shortcut_url;
+    return $url;
 }
 
-function parse_static_args($subject, $domain, $ref)
-{
-    $subject = preg_replace("/%d/", $domain, $subject);
-    $subject = preg_replace("/%r/", $ref, $subject);
-    $subject = preg_replace("/%t/", urldecode($_GET['t']), $subject);
-    return $subject;
-}
 
 function go($command, $file)
 {
     $args = get_args_from_command($command);
     $shortcut = get_shortcut($file, $args['trigger']);
-    header('Location: ' . get_url($shortcut, $args));
+    header('Location: ' . get_url($shortcut, $args['args'], $args['kwargs'], $command));
 }
 
 // Go go gadget shortcut!
