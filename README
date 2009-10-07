@@ -24,11 +24,11 @@ shrt features the standard Shortwave syntax:
 * ``%d`` - the domain of the current site. (See notes)
 * ``%r`` - the full URL of the current site. (See notes)
 * ``%t`` - the title of the current page
-* ``%c`` - the full given command
 * ``>`` - comment to the end of the line.
 
 Plus some extras:
 
+* ``%c`` - the full given command
 * ``%{kittens}`` - a default argument, to be optionally overridden.
 * ``%{%d}`` - ``%d`` argument nested inside of default argument.
 * ``%{%r}`` - ``%r`` argument nested inside of default argument.
