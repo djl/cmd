@@ -186,13 +186,8 @@ function get_url($shortcut_url, $args, $kwargs, $command)
 
 function parse_simple($url, $args, $kwargs, $command)
 {
-    // Referrer
-    $ref = (!empty($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : "";
-    $parsed = parse_url($ref);
-    $domain = !empty($parsed['host']) ? $parsed['host'] : "";
-    
-    $url = preg_replace("/%d/", $domain, $url);
-    $url = preg_replace("/%r/", $ref, $url);
+    $url = preg_replace("/%d/", urldecode($_GET['h']), $url);
+    $url = preg_replace("/%r/", urldecode($_GET['u']), $url);
     $url = preg_replace("/%t/", urldecode($_GET['t']), $url);
     $url = preg_replace("/%c/", urldecode($_GET['c']), $url);
     return $url;
@@ -318,7 +313,7 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
         <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
             <label for="custom" id="label" class="out">Shortcut file:</label><input<?php if (IS_LOCKED): ?> disabled="disabled" <?php endif; ?> type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&f=(.*?)\;/,'&f='+this.value+'\';')">
         </form>
-        <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`help`%20for%20a%20list%20of%20commands:');if(c){if(c.substring(0,1)=='%20'){nw=true;}c=escape(c);var%20u='<?php echo url() ?>?t='+escape(document.title)+'&c='+c+'&f=';if(nw){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></p>
+        <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`help`%20for%20a%20list%20of%20commands:');var%20h=escape(window.location.hostname);var%20u=escape(window.location);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=escape(c);var%20u='<?php echo url() ?>?t='+escape(document.title)+'&c='+c+'&h='+h+'&u='+u+'&f=';if(nw){var%20w=window.open(u);w.focus();}else{window.location.href=u;};};};">shrt</a></p>
     <?php endif; ?>
 </body>
 </html>

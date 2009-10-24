@@ -68,7 +68,6 @@ Notes
 Todo
 ----
 
-* Move referrer/domains into the bookmarklet
 * Ability to use HTTP methods (GET, POST, PUT, DELETE) -- need to figure out syntax first.
 * Update help page to better show search arguments.
 * Allow definition of constants in shrts.txt file (ties into the ``help`` trigger?)
