@@ -242,7 +242,6 @@ function parse_kwargs($url, $args, $kwargs, $command)
 
 function parse_default($url, $args, $kwargs, $command)
 {
-    echo $url . '<br>';
     $pattern = '/(%{[\w|\p{P}]+})/';
     if (preg_match($pattern, $url))
     {
@@ -260,8 +259,9 @@ function parse_default($url, $args, $kwargs, $command)
             }
             $furl .= $part;
          }
+         $url = $furl;
     }
-    return $furl;
+    return $url;
 }
 
 
