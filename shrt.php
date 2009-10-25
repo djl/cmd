@@ -175,7 +175,8 @@ function get_url($shortcut_url, $args, $kwargs, $command)
 {
     $filters = array('parse_kwargs',
                      'parse_simple',
-                     'parse_optional');
+                     'parse_optional',
+                     'parse_default');
     
     foreach ($filters as $filter)
     {
@@ -237,6 +238,30 @@ function parse_kwargs($url, $args, $kwargs, $command)
         $url = $furl;
     }
     return $url;
+}
+
+function parse_default($url, $args, $kwargs, $command)
+{
+    echo $url . '<br>';
+    $pattern = '/(%{[\w|\p{P}]+})/';
+    if (preg_match($pattern, $url))
+    {
+         $parts = preg_split($pattern, $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+         $furl = array_shift($parts);
+         $count = 0;
+         foreach ($parts as $part)
+         {
+            if (preg_match($pattern, $part))
+            {
+                if (preg_match_named('/(?<wrap>%{(?<value>[\w|\p{P}]+)})/', $part, $matches))
+                {
+                    $part = $matches['value'];
+                }
+            }
+            $furl .= $part;
+         }
+    }
+    return $furl;
 }
 
 
