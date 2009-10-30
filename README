@@ -62,7 +62,6 @@ Notes
 * When upgrading to a new version or changing settings, an update to your bookmarklet may be required.
 * shrt is not optimized at all, probably nowhere near the speed it could be.
 * shrt has **no** XSS/CSRF protection -- eventually, it might
-* The ``%d`` and ``%r`` arguments currently don't work with sites served over HTTPS
 
 
 Todo
