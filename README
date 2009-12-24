@@ -9,7 +9,7 @@ shrt is an implementation of `Shaun Inman <http://shauninman.com/>`__'s `Shortwa
 Usage
 -----
 
-1. Upload shrt.php and point your browser to it.  
+1. Upload shrt.php and point your browser to it.
 2. Enter URL to your shrt/Shortwave text file.
 3. Drag the bookmarklet onto your bookmarks bar.
 4. Click bookmarklet.
@@ -21,8 +21,8 @@ Syntax
 shrt features the standard Shortwave syntax:
 
 * ``%s`` - will be replaced by any arguments you provide, or blank if none are provided.
-* ``%d`` - the domain of the current site. (See notes)
-* ``%r`` - the full URL of the current site. (See notes)
+* ``%d`` - the domain of the current site.
+* ``%r`` - the full URL of the current site.
 * ``%t`` - the title of the current page
 * ``>`` - comment to the end of the line.
 
