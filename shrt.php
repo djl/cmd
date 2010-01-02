@@ -188,7 +188,7 @@ function get_url($shortcut_url, $args, $kwargs, $command)
 function parse_simple($url, $args, $kwargs, $command)
 {
     $url = preg_replace("/%d/", urldecode($_GET['d']), $url);
-    $url = preg_replace("/%r/", urldecode($_GET['r']), $url);
+    $url = preg_replace("/%r/", urlencode($_GET['r']), $url);
     $url = preg_replace("/%t/", urldecode($_GET['t']), $url);
     $url = preg_replace("/%c/", urldecode($_GET['c']), $url);
     return $url;
