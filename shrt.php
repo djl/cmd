@@ -157,8 +157,8 @@ function get_shortcuts($file)
     foreach ($lines as $line)
     {
         $line = preg_replace('/\s\s+/', ' ', trim($line));
-        // Kill blank lines, comments and '#kill-defaults'
-        if (!preg_match('/^>|#/', $line) && $line != "")
+        // Kill blank lines, comments, '#kill-defaults' and @groups
+        if (!preg_match('/^>|#|@/', $line) && $line != "")
         {
             $segments = preg_split('/[ ]+/', $line, 3);
             $takes_search = (strstr($segments[1], "%s") && $segments[0] != "*");
