@@ -1,9 +1,10 @@
 shrt
 ====
 
-shrt is an implementation of `Shaun Inman <http://shauninman.com/>`__'s `Shortwave <http://shortwaveapp.com/>`__, described thusly:
+shrt is an extensible bookmarklet command thing. It's similar to
+`Shortwave <http://shortwaveapp.com>`_ and
+`Quix <http://quixapp.com>`_.
 
-    an extensible quick-search and shortcut bookmark.
 
 
 Usage
@@ -15,10 +16,11 @@ Usage
 4. Click bookmarklet.
 
 
+
 Syntax
 ------
 
-shrt features the standard Shortwave syntax:
+shrt features the standard Shortwave/Quix syntax:
 
 * ``%s`` - will be replaced by any arguments you provide, or blank if none are provided.
 * ``%d`` - the domain of the current site.
@@ -34,17 +36,29 @@ Plus some extras:
 * ``%{%r}`` - ``%r`` argument nested inside of default argument.
 
 
+
+Compatibility
+-------------
+
+shrt *should* be able to read your Shortwave and Quix files, but obviously 
+neither will be able to parse the extra syntax shrt provides.
+
+
+
 Pattern matching for your shrts file
 ------------------------------------
 
-Define a PCRE-compatible pattern in the ``FILE_MATCH`` constant to have shrt match against it when loading your file.
+Define a PCRE-compatible pattern in the ``FILE_MATCH`` constant to
+have shrt match against it when loading your file.
 
 
 
 Lockdown
 --------
 
-To disable shrt from generating new bookmarklets, simply set the ``IS_LOCKED`` constant to ``true``.
+To disable shrt from generating new bookmarklets, simply set the
+``IS_LOCKED`` constant to ``true``.
+
 
 
 Examples
@@ -53,15 +67,16 @@ Examples
 See examples.txt.
 
 
+
 Notes
 -----
 
 * PHP must be compiled --with-curl
 * JavaScript is required.
-* shrt can read your current Shortwave file, but Shortwave probably can't read your shrt file.
 * When upgrading to a new version or changing settings, an update to your bookmarklet may be required.
 * shrt is not optimized at all, probably nowhere near the speed it could be.
 * shrt has **no** XSS/CSRF protection -- eventually, it might
+
 
 
 Todo

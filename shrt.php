@@ -1,10 +1,10 @@
 <?php
 define('ARGUMENT_DELIMITER', ',');
 define('DEFAULT_URL', 'http://www.google.com/search?q=%c');
-define('HELP_TITLE', '...your commands');
+define('HELP_TITLE', 'your shortcuts');
 define('HELP_TRIGGER', 'help');
 define('SHRT_URL', 'http://github.com/xvzf/shrt/tree/master');
-define('TITLE', '...because Saft is broken in the WebKit nightlies');
+define('TITLE', 'bookmarklet shortcuts');
 define('USERAGENT', 'Grabbing your shortcuts. (' . SHRT_URL . '); Allow like Gecko');
 define('IS_LOCKED', FALSE);
 define('FILE_MATCH', '');
@@ -32,6 +32,24 @@ function title()
     if (show_help()) { return HELP_TITLE; }
     return TITLE;
 }
+
+function tab2space($text, $spaces = 4)
+{
+    $lines = explode("\n", $text);
+    foreach ($lines as $line)
+    {
+        while (false !== $tab_pos = strpos($line, "\t"))
+        {
+            $start = substr($line, 0, $tab_pos);
+            $tab = str_repeat(' ', $spaces - $tab_pos % $spaces);
+            $end = substr($line, $tab_pos + 1);
+            $line = $start . $tab . $end;
+        }
+        $result[] = $line;
+    }
+    return implode("\n", $result);
+}
+
 
 function remove_numeric_keys(&$array)
 {
@@ -124,6 +142,7 @@ function get_shortcut($file, $trigger)
     $shortcuts = array();
     foreach($lines as $line)
     {
+        $line = tab2space($line);
         $line = preg_replace('/\s\s+/', ' ', trim($line));
         // Kill blank lines, comments and '#kill-defaults' lines
         if (!preg_match('/^>|#/', $line) && $line != "")
@@ -154,18 +173,47 @@ function get_shortcuts($file)
     $file = get_file($file);
     $lines = explode("\n", $file);
     $shortcuts = array();
+
+    $last_was_group = false;
+    $previous = $group_name = $group_description = null;
     foreach ($lines as $line)
     {
+        $line = tab2space($line);
         $line = preg_replace('/\s\s+/', ' ', trim($line));
-        // Kill blank lines, comments, '#kill-defaults' and @groups
-        if (!preg_match('/^>|#|@/', $line) && $line != "")
+        // Kill blank lines, comments, '#kill-defaults'
+        if (!preg_match('/^>|#/', $line) && $line != "")
         {
+            // groups
+            if (preg_match('/^@/', $line))
+            {
+                // parse out the name/description
+                $splits = preg_split('/^@/', $line, 0, PREG_SPLIT_NO_EMPTY);
+                if ($splits)
+                {
+                    if (!$last_was_group)
+                    {
+                        $group_name = $splits[0];
+                        $last_was_group = true;
+                    }
+                    else
+                    {
+                        $last_was_group = false;
+                        $group_description = $splits[0];
+                    }
+                }
+
+                // jump to next line
+                continue;
+            }
             $segments = preg_split('/[ ]+/', $line, 3);
             $takes_search = (strstr($segments[1], "%s") && $segments[0] != "*");
             $shortcuts[$segments[0]] = array('trigger' => $segments[0],
                                              'url' => $segments[1],
                                              'title' => $segments[2],
-                                             'search' => $takes_search);
+                                             'search' => $takes_search,
+                                             'group_name' => $group_name,
+                                             'group_description' => $group_description);
+            $group_description = "";
         }
     }
     return $shortcuts;
@@ -177,7 +225,7 @@ function get_url($shortcut_url, $args, $kwargs, $command)
                      'parse_simple',
                      'parse_optional',
                      'parse_default');
-    
+
     foreach ($filters as $filter)
     {
         $shortcut_url = $filter($shortcut_url, $args, $kwargs, $command);
@@ -288,10 +336,10 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     *{margin:0;padding:0;}
     html{background:#fff;border-top:4px solid <?php echo $color; ?>;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
     body{margin:4em auto;width:50em;}
-    h1{font-size:2em;line-height:6em;text-shadow: 0 -1px 1px #FFF;}
+    h1{font-size:3em;line-height:3em;margin-bottom:1em;text-shadow: 0 -1px 1px #FFF;}
     h1 a:link,h1 a:visited{color:black;text-decoration:none;}
     h1 a:hover,h1 a:active,h1 a:focus{color:<?php echo $color; ?>;}
-    h2{color:#bbb;font-size:2em;font-weight:normal;margin:0 0 3em;}
+    h2{font-size:2em;font-weight:bold;margin:3em 0 0.5em;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
     label,.out{line-height:1.8em !important;text-shadow: 0 -1px 1px #FFF;}
     label{font-size:1.4em;}
@@ -302,7 +350,7 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     a:hover{color:black;}
     a#link{background:<?php echo $color; ?>;color:#fff;padding:4px;text-shadow: 1px 1px 1px <?php echo $color; ?>;text-decoration:none;}
     a#link:hover{background:black;text-shadow:1px 1px 1px black;}
-    table{font-size:1.4em;margin:4em auto;width:100%;}
+    table{font-size:1.4em;margin:4em auto 6em;width:100%;}
     td{padding:10px;}
     code {color:#777;font: 1.1em consolas,"panic sans","bitstream vera sans","courier new",monaco,monospace;}
     .out{color:#aaa;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
@@ -310,6 +358,7 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     .left{text-align:left;}
     .alt{background:#eee;}
     .error{color:red;font-weight:bold;}
+    .lite{color:#777;margin: 0;}
     </style>
     <script type="text/javascript">function $(id){return document.getElementById(id)};</script>
 </head>
@@ -317,21 +366,31 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
     <header><h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em><?php echo title(); ?></em></h1></header>
     <?php if (show_help()): ?>
         <?php $shrts = get_shortcuts($_GET['f']); ?>
-        <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p>
-        <table cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Trigger</th>
-                    <th>Title</th>
-                </tr>
-            </thead>
-        <?php $count=0;?>
+
+        <!-- <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p> -->
+
+        <?php $count=0; $previous = null; ?>
         <?php foreach($shrts as $shrt): ?>
+            <?php if ($shrt['group_name'] != $previous || $count < 1): ?>
+                <?php if ($shrt['group_name'] != $previous): ?></table><?php endif; ?>
+                <header>
+                    <h2><?php echo $shrt['group_name']; ?></h2>
+                    <?php if ($shrt['group_description']): ?><p class="lite"><?php echo $shrt['group_description']; ?></p><?php endif; ?>
+                </header>
+                <table cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Trigger</th>
+                        <th>Title</th>
+                    </tr>
+                </thead>
+            <?php endif; ?>
             <tr<?php if ($count % 2): ?> class="alt"<?php endif; ?>>
                 <td><code><?php echo $shrt['trigger'] ?></code></td>
                 <td><?php echo $shrt['title'] ?><?php if ($shrt['search']): ?> <span class="red">*</span><?php endif; ?></td>
             </tr>
             <?php $count++; ?>
+            <?php $previous = $shrt['group_name']; ?>
         <?php endforeach; ?>
         </table>
     <?php else: ?>
