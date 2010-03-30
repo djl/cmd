@@ -371,7 +371,7 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
 
         <!-- <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p> -->
 
-        <?php $count=0; $previous = null; ?>
+        <?php $count = 0; $previous = null; ?>
         <?php foreach($shrts as $shrt): ?>
             <?php if ($shrt['group_name'] != $previous || $count < 1): ?>
                 <?php if ($shrt['group_name'] != $previous): ?></table><?php endif; ?>
