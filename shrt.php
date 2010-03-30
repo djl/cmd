@@ -323,7 +323,9 @@ function go($command, $file)
 // Go go gadget shortcut!
 if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
 {
-    go(urldecode($_GET['c']), urldecode($_GET['f']));
+    $c = stripslashes(urldecode($_GET['c']));
+    $f = stripslashes(urldecode($_GET['f']));
+    go($c, $f);
 }
 ?>
 <!DOCTYPE html>
