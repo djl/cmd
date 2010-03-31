@@ -135,32 +135,15 @@ function get_args_from_command($command)
     return $matches;
 }
 
-function get_shortcut($file, $trigger)
+function get_shortcut($shortcuts, $trigger)
 {
-    $file = get_file($file);
-    $lines = explode("\n", $file);
-    $shortcuts = array();
-    foreach($lines as $line)
+    if (array_key_exists($trigger, $shortcuts))
     {
-        $line = tab2space($line);
-        $line = preg_replace('/\s\s+/', ' ', trim($line));
-        // Kill blank lines, comments and '#kill-defaults' lines
-        if (!preg_match('/^>|#/', $line) && $line != "")
-        {
-            list($s_trigger, $s_url, $s_title) = preg_split('/[ ]+/', $line, 3);
-            if ($trigger == $s_trigger)
-            {
-                return $s_url;
-            }
-            else
-            {
-                $shortcuts[$s_trigger] = $s_url;
-            }
-        }
+        return $shortcuts[$trigger];
     }
-    if (array_key_exists('*', $shortcuts))
+    else if (array_key_exists('*', $shortcuts))
     {
-        return $shortcuts['*'];
+        return $shortcuts[$trigger];
     }
     else
     {
@@ -168,43 +151,57 @@ function get_shortcut($file, $trigger)
     }
 }
 
-function get_shortcuts($file)
+function parse_shortcut_file($file)
 {
     $file = get_file($file);
     $lines = explode("\n", $file);
+
+    // stuff we'll return
     $shortcuts = array();
+    $config = array();
 
     $last_was_group = false;
     $previous = $group_name = $group_description = null;
     foreach ($lines as $line)
     {
         $line = tab2space($line);
-        $line = preg_replace('/\s\s+/', ' ', trim($line));
+        // $line = preg_replace('/\s\s+/', ' ', trim($line));
         // Kill blank lines, comments, '#kill-defaults'
         if (!preg_match('/^>|#/', $line) && $line != "")
         {
-            // groups
-            if (preg_match('/^@/', $line))
+            // groups/config lines
+            if (preg_match('/^(@|!)/', $line))
             {
-                // parse out the name/description
-                $splits = preg_split('/^@/', $line, 0, PREG_SPLIT_NO_EMPTY);
-                if ($splits)
+                if (strpos($line, '@'))
                 {
-                    if (!$last_was_group)
+                    // parse out the name/description
+                    $splits = preg_split('/^@/', $line, 0, PREG_SPLIT_NO_EMPTY);
+                    if ($splits)
                     {
-                        $group_name = $splits[0];
-                        $last_was_group = true;
-                    }
-                    else
-                    {
-                        $last_was_group = false;
-                        $group_description = $splits[0];
+                        if (!$last_was_group)
+                        {
+                            $group_name = $splits[0];
+                            $last_was_group = true;
+                        }
+                        else
+                        {
+                            $last_was_group = false;
+                            $group_description = $splits[0];
+                        }
                     }
                 }
-
+                else
+                {
+                    preg_match_named('/^!(?<key>(\w|\p{P})+):(?<value>.*)/', $line, $matches);
+                    foreach ($matches as $key => $value)
+                    {
+                        $config[$key] = $value;
+                    }
+                }
                 // jump to next line
                 continue;
             }
+
             $segments = preg_split('/[ ]+/', $line, 3);
             $takes_search = (strstr($segments[1], "%s") && $segments[0] != "*");
             $shortcuts[$segments[0]] = array('trigger' => $segments[0],
@@ -216,7 +213,9 @@ function get_shortcuts($file)
             $group_description = "";
         }
     }
-    return $shortcuts;
+
+    return array('shortcuts' => $shortcuts,
+                 'config' => $config);
 }
 
 function get_url($shortcut_url, $args, $kwargs, $command)
@@ -254,8 +253,9 @@ function parse_optional($url, $args, $kwargs, $command)
     return $url;
 }
 
-function parse_kwargs($url, $args, $kwargs, $command)
+function parse_kwargs($shortcut, $args, $kwargs, $command)
 {
+    $url = $shortcut['url'];
     if (preg_match('/%{[\w|\p{P}]+:(.*)}/', $url))
     {
         $parts = preg_split('/%{([\w|\p{P}]+:.*)}/', $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
@@ -312,20 +312,26 @@ function parse_default($url, $args, $kwargs, $command)
     return $url;
 }
 
-
-function go($command, $file)
-{
-    $args = get_args_from_command($command);
-    $shortcut = get_shortcut($file, $args['trigger']);
-    header('Location: ' . get_url($shortcut, $args['args'], $args['kwargs'], $command));
-}
-
 // Go go gadget shortcut!
-if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
+if (isset($_GET['c']) and isset($_GET['f']))
 {
-    $c = stripslashes(urldecode($_GET['c']));
-    $f = stripslashes(urldecode($_GET['f']));
-    go($c, $f);
+    // compensate for JavaScript's odd escaping
+    $command = stripslashes(urldecode($_GET['c']));
+    $file = stripslashes(urldecode($_GET['f']));
+
+    // get the arguments
+    $args = get_args_from_command($command);
+
+    // parse the shortcuts file
+    $parsed = parse_shortcut_file($file);
+
+    // shortcuts
+    $SHORTCUTS = $parsed['shortcuts'];
+    $shortcut = get_shortcut($SHORTCUTS, $args['trigger']);
+    $url = get_url($shortcut, $args['args'], $args['kwargs'], $command);
+
+    // go!
+    header('Location: ' . $url);
 }
 ?>
 <!DOCTYPE html>
@@ -367,12 +373,11 @@ if (isset($_GET['c']) and isset($_GET['f']) and !show_help())
 <body>
     <header><h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em><?php echo title(); ?></em></h1></header>
     <?php if (show_help()): ?>
-        <?php $shrts = get_shortcuts($_GET['f']); ?>
 
         <!-- <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p> -->
 
         <?php $count = 0; $previous = null; ?>
-        <?php foreach($shrts as $shrt): ?>
+        <?php foreach($SHORTCUTS as $shrt): ?>
             <?php if ($shrt['group_name'] != $previous || $count < 1): ?>
                 <?php if ($shrt['group_name'] != $previous): ?></table><?php endif; ?>
                 <header>
