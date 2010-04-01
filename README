@@ -11,7 +11,7 @@ Usage
 -----
 
 1. Upload shrt.php and point your browser to it.
-2. Enter URL to your shrt/Shortwave text file.
+2. Enter the URL to your shortcuts file.
 3. Drag the bookmarklet onto your bookmarks bar.
 4. Click bookmarklet.
 
@@ -62,7 +62,7 @@ The syntax is as follows:
 That is a dollar sign (``$``) followed the configuration option you'd
 like to set and the value you'd like to set it to.
 
-Say you'd like to change the help trigger to a question mark . Simply place the following
+Say you'd like to change the help trigger to a question mark. Simply place the following
 line somewhere in your shortcuts file:
 
 ::

@@ -391,12 +391,12 @@ if (isset($_GET['c']) and isset($_GET['f']))
         <!-- <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p> -->
 
         <?php $count = 0; $previous = null; ?>
-        <?php foreach($SHORTCUTS as $shrt): ?>
-            <?php if ($shrt['group_name'] != $previous || $count < 1): ?>
-                <?php if ($shrt['group_name'] != $previous): ?></table><?php endif; ?>
+        <?php foreach($SHORTCUTS as $shortcut): ?>
+            <?php if ($shortcut['group_name'] != $previous || $count < 1): ?>
+                <?php if ($shortcut['group_name'] != $previous): ?></table><?php endif; ?>
                 <header>
-                    <h2><?php echo $shrt['group_name']; ?></h2>
-                    <?php if ($shrt['group_description']): ?><p class="lite"><?php echo $shrt['group_description']; ?></p><?php endif; ?>
+                    <h2><?php echo $shortcut['group_name']; ?></h2>
+                    <?php if ($shortcut['group_description']): ?><p class="lite"><?php echo $shortcut['group_description']; ?></p><?php endif; ?>
                 </header>
                 <table cellspacing="0">
                 <thead>
@@ -407,18 +407,18 @@ if (isset($_GET['c']) and isset($_GET['f']))
                 </thead>
             <?php endif; ?>
             <tr<?php if ($count % 2): ?> class="alt"<?php endif; ?>>
-                <td><code><?php echo $shrt['trigger'] ?></code></td>
-                <td><?php echo $shrt['title'] ?><?php if ($shrt['search']): ?> <span class="red">*</span><?php endif; ?></td>
+                <td><code><?php echo $shortcut['trigger'] ?></code></td>
+                <td><?php echo $shortcut['title'] ?><?php if ($shortcut['search']): ?> <span class="red">*</span><?php endif; ?></td>
             </tr>
             <?php $count++; ?>
-            <?php $previous = $shrt['group_name']; ?>
+            <?php $previous = $shortcut['group_name']; ?>
         <?php endforeach; ?>
         </table>
     <?php else: ?>
         <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
             <label for="custom" id="label" class="out">Shortcut file:</label><input<?php if (IS_LOCKED): ?> disabled="disabled" <?php endif; ?> type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&f=(.*?)\'/,'&f='+this.value+'\'')">
         </form>
-        <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo HELP_TRIGGER ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t;if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};">shrt</a></p>
+        <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo HELP_TRIGGER ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t;if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo NAME ?></a></p>
     <?php endif; ?>
 </body>
 </html>
