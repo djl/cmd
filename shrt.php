@@ -5,6 +5,7 @@ define('FILE_MATCH', '', true);
 define('HELP_TITLE', 'your shortcuts', true);
 define('HELP_TRIGGER', 'help', true);
 define('IS_LOCKED', false, true);
+define('NAME', 'shrt', true);
 define('TITLE', 'bookmarklet shortcuts', true);
 define('USERAGENT', 'Grabbing your shortcuts. (http://github.com/xvzf/shrt/tree/master)', true);
 
@@ -254,7 +255,7 @@ function parse_shortcut_file($file)
         if (!preg_match('/^>|#/', $line) && $line != "")
         {
             // groups/config lines
-            if (preg_match('/^(@|!)/', $line))
+            if (preg_match('/^(@|\$)/', $line))
             {
                 if (strpos($line, '@'))
                 {
@@ -276,11 +277,11 @@ function parse_shortcut_file($file)
                 }
                 else
                 {
-                    preg_match_named('/^!(?<key>(\w|\p{P})+):"(?<value>.*)"/', $line, $matches);
+                    preg_match_named('/^\$(\s)+(?<key>(\w|\p{P})+)(\s+)(?<value>.*)$/', $line, $matches);
                     $config_last = "";
                     foreach ($matches as $match)
                     {
-                        if ($config_last)
+                        if ($config_last && $match)
                         {
                             $config[$config_last] = $match;
                         }
@@ -324,7 +325,7 @@ if (isset($_GET['c']) and isset($_GET['f']))
 
     // parse the shortcuts file
     $parsed = parse_shortcut_file($file);
-    
+
     // shortcuts
     $SHORTCUTS = $parsed['shortcuts'];
 
@@ -351,7 +352,7 @@ if (isset($_GET['c']) and isset($_GET['f']))
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>shrt</title>
+    <title><?php echo NAME ?></title>
     <style type="text/css">
     <?php $color = "#c86f4d"; ?>
     *{margin:0;padding:0;}
@@ -384,7 +385,7 @@ if (isset($_GET['c']) and isset($_GET['f']))
     <script type="text/javascript">function $(id){return document.getElementById(id)};</script>
 </head>
 <body>
-    <header><h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>">shrt</a> <em><?php echo title(); ?></em></h1></header>
+    <header><h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>"><?php echo NAME ?></a> <em><?php echo title(); ?></em></h1></header>
     <?php if (show_help()): ?>
 
         <!-- <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p> -->
@@ -417,7 +418,7 @@ if (isset($_GET['c']) and isset($_GET['f']))
         <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
             <label for="custom" id="label" class="out">Shortcut file:</label><input<?php if (IS_LOCKED): ?> disabled="disabled" <?php endif; ?> type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&f=(.*?)\'/,'&f='+this.value+'\'')">
         </form>
-        <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`help`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t;if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};">shrt</a></p>
+        <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo HELP_TRIGGER ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t;if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};">shrt</a></p>
     <?php endif; ?>
 </body>
 </html>
