@@ -34,7 +34,7 @@ Plus some extras:
 * ``%{kittens}`` - a default argument, to be optionally overridden.
 * ``%{%d}`` - ``%d`` argument nested inside of default argument.
 * ``%{%r}`` - ``%r`` argument nested inside of default argument.
-* ``!ARGUMENT_DELIMITER:":"`` - a custom configuration option
+* ``$ OPTION VALUE`` - a custom configuration option
 
 
 
@@ -112,6 +112,5 @@ Notes
 Todo
 ----
 
-* Documentation. Documentation. Documentation.
-* Ability to use HTTP methods (GET, POST, PUT, DELETE) -- need to figure out syntax first.
 * Update help page to better show search arguments.
+* Ability to use HTTP methods (GET, POST, PUT, DELETE) -- need to figure out syntax first.
