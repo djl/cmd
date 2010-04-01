@@ -1,101 +1,19 @@
 <?php
-define('ARGUMENT_DELIMITER', ',');
-define('DEFAULT_URL', 'http://www.google.com/search?q=%c');
-define('HELP_TITLE', 'your shortcuts');
-define('HELP_TRIGGER', 'help');
-define('SHRT_URL', 'http://github.com/xvzf/shrt/tree/master');
-define('TITLE', 'bookmarklet shortcuts');
-define('USERAGENT', 'Grabbing your shortcuts. (' . SHRT_URL . '); Allow like Gecko');
-define('IS_LOCKED', FALSE);
-define('FILE_MATCH', '');
+define('ARGUMENT_DELIMITER', ',', true);
+define('DEFAULT_URL', 'http://www.google.com/search?q=%c', true);
+define('FILE_MATCH', '', true);
+define('HELP_TITLE', 'your shortcuts', true);
+define('HELP_TRIGGER', 'help', true);
+define('IS_LOCKED', false, true);
+define('TITLE', 'bookmarklet shortcuts', true);
+define('USERAGENT', 'Grabbing your shortcuts. (http://github.com/xvzf/shrt/tree/master)', true);
 
 ini_set('user_agent', USERAGENT);
+
 
 function encode(&$val)
 {
     $val = urlencode($val);
-}
-
-function url()
-{
-    $protocol = array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
-    return $protocol.'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-}
-
-function show_help()
-{
-    return isset($_GET['f']) and isset($_GET['c']) and trim($_GET['c']) == HELP_TRIGGER;
-}
-
-function title()
-{
-    if (show_help()) { return HELP_TITLE; }
-    return TITLE;
-}
-
-function tab2space($text, $spaces = 4)
-{
-    $lines = explode("\n", $text);
-    foreach ($lines as $line)
-    {
-        while (false !== $tab_pos = strpos($line, "\t"))
-        {
-            $start = substr($line, 0, $tab_pos);
-            $tab = str_repeat(' ', $spaces - $tab_pos % $spaces);
-            $end = substr($line, $tab_pos + 1);
-            $line = $start . $tab . $end;
-        }
-        $result[] = $line;
-    }
-    return implode("\n", $result);
-}
-
-
-function remove_numeric_keys(&$array)
-{
-    foreach ($array as $key => $value)
-    {
-        if (is_int($key))
-        {
-            unset($array[$key]);
-        }
-    }
-    return $array;
-
-}
-
-function preg_match_named($pattern, $subject, &$matches, $flags=null, $offset=null)
-{
-    $c = preg_match($pattern, $subject, $matches, $flags, $offset);
-    $matches = remove_numeric_keys($matches);
-    return $c;
-}
-
-function preg_match_all_named($pattern, $subject, &$matches, $flags=null, $offset=null)
-{
-    $c = preg_match_all($pattern, $subject, $matches, $flags, $offset);
-    $matches = remove_numeric_keys($matches);
-    return $c;
-}
-
-function get_file($url)
-{
-    if (FILE_MATCH != '' && preg_match(FILE_MATCH, $url) == FALSE)
-    {
-        die("<p><strong class=\"error\">Warning:</strong> The URL <strong>$url</strong> did not match the required pattern.</p>");
-    }
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_USERAGENT, USERAGENT);
-    curl_setopt($ch, CURLOPT_URL, $url);
-    $data = curl_exec($ch);
-    if(curl_error($ch))
-    {
-        die(curl_error($ch));
-    }
-    curl_close($ch);
-    return $data;
 }
 
 function get_args_from_command($command)
@@ -108,7 +26,6 @@ function get_args_from_command($command)
     {
         $matches['args'] = "";
     }
-
     $arguments = explode(ARGUMENT_DELIMITER, $matches['args']);
     $kwargs = array();
 
@@ -135,6 +52,27 @@ function get_args_from_command($command)
     return $matches;
 }
 
+function get_file($url)
+{
+    if (FILE_MATCH != '' && preg_match(FILE_MATCH, $url) == FALSE)
+    {
+        die("<p><strong class=\"error\">Warning:</strong> The URL <strong>$url</strong> did not match the required pattern.</p>");
+    }
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_USERAGENT, USERAGENT);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    $data = curl_exec($ch);
+    if(curl_error($ch))
+    {
+        die(curl_error($ch));
+    }
+    curl_close($ch);
+    return $data;
+}
+
+
 function get_shortcut($shortcuts, $trigger)
 {
     if (array_key_exists($trigger, $shortcuts))
@@ -149,6 +87,152 @@ function get_shortcut($shortcuts, $trigger)
     {
         return DEFAULT_URL;
     }
+}
+
+function get_url($shortcut_url, $args, $kwargs, $command)
+{
+    $filters = array('parse_kwargs',
+                     'parse_simple',
+                     'parse_optional',
+                     'parse_default');
+
+    foreach ($filters as $filter)
+    {
+        $shortcut_url = $filter($shortcut_url, $args, $kwargs, $command);
+    }
+    return $shortcut_url;
+}
+
+function parse_default($url, $args, $kwargs, $command)
+{
+    $pattern = '/(%{[\w|\p{P}]+})/';
+    if (preg_match($pattern, $url))
+    {
+         $parts = preg_split($pattern, $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+         $furl = array_shift($parts);
+         $count = 0;
+         foreach ($parts as $part)
+         {
+            if (preg_match($pattern, $part))
+            {
+                if (preg_match_named('/(?<wrap>%{(?<value>[\w|\p{P}]+)})/', $part, $matches))
+                {
+                    $part = $matches['value'];
+                }
+            }
+            $furl .= $part;
+         }
+         $url = $furl;
+    }
+    return $url;
+}
+
+function preg_match_named($pattern, $subject, &$matches, $flags=null, $offset=null)
+{
+    $c = preg_match($pattern, $subject, $matches, $flags, $offset);
+    $matches = remove_numeric_keys($matches);
+    return $c;
+}
+
+function preg_match_all_named($pattern, $subject, &$matches, $flags=null, $offset=null)
+{
+    $c = preg_match_all($pattern, $subject, $matches, $flags, $offset);
+    $matches = remove_numeric_keys($matches);
+    return $c;
+}
+
+function remove_numeric_keys(&$array)
+{
+    foreach ($array as $key => $value)
+    {
+        if (is_int($key))
+        {
+            unset($array[$key]);
+        }
+    }
+    return $array;
+
+}
+
+function show_help()
+{
+    return isset($_GET['f']) && isset($_GET['c']) && trim($_GET['c']) == HELP_TRIGGER;
+}
+
+function tab2space($text, $spaces = 4)
+{
+    $lines = explode("\n", $text);
+    foreach ($lines as $line)
+    {
+        while (false !== $tab_pos = strpos($line, "\t"))
+        {
+            $start = substr($line, 0, $tab_pos);
+            $tab = str_repeat(' ', $spaces - $tab_pos % $spaces);
+            $end = substr($line, $tab_pos + 1);
+            $line = $start . $tab . $end;
+        }
+        $result[] = $line;
+    }
+    return implode("\n", $result);
+}
+
+function title()
+{
+    if (show_help()) { return HELP_TITLE; }
+    return TITLE;
+}
+
+function url()
+{
+    $protocol = array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
+    return $protocol.'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+}
+
+function parse_kwargs($shortcut, $args, $kwargs, $command)
+{
+    $url = $shortcut['url'];
+    if (preg_match('/%{[\w|\p{P}]+:(.*)}/', $url))
+    {
+        $parts = preg_split('/%{([\w|\p{P}]+:.*)}/', $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $furl = array_shift($parts);
+        $count = 0;
+        foreach ($parts as $part)
+        {
+            if (preg_match('/[\w|\p{P}]+:(.*)/', $part))
+            {
+
+                if (preg_match_named('/(?<wrap>(?<key>[\w|\p{P}]+):(?<value>.*))/', $part, $matches))
+                {
+                    if (array_key_exists($matches['key'], $kwargs))
+                    {
+                        $pattern = "/(%s)|(%{.*?})/";
+                        $part = str_replace($matches['wrap'], $kwargs[$matches['key']], $matches['value']);
+                        $part = preg_replace($pattern, $kwargs[$matches['key']], $part);
+                        $furl .= $part;
+                    }
+                }
+            }
+            else
+            {
+                $url = str_replace('%s', $args[$count], $part);
+                $count++;
+            }
+        }
+        $url = $furl;
+    }
+    return $url;
+}
+
+function parse_optional($url, $args, $kwargs, $command)
+{
+    $parts = preg_split('/(%s)/', $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $count = 0;
+    $url = "";
+    foreach($parts as $part)
+    {
+        $url .= str_replace('%s', $args[$count], $part);
+    }
+    return $url;
 }
 
 function parse_shortcut_file($file)
@@ -192,10 +276,15 @@ function parse_shortcut_file($file)
                 }
                 else
                 {
-                    preg_match_named('/^!(?<key>(\w|\p{P})+):(?<value>.*)/', $line, $matches);
-                    foreach ($matches as $key => $value)
+                    preg_match_named('/^!(?<key>(\w|\p{P})+):"(?<value>.*)"/', $line, $matches);
+                    $config_last = "";
+                    foreach ($matches as $match)
                     {
-                        $config[$key] = $value;
+                        if ($config_last)
+                        {
+                            $config[$config_last] = $match;
+                        }
+                        $config_last = $match;
                     }
                 }
                 // jump to next line
@@ -213,23 +302,8 @@ function parse_shortcut_file($file)
             $group_description = "";
         }
     }
-
     return array('shortcuts' => $shortcuts,
                  'config' => $config);
-}
-
-function get_url($shortcut_url, $args, $kwargs, $command)
-{
-    $filters = array('parse_kwargs',
-                     'parse_simple',
-                     'parse_optional',
-                     'parse_default');
-
-    foreach ($filters as $filter)
-    {
-        $shortcut_url = $filter($shortcut_url, $args, $kwargs, $command);
-    }
-    return $shortcut_url;
 }
 
 function parse_simple($url, $args, $kwargs, $command)
@@ -241,77 +315,6 @@ function parse_simple($url, $args, $kwargs, $command)
     return $url;
 }
 
-function parse_optional($url, $args, $kwargs, $command)
-{
-    $parts = preg_split('/(%s)/', $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-    $count = 0;
-    $url = "";
-    foreach($parts as $part)
-    {
-        $url .= str_replace('%s', $args[$count], $part);
-    }
-    return $url;
-}
-
-function parse_kwargs($shortcut, $args, $kwargs, $command)
-{
-    $url = $shortcut['url'];
-    if (preg_match('/%{[\w|\p{P}]+:(.*)}/', $url))
-    {
-        $parts = preg_split('/%{([\w|\p{P}]+:.*)}/', $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        $furl = array_shift($parts);
-        $count = 0;
-        foreach ($parts as $part)
-        {
-            if (preg_match('/[\w|\p{P}]+:(.*)/', $part))
-            {
-
-                if (preg_match_named('/(?<wrap>(?<key>[\w|\p{P}]+):(?<value>.*))/', $part, $matches))
-                {
-                    if (array_key_exists($matches['key'], $kwargs))
-                    {
-                        $pattern = "/(%s)|(%{.*?})/";
-                        $part = str_replace($matches['wrap'], $kwargs[$matches['key']], $matches['value']);
-                        $part = preg_replace($pattern, $kwargs[$matches['key']], $part);
-                        $furl .= $part;
-                    }
-                }
-            }
-            else
-            {
-                $url = str_replace('%s', $args[$count], $part);
-                $count++;
-            }
-        }
-        $url = $furl;
-    }
-    return $url;
-}
-
-function parse_default($url, $args, $kwargs, $command)
-{
-    $pattern = '/(%{[\w|\p{P}]+})/';
-    if (preg_match($pattern, $url))
-    {
-         $parts = preg_split($pattern, $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-         $furl = array_shift($parts);
-         $count = 0;
-         foreach ($parts as $part)
-         {
-            if (preg_match($pattern, $part))
-            {
-                if (preg_match_named('/(?<wrap>%{(?<value>[\w|\p{P}]+)})/', $part, $matches))
-                {
-                    $part = $matches['value'];
-                }
-            }
-            $furl .= $part;
-         }
-         $url = $furl;
-    }
-    return $url;
-}
-
 // Go go gadget shortcut!
 if (isset($_GET['c']) and isset($_GET['f']))
 {
@@ -319,14 +322,24 @@ if (isset($_GET['c']) and isset($_GET['f']))
     $command = stripslashes(urldecode($_GET['c']));
     $file = stripslashes(urldecode($_GET['f']));
 
+    // parse the shortcuts file
+    $parsed = parse_shortcut_file($file);
+    
+    // shortcuts
+    $SHORTCUTS = $parsed['shortcuts'];
+
+    // config values
+    foreach($parsed['config'] as $k => $v)
+    {
+        // this exploits a bug (or feature?) in PHP:
+        // when constants are defined without case-sensitivity it is
+        // possible to redefine them without throwing errors
+        define($k, $v);
+    }
+
     // get the arguments
     $args = get_args_from_command($command);
 
-    // parse the shortcuts file
-    $parsed = parse_shortcut_file($file);
-
-    // shortcuts
-    $SHORTCUTS = $parsed['shortcuts'];
     $shortcut = get_shortcut($SHORTCUTS, $args['trigger']);
     $url = get_url($shortcut, $args['args'], $args['kwargs'], $command);
 
