@@ -1,13 +1,13 @@
 <?php
-define('ARGUMENT_DELIMITER', ',', true);
-define('DEFAULT_URL', 'http://www.google.com/search?q=%c', true);
-define('FILE_MATCH', '', true);
-define('HELP_TITLE', 'your shortcuts', true);
-define('HELP_TRIGGER', 'help', true);
-define('IS_LOCKED', false, true);
-define('NAME', 'shrt', true);
-define('TITLE', 'bookmarklet shortcuts', true);
-define('USERAGENT', 'Grabbing your shortcuts. (http://github.com/xvzf/shrt/tree/master)', true);
+define('ARGUMENT_DELIMITER', ',', TRUE);
+define('DEFAULT_URL', 'http://www.google.com/search?q=%c', TRUE);
+define('FILE_MATCH', '', TRUE);
+define('HELP_TITLE', 'your shortcuts', TRUE);
+define('HELP_TRIGGER', 'help', TRUE);
+define('IS_LOCKED', false, TRUE);
+define('NAME', 'shrt', TRUE);
+define('TITLE', 'bookmarklet shortcuts', TRUE);
+define('USERAGENT', 'Grabbing your shortcuts. (http://github.com/xvzf/shrt/tree/master)', TRUE);
 
 ini_set('user_agent', USERAGENT);
 
@@ -60,10 +60,12 @@ function get_file($url)
         die("<p><strong class=\"error\">Warning:</strong> The URL <strong>$url</strong> did not match the required pattern.</p>");
     }
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_USERAGENT, USERAGENT);
-    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt_array($ch, array(CURLOPT_CONNECTTIMEOUT => 3,
+                                 CURLOPT_FAILONERROR => TRUE,
+                                 CURLOPT_HEADER => FALSE,
+                                 CURLOPT_RETURNTRANSFER => 1,
+                                 CURLOPT_URL => $url,
+                                 CURLOPT_USERAGENT => USERAGENT));
     $data = curl_exec($ch);
     if(curl_error($ch))
     {
@@ -266,7 +268,7 @@ function parse_shortcut_file($file)
                         if (!$last_was_group)
                         {
                             $group_name = $splits[0];
-                            $last_was_group = true;
+                            $last_was_group = TRUE;
                         }
                         else
                         {
