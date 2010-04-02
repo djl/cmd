@@ -84,7 +84,7 @@ function get_shortcut($shortcuts, $trigger)
     }
     else if (array_key_exists('*', $shortcuts))
     {
-        return $shortcuts[$trigger];
+        return $shortcuts['*'];
     }
     else
     {
@@ -252,14 +252,16 @@ function parse_shortcut_file($file)
     foreach ($lines as $line)
     {
         $line = tab2space($line);
-        // $line = preg_replace('/\s\s+/', ' ', trim($line));
-        // Kill blank lines, comments, '#kill-defaults'
-        if (!preg_match('/^>|#/', $line) && $line != "")
+        $line = preg_replace('/\s{2,}/', ' ', trim($line));
+        if (!$line) continue;
+
+        // Ignore comments and '#kill-defaults' lines
+        if (!preg_match('/^>|#/', $line) && $line !='')
         {
             // groups/config lines
             if (preg_match('/^(@|\$)/', $line))
             {
-                if (strpos($line, '@'))
+                if (preg_match('/^@/', $line))
                 {
                     // parse out the name/description
                     $splits = preg_split('/^@/', $line, 0, PREG_SPLIT_NO_EMPTY);
@@ -347,7 +349,10 @@ if (isset($_GET['c']) and isset($_GET['f']))
     $url = get_url($shortcut, $args['args'], $args['kwargs'], $command);
 
     // go!
-    header('Location: ' . $url);
+    if (!show_help())
+    {
+        header('Location: ' . $url);
+    }
 }
 ?>
 <!DOCTYPE html>
