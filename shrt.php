@@ -1,10 +1,11 @@
 <?php
 define('ARGUMENT_DELIMITER', ',', TRUE);
+define('COLOR', 'c86f4d', TRUE);
 define('DEFAULT_URL', 'http://www.google.com/search?q=%c', TRUE);
 define('FILE_MATCH', '', TRUE);
 define('HELP_TITLE', 'your shortcuts', TRUE);
 define('HELP_TRIGGER', 'help', TRUE);
-define('IS_LOCKED', false, TRUE);
+define('IS_LOCKED', FALSE, TRUE);
 define('NAME', 'shrt', TRUE);
 define('TITLE', 'bookmarklet shortcuts', TRUE);
 define('USERAGENT', 'Grabbing your shortcuts. (http://github.com/xvzf/shrt/tree/master)', TRUE);
@@ -256,7 +257,7 @@ function parse_shortcut_file($file)
         if (!$line) continue;
 
         // Ignore comments and '#kill-defaults' lines
-        if (!preg_match('/^>|#/', $line) && $line !='')
+        if (!preg_match('/^>|#/', $line))
         {
             // groups/config lines
             if (preg_match('/^(@|\$)/', $line))
@@ -361,13 +362,12 @@ if (isset($_GET['c']) and isset($_GET['f']))
     <meta charset="UTF-8">
     <title><?php echo NAME ?></title>
     <style type="text/css">
-    <?php $color = "#c86f4d"; ?>
     *{margin:0;padding:0;}
-    html{background:#fff;border-top:4px solid <?php echo $color; ?>;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
+    html{background:#fff;border-top:4px solid #<?php echo COLOR; ?>;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
     body{margin:4em auto;width:50em;}
     h1{font-size:3em;line-height:3em;margin-bottom:1em;text-shadow: 0 -1px 1px #FFF;}
     h1 a:link,h1 a:visited{color:black;text-decoration:none;}
-    h1 a:hover,h1 a:active,h1 a:focus{color:<?php echo $color; ?>;}
+    h1 a:hover,h1 a:active,h1 a:focus{color:#<?php echo COLOR; ?>;}
     h2{font-size:2em;font-weight:bold;margin:3em 0 0.5em;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
     label,.out{line-height:1.8em !important;text-shadow: 0 -1px 1px #FFF;}
@@ -375,15 +375,15 @@ if (isset($_GET['c']) and isset($_GET['f']))
     em{color:#bbb;font-style:normal;font-weight:normal;}
     p{font-size:1.4em;margin:0 0 2em;line-height:2em;}
     p.note{font-size:1.1em;margin-top:10em;padding:1em;}
-    a{color:<?php echo $color; ?>;}
+    a{color:#<?php echo COLOR; ?>;}
     a:hover{color:black;}
-    a#link{background:<?php echo $color; ?>;color:#fff;padding:4px;text-shadow: 1px 1px 1px <?php echo $color; ?>;text-decoration:none;}
+    a#link{background:#<?php echo COLOR; ?>;color:#fff;padding:4px;text-shadow: 1px 1px 1px #<?php echo COLOR; ?>;text-decoration:none;}
     a#link:hover{background:black;text-shadow:1px 1px 1px black;}
     table{font-size:1.4em;margin:4em auto 6em;width:100%;}
     td{padding:10px;}
     code {color:#777;font: 1.1em consolas,"panic sans","bitstream vera sans","courier new",monaco,monospace;}
     .out{color:#aaa;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
-    .red{color:<?php echo $color; ?> !important;}
+    .red{color:#<?php echo COLOR; ?> !important;}
     .left{text-align:left;}
     .alt{background:#eee;}
     .error{color:red;font-weight:bold;}
