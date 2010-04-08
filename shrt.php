@@ -28,6 +28,8 @@ function get_args_from_command($command)
     {
         $matches['args'] = "";
     }
+
+    $matches['trigger'] = strtolower($matches['trigger']);
     $arguments = explode(ARGUMENT_DELIMITER, $matches['args']);
     $kwargs = array();
 
@@ -299,7 +301,7 @@ function parse_shortcut_file($file)
 
             $segments = preg_split('/[ ]+/', $line, 3);
             $takes_search = (strstr($segments[1], "%s") && $segments[0] != "*");
-            $shortcuts[$segments[0]] = array('trigger' => $segments[0],
+            $shortcuts[$segments[0]] = array('trigger' => strtolower($segments[0]),
                                              'url' => $segments[1],
                                              'title' => $segments[2],
                                              'search' => $takes_search,
