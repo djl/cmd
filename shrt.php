@@ -342,7 +342,7 @@ if (isset($_GET['c']) and isset($_GET['f']))
         // this exploits a bug (or feature?) in PHP:
         // when constants are defined without case-sensitivity it is
         // possible to redefine them without throwing errors
-        define($k, $v);
+        define(strtoupper($k), $v);
     }
 
     // get the arguments
