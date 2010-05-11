@@ -1,6 +1,7 @@
 <?php
 define('ARGUMENT_DELIMITER', ',', TRUE);
 define('COLOR', 'c86f4d', TRUE);
+define('COMMENT', '>', TRUE);
 define('DEFAULT_URL', 'http://www.google.com/search?q=%c', TRUE);
 define('FILE_MATCH', '', TRUE);
 define('HELP_TITLE', 'your shortcuts', TRUE);
@@ -259,7 +260,8 @@ function parse_shortcut_file($file)
         if (!$line) continue;
 
         // Ignore comments and '#kill-defaults' lines
-        if (!preg_match('/^>|#/', $line))
+        $ignore = sprintf('/^%s|#kill-defaults/', COMMENT);
+        if (!preg_match($ignore, $line))
         {
             // groups/config lines
             if (preg_match('/^(@|\$)/', $line))
