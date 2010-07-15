@@ -201,8 +201,7 @@ function parse_shortcut_file($file)
     $previous = $group_name = $group_description = null;
     foreach ($lines as $line)
     {
-        $line = tab2space($line);
-        $line = preg_replace('/\s{2,}/', ' ', trim($line));
+        $line = preg_replace('/(\s{2,}|\t)/', ' ', trim($line));
         if (!$line) continue;
 
         // Ignore comments and '#kill-defaults' lines
@@ -301,23 +300,6 @@ function remove_numeric_keys(&$array)
 function show_help()
 {
     return isset($_GET['f']) && isset($_GET['c']) && trim($_GET['c']) == HELP_TRIGGER;
-}
-
-function tab2space($text, $spaces = 4)
-{
-    $lines = explode("\n", $text);
-    foreach ($lines as $line)
-    {
-        while (false !== $tab_pos = strpos($line, "\t"))
-        {
-            $start = substr($line, 0, $tab_pos);
-            $tab = str_repeat(' ', $spaces - $tab_pos % $spaces);
-            $end = substr($line, $tab_pos + 1);
-            $line = $start . $tab . $end;
-        }
-        $result[] = $line;
-    }
-    return implode("\n", $result);
 }
 
 function title()
