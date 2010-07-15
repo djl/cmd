@@ -99,8 +99,8 @@ function get_shortcut($shortcuts, $trigger)
 function get_url($shortcut_url, $args, $kwargs, $command)
 {
     $filters = array('parse_kwargs',
-                     'parse_simple',
                      'parse_optional',
+                     'parse_simple',
                      'parse_default');
 
     foreach ($filters as $filter)
@@ -127,77 +127,23 @@ function parse_default($url, $args, $kwargs, $command)
                     $part = $matches['value'];
                 }
             }
-            $furl .= $part;
+            if ($args[$count])
+            {
+                $furl .= $args[$count];
+            }
+            else
+            {
+                $furl .= $part;
+            }
+            $count++;
          }
          $url = $furl;
     }
     return $url;
 }
 
-function preg_match_named($pattern, $subject, &$matches, $flags=null, $offset=null)
+function parse_kwargs($url, $args, $kwargs, $command)
 {
-    $c = preg_match($pattern, $subject, $matches, $flags, $offset);
-    $matches = remove_numeric_keys($matches);
-    return $c;
-}
-
-function preg_match_all_named($pattern, $subject, &$matches, $flags=null, $offset=null)
-{
-    $c = preg_match_all($pattern, $subject, $matches, $flags, $offset);
-    $matches = remove_numeric_keys($matches);
-    return $c;
-}
-
-function remove_numeric_keys(&$array)
-{
-    foreach ($array as $key => $value)
-    {
-        if (is_int($key))
-        {
-            unset($array[$key]);
-        }
-    }
-    return $array;
-
-}
-
-function show_help()
-{
-    return isset($_GET['f']) && isset($_GET['c']) && trim($_GET['c']) == HELP_TRIGGER;
-}
-
-function tab2space($text, $spaces = 4)
-{
-    $lines = explode("\n", $text);
-    foreach ($lines as $line)
-    {
-        while (false !== $tab_pos = strpos($line, "\t"))
-        {
-            $start = substr($line, 0, $tab_pos);
-            $tab = str_repeat(' ', $spaces - $tab_pos % $spaces);
-            $end = substr($line, $tab_pos + 1);
-            $line = $start . $tab . $end;
-        }
-        $result[] = $line;
-    }
-    return implode("\n", $result);
-}
-
-function title()
-{
-    if (show_help()) { return HELP_TITLE; }
-    return TITLE;
-}
-
-function url()
-{
-    $protocol = array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
-    return $protocol.'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-}
-
-function parse_kwargs($shortcut, $args, $kwargs, $command)
-{
-    $url = $shortcut['url'];
     if (preg_match('/%{[\w|\p{P}]+:(.*)}/', $url))
     {
         $parts = preg_split('/%{([\w|\p{P}]+:.*)}/', $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
@@ -325,6 +271,67 @@ function parse_simple($url, $args, $kwargs, $command)
     return $url;
 }
 
+function preg_match_named($pattern, $subject, &$matches, $flags=null, $offset=null)
+{
+    $c = preg_match($pattern, $subject, $matches, $flags, $offset);
+    $matches = remove_numeric_keys($matches);
+    return $c;
+}
+
+function preg_match_all_named($pattern, $subject, &$matches, $flags=null, $offset=null)
+{
+    $c = preg_match_all($pattern, $subject, $matches, $flags, $offset);
+    $matches = remove_numeric_keys($matches);
+    return $c;
+}
+
+function remove_numeric_keys(&$array)
+{
+    foreach ($array as $key => $value)
+    {
+        if (is_int($key))
+        {
+            unset($array[$key]);
+        }
+    }
+    return $array;
+
+}
+
+function show_help()
+{
+    return isset($_GET['f']) && isset($_GET['c']) && trim($_GET['c']) == HELP_TRIGGER;
+}
+
+function tab2space($text, $spaces = 4)
+{
+    $lines = explode("\n", $text);
+    foreach ($lines as $line)
+    {
+        while (false !== $tab_pos = strpos($line, "\t"))
+        {
+            $start = substr($line, 0, $tab_pos);
+            $tab = str_repeat(' ', $spaces - $tab_pos % $spaces);
+            $end = substr($line, $tab_pos + 1);
+            $line = $start . $tab . $end;
+        }
+        $result[] = $line;
+    }
+    return implode("\n", $result);
+}
+
+function title()
+{
+    if (show_help()) { return HELP_TITLE; }
+    return TITLE;
+}
+
+function url()
+{
+    $protocol = array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
+    return $protocol.'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+}
+
 // Go go gadget shortcut!
 if (isset($_GET['c']) and isset($_GET['f']))
 {
@@ -351,7 +358,7 @@ if (isset($_GET['c']) and isset($_GET['f']))
     $args = get_args_from_command($command);
 
     $shortcut = get_shortcut($SHORTCUTS, $args['trigger']);
-    $url = get_url($shortcut, $args['args'], $args['kwargs'], $command);
+    $url = get_url($shortcut['url'], $args['args'], $args['kwargs'], $command);
 
     // go!
     if (!show_help())
