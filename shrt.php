@@ -201,51 +201,52 @@ function parse_shortcut_file($file)
     $previous = $group_name = $group_description = null;
     foreach ($lines as $line)
     {
+        // get rid of useless whitespace
         $line = preg_replace('/(\s{2,}|\t)/', ' ', trim($line));
-        if (!$line) continue;
 
-        // Ignore comments and '#kill-defaults' lines
+        // Ignore blank lines, comments and '#kill-defaults' lines
         $ignore = sprintf('/^%s|#kill-defaults/', COMMENT);
-        if (!preg_match($ignore, $line))
-        {
-            // groups/config lines
-            if (preg_match('/^(@|\$)/', $line))
-            {
-                if (preg_match('/^@/', $line))
-                {
-                    // parse out the name/description
-                    $splits = preg_split('/^@/', $line, 0, PREG_SPLIT_NO_EMPTY);
-                    if ($splits)
-                    {
-                        if (!$last_was_group)
-                        {
-                            $group_name = $splits[0];
-                            $last_was_group = TRUE;
-                        }
-                        else
-                        {
-                            $last_was_group = false;
-                            $group_description = $splits[0];
-                        }
-                    }
-                }
-                else
-                {
-                    preg_match_named('/^\$(\s)+(?<key>(\w|\p{P})+)(\s+)(?<value>.*)$/', $line, $matches);
-                    $config_last = "";
-                    foreach ($matches as $match)
-                    {
-                        if ($config_last && $match)
-                        {
-                            $config[$config_last] = $match;
-                        }
-                        $config_last = $match;
-                    }
-                }
-                // jump to next line
-                continue;
-            }
+        if (!$line || preg_match($ignore, $line)) continue;
 
+        // groups/config lines
+        if (preg_match('/^(@|\$)/', $line))
+        {
+            if (preg_match('/^@/', $line))
+            {
+                // parse out the name/description
+                $splits = preg_split('/^@/', $line, 0, PREG_SPLIT_NO_EMPTY);
+                if ($splits)
+                {
+                    if (!$last_was_group)
+                    {
+                        $group_name = $splits[0];
+                        $last_was_group = TRUE;
+                    }
+                    else
+                    {
+                        $last_was_group = false;
+                        $group_description = $splits[0];
+                    }
+                }
+            }
+            else
+            {
+                preg_match_named('/^\$(\s)+(?<key>(\w|\p{P})+)(\s+)(?<value>.*)$/', $line, $matches);
+                $config_last = "";
+                foreach ($matches as $match)
+                {
+                    if ($config_last && $match)
+                    {
+                        $config[$config_last] = $match;
+                    }
+                    $config_last = $match;
+                }
+            }
+        }
+
+        // just a regular shortcut
+        else
+        {
             $segments = preg_split('/[ ]+/', $line, 3);
             $takes_search = (strstr($segments[1], "%s") && $segments[0] != "*");
             $shortcuts[$segments[0]] = array('trigger' => strtolower($segments[0]),
