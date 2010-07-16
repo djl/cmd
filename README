@@ -2,8 +2,10 @@ shrt
 ====
 
 shrt is an extensible bookmarklet command thing. It's similar to
-`Shortwave <http://shortwaveapp.com>`_ and
-`Quix <http://quixapp.com>`_.
+Shortwave_ and `Quix`_.
+
+.. _Shortwave: http://shortwaveapp.com
+.. _Quix: http://quixapp.com
 
 
 
@@ -20,9 +22,9 @@ Usage
 Syntax
 ------
 
-shrt features the standard Shortwave/Quix syntax:
+shrt features the standard Shortwave/Quix tokens:
 
-* ``%s`` - will be replaced by any arguments you provide, or blank if none are provided.
+* ``%s`` - will be replaced by any arguments you provide.
 * ``%d`` - the domain of the current site.
 * ``%r`` - the full URL of the current site.
 * ``%t`` - the title of the current page
@@ -30,10 +32,10 @@ shrt features the standard Shortwave/Quix syntax:
 
 Plus some extras:
 
-* ``%c`` - the full given command
-* ``%{kittens}`` - a default argument, to be optionally overridden.
-* ``%{%d}`` - ``%d`` argument nested inside of default argument.
-* ``%{%r}`` - ``%r`` argument nested inside of default argument.
+* ``%c`` - the full given command.
+* ``%{kittens}`` - a positional argument, to be optionally overridden.
+* ``%{key:value}`` - a keyword argument. If the key is given the 'value' is parsed.
+  Otherwise it is ignored.
 * ``$ OPTION VALUE`` - a custom configuration option
 
 
@@ -43,6 +45,8 @@ Compatibility
 
 shrt *should* be able to read your Shortwave and Quix files, but obviously
 neither will be able to parse the extra syntax shrt provides.
+
+If shrt *can't* correctly parse one of these files, it's a bug.
 
 
 
@@ -62,32 +66,13 @@ The syntax is as follows:
 That is a dollar sign (``$``) followed the configuration option you'd
 like to set and the value you'd like to set it to.
 
-Say you'd like to change the help trigger to a question mark. Simply place the following
-line somewhere in your shortcuts file:
+Say you'd like to change the help trigger to a question mark. Place the
+following line somewhere in your shortcuts file:
 
 ::
 
     $ HELP_TRIGGER ?
 
-
-Be aware: Redefining any settings (such as the help trigger) may require
-you re-install the bookmarklet before they become active.
-
-
-
-Pattern matching for your shrts file
-------------------------------------
-
-Define a PCRE-compatible pattern in the ``FILE_MATCH`` constant to
-have shrt match against it when loading your file.
-
-
-
-Lockdown
---------
-
-To disable shrt from generating new bookmarklets, simply set the
-``IS_LOCKED`` constant to ``true``.
 
 
 
@@ -103,9 +88,11 @@ Notes
 
 * PHP must be compiled --with-curl
 * JavaScript is required.
-* When upgrading to a new version or changing settings, an update to your bookmarklet may be required.
-* shrt is not optimized at all, probably nowhere near the speed it could be.
-* shrt has **no** XSS/CSRF protection -- eventually, it might
+* When upgrading to a new version or changing settings, an update to your
+  bookmarklet may be required.
+* shrt is not optimized. It's probably nowhere near the speed it could be.
+* shrt has **no** XSS/CSRF protection. This shouldn't be a problem unless you're
+  running with an unknown shortcuts file.
 
 
 
@@ -113,3 +100,4 @@ Todo
 ----
 
 * Update help page to better show search arguments.
+* File includes?
