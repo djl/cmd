@@ -32,7 +32,7 @@ function get_args_from_command($command)
 
     $matches['trigger'] = strtolower($matches['trigger']);
     $arguments = explode(ARGUMENT_DELIMITER, $matches['args']);
-    $kwargs = array();
+    $blargs = array();
 
     $count = 0;
     foreach ($arguments as $argument)
@@ -42,7 +42,7 @@ function get_args_from_command($command)
         {
             if ($named_args['key'])
             {
-                $kwargs[$named_args['key']] = $named_args['value'];
+                $blargs[$named_args['key']] = $named_args['value'];
                 unset($arguments[$count]);
             }
         }
@@ -53,7 +53,7 @@ function get_args_from_command($command)
 
     $matches['command'] = $command;
     $matches['args'] = $arguments;
-    $matches['kwargs'] = $kwargs;
+    $matches['blargs'] = $blargs;
     return $matches;
 }
 
@@ -96,21 +96,21 @@ function get_shortcut($shortcuts, $trigger)
     }
 }
 
-function get_url($shortcut_url, $args, $kwargs, $command)
+function get_url($shortcut_url, $args, $blargs, $command)
 {
-    $filters = array('parse_kwargs',
+    $filters = array('parse_blocks',
                      'parse_optional',
                      'parse_simple',
                      'parse_default');
 
     foreach ($filters as $filter)
     {
-        $shortcut_url = $filter($shortcut_url, $args, $kwargs, $command);
+        $shortcut_url = $filter($shortcut_url, $args, $blargs, $command);
     }
     return $shortcut_url;
 }
 
-function parse_default($url, $args, $kwargs, $command)
+function parse_default($url, $args, $blargs, $command)
 {
     $pattern = '/(%{[\w|\p{P}]+})/';
     if (preg_match($pattern, $url))
@@ -142,7 +142,7 @@ function parse_default($url, $args, $kwargs, $command)
     return $url;
 }
 
-function parse_kwargs($url, $args, $kwargs, $command)
+function parse_blocks($url, $args, $blargs, $command)
 {
     if (preg_match('/%{[\w|\p{P}]+:(.*)}/', $url))
     {
@@ -156,11 +156,11 @@ function parse_kwargs($url, $args, $kwargs, $command)
 
                 if (preg_match_named('/(?<wrap>(?<key>[\w|\p{P}]+):(?<value>.*))/', $part, $matches))
                 {
-                    if (array_key_exists($matches['key'], $kwargs))
+                    if (array_key_exists($matches['key'], $blargs))
                     {
                         $pattern = "/(%s)|(%{.*?})/";
-                        $part = str_replace($matches['wrap'], $kwargs[$matches['key']], $matches['value']);
-                        $part = preg_replace($pattern, $kwargs[$matches['key']], $part);
+                        $part = str_replace($matches['wrap'], $blargs[$matches['key']], $matches['value']);
+                        $part = preg_replace($pattern, $blargs[$matches['key']], $part);
                         $furl .= $part;
                     }
                 }
@@ -176,7 +176,7 @@ function parse_kwargs($url, $args, $kwargs, $command)
     return $url;
 }
 
-function parse_optional($url, $args, $kwargs, $command)
+function parse_optional($url, $args, $blargs, $command)
 {
     $parts = preg_split('/(%s)/', $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $count = 0;
@@ -243,11 +243,9 @@ function parse_shortcut_file($file)
                 }
             }
         }
-
-        // just a regular shortcut
         else
         {
-            $segments = preg_split('/[ ]+/', $line, 3);
+            $segments = preg_split('/\s+/', $line, 3);
             $takes_search = (strstr($segments[1], "%s") && $segments[0] != "*");
             $shortcuts[$segments[0]] = array('trigger' => strtolower($segments[0]),
                                              'url' => $segments[1],
@@ -262,7 +260,7 @@ function parse_shortcut_file($file)
                  'config' => $config);
 }
 
-function parse_simple($url, $args, $kwargs, $command)
+function parse_simple($url, $args, $blargs, $command)
 {
     $url = preg_replace("/%d/", urldecode($_GET['d']), $url);
     $url = preg_replace("/%r/", urlencode($_GET['r']), $url);
@@ -341,7 +339,7 @@ if (isset($_GET['c']) and isset($_GET['f']))
     $args = get_args_from_command($command);
 
     $shortcut = get_shortcut($SHORTCUTS, $args['trigger']);
-    $url = get_url($shortcut['url'], $args['args'], $args['kwargs'], $command);
+    $url = get_url($shortcut['url'], $args['args'], $args['blargs'], $command);
 
     // go!
     if (!show_help())

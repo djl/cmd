@@ -34,9 +34,48 @@ Plus some extras:
 
 * ``%c`` - the full given command.
 * ``%{kittens}`` - a positional argument, to be optionally overridden.
-* ``%{key:value}`` - a keyword argument. If the key is given the 'value' is parsed.
-  Otherwise it is ignored.
+* ``%{name:content}`` - a block. If the name is given in the command,
+  ``content`` is parsed along with the given arguments. Otherwise it is ignored.
 * ``$ OPTION VALUE`` - a custom configuration option
+
+
+
+Blocks
+------
+
+Nested blocks allow you to supply search terms out of order and allows
+selective application of certain rules based on search terms.
+
+Defining a section looks like this:
+
+::
+
+    %{name:content}
+
+
+The ``name`` is what you'll use to pass arguments to your block. ``content``
+is what will be applied. Blocks are effectively nested shortcuts.
+
+Here's a full example of a shortcut with a block:
+
+gh http://github.com/search?q=%s&type=Everything%{lang:&language=%s} GitHub Search
+
+
+When calling the above shortcut without a block (e.g. ``gh flask``), the
+``&language=%s`` section is *not* applied.
+
+Calling the shortcut with a block, like so:
+
+::
+
+    gh flask,lang=python
+
+
+Will result in the following URL:
+
+::
+
+    http://github.com/search?q=flask&type=Everything&language=python
 
 
 
