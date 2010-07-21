@@ -79,6 +79,12 @@ Will result in the following URL:
 
 
 
+You can pass multiple arguments to a single block by separating them with
+a comma (or your choice of ``ARGUMENT_DELIMITER``), but blocks must be
+called *after* all other positional arguments have been given.
+
+
+
 Compatibility
 -------------
 
