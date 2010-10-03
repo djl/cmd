@@ -9,10 +9,9 @@ define('HELP_TRIGGER', 'help', TRUE);
 define('IS_LOCKED', FALSE, TRUE);
 define('NAME', 'shrt', TRUE);
 define('TITLE', 'bookmarklet shortcuts', TRUE);
-define('USERAGENT', 'Grabbing your shortcuts. (http://github.com/xvzf/shrt/tree/master)', TRUE);
+define('USERAGENT', 'Grabbing your shortcuts. (http://github.com/xvzf/shrt)', TRUE);
 
 ini_set('user_agent', USERAGENT);
-
 
 function encode(&$val)
 {
@@ -73,7 +72,8 @@ function get_file($url)
     $data = curl_exec($ch);
     if(curl_error($ch))
     {
-        die(curl_error($ch));
+        $error = sprintf("<p>%s couldn't grab your shorcuts file because:<br><br><strong>%s</p>", NAME, curl_error($ch));
+        die($error);
     }
     curl_close($ch);
     return $data;
@@ -323,9 +323,6 @@ if (isset($_GET['c']) and isset($_GET['f']))
     // parse the shortcuts file
     $parsed = parse_shortcut_file($file);
 
-    // shortcuts
-    $SHORTCUTS = $parsed['shortcuts'];
-
     // config values
     foreach($parsed['config'] as $k => $v)
     {
@@ -335,10 +332,8 @@ if (isset($_GET['c']) and isset($_GET['f']))
         define(strtoupper($k), $v);
     }
 
-    // get the arguments
     $args = get_args_from_command($command);
-
-    $shortcut = get_shortcut($SHORTCUTS, $args['trigger']);
+    $shortcut = get_shortcut($parsed['shortcuts'], $args['trigger']);
     $url = get_url($shortcut['url'], $args['args'], $args['blargs'], $command);
 
     // go!
@@ -363,25 +358,28 @@ if (isset($_GET['c']) and isset($_GET['f']))
     h2{font-size:2em;font-weight:bold;margin:3em 0 0.5em;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
     label,.out{line-height:1.8em !important;text-shadow: 0 -1px 1px #FFF;}
-    label{font-size:1.4em;}
+    label{font-size:1.6em;}
     em{color:#bbb;font-style:normal;font-weight:normal;}
     p{font-size:1.4em;margin:0 0 2em;line-height:2em;}
     p.note{font-size:1.1em;margin-top:10em;padding:1em;}
     a{color:#<?php echo COLOR; ?>;}
     a:hover{color:black;}
-    a#link{background:#<?php echo COLOR; ?>;color:#fff;padding:4px;text-shadow: 1px 1px 1px #<?php echo COLOR; ?>;text-decoration:none;}
+    a#link{background:#<?php echo COLOR; ?>;font-size:14px;color:#fff;padding:4px;text-shadow: 1px 1px 1px #<?php echo COLOR; ?>;text-decoration:none;}
     a#link:hover{background:black;text-shadow:1px 1px 1px black;}
     table{font-size:1.4em;margin:4em auto 6em;width:100%;}
     td{padding:10px;}
     code {color:#777;font: 1.1em consolas,"panic sans","bitstream vera sans","courier new",monaco,monospace;}
-    .out{color:#aaa;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
+    label{color:#bbb;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
     .red{color:#<?php echo COLOR; ?> !important;}
     .left{text-align:left;}
     .alt{background:#eee;}
     .error{color:red;font-weight:bold;}
     .lite{color:#777;margin: 0;}
     </style>
-    <script type="text/javascript">function $(id){return document.getElementById(id)};</script>
+    <script type="text/javascript">
+        function $(id){return document.getElementById(id)};
+        window.onload = function () { $("custom").onkeyup = function () { $('link').href = $('link').href.replace(/&f=(.*?)\'/,'&f='+this.value+'\'')}; }
+    </script>
 </head>
 <body>
     <header><h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>"><?php echo NAME ?></a> <em><?php echo title(); ?></em></h1></header>
@@ -390,7 +388,7 @@ if (isset($_GET['c']) and isset($_GET['f']))
         <!-- <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p> -->
 
         <?php $count = 0; $previous = null; ?>
-        <?php foreach($SHORTCUTS as $shortcut): ?>
+        <?php foreach($parsed['shortcuts'] as $shortcut): ?>
             <?php if ($shortcut['group_name'] != $previous || $count < 1): ?>
                 <?php if ($shortcut['group_name'] != $previous): ?></table><?php endif; ?>
                 <header>
@@ -415,9 +413,9 @@ if (isset($_GET['c']) and isset($_GET['f']))
         </table>
     <?php else: ?>
         <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
-            <label for="custom" id="label" class="out">Shortcut file:</label><input<?php if (IS_LOCKED): ?> disabled="disabled" <?php endif; ?> type="text" name="custom" value="http://" id="custom" onkeyup="$('link').href=$('link').href.replace(/&f=(.*?)\'/,'&f='+this.value+'\'')">
+            <label for="custom" id="label" class="out">shortcuts file:</label><input<?php if (IS_LOCKED): ?> disabled="disabled" <?php endif; ?> type="text" name="custom" value="http://" id="custom">
         </form>
-        <p class="left"><span class="out">bookmarklet: </span><a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo HELP_TRIGGER ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t;if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo NAME ?></a></p>
+        <a id="link" href="javascript:shrt();function%20shrt(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo HELP_TRIGGER ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t;if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo NAME ?></a>
     <?php endif; ?>
 </body>
 </html>
