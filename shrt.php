@@ -262,10 +262,10 @@ function parse_shortcut_file($file)
 
 function parse_simple($url, $args, $blargs, $command)
 {
-    $url = preg_replace("/%d/", urldecode($_GET['d']), $url);
-    $url = preg_replace("/%r/", urlencode($_GET['r']), $url);
-    $url = preg_replace("/%t/", urldecode($_GET['t']), $url);
-    $url = preg_replace("/%c/", urldecode($_GET['c']), $url);
+    $url = preg_replace("/%d/", $_GET['d'], $url);
+    $url = preg_replace("/%r/", $_GET['r'], $url);
+    $url = preg_replace("/%t/", $_GET['t'], $url);
+    $url = preg_replace("/%c/", $_GET['c'], $url);
     return $url;
 }
 
@@ -314,11 +314,12 @@ function url()
 }
 
 // Go go gadget shortcut!
-if (isset($_GET['c']) and isset($_GET['f']))
+if (isset($_REQUEST['c']) and isset($_GET['f']))
 {
     // compensate for JavaScript's odd escaping
-    $command = stripslashes(urldecode($_GET['c']));
-    $file = stripslashes(urldecode($_GET['f']));
+    // we need to use $_REQUEST here because $_GET is automatically urldecoded
+    $command = stripslashes($_REQUEST['c']);
+    $file = stripslashes($_GET['f']);
 
     // parse the shortcuts file
     $parsed = parse_shortcut_file($file);
