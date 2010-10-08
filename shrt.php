@@ -378,7 +378,7 @@ if (isset($_GET['c']) and isset($_GET['f']))
     </style>
     <script type="text/javascript">
         function $(id){return document.getElementById(id)};
-        window.onload = function () { $("custom").onkeyup = function () { $('link').href = $('link').href.replace(/&f=(.*?)\'/,'&f='+this.value+'\'')}; }
+        window.onload = function () { $("custom").onkeyup = function () { $('link').href = $('link').href.replace(/&f=(.*?)'/,'&f='+this.value+"'")}; }
     </script>
 </head>
 <body>
