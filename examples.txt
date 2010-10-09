@@ -1,5 +1,5 @@
-> No shrt. No shoes. No service.
-> http://github.com/xvzf/shrt/
+> Here's looking at you, kid
+> http://github.com/xvzf/kid/
 
 g     http://www.google.com/search?q=%s                               Google Search
 gf    http://www.gamefaqs.com/search/index.html?game=%s&platform=%{0} GameFAQs

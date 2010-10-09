@@ -1,7 +1,7 @@
-shrt
+kid
 ====
 
-shrt is an extensible bookmarklet command thing. It's similar to
+kid is an extensible bookmarklet command thing. It's similar to
 Shortwave_ and `Quix`_.
 
 .. _Shortwave: http://shortwaveapp.com
@@ -12,7 +12,7 @@ Shortwave_ and `Quix`_.
 Usage
 -----
 
-1. Upload shrt.php and point your browser to it.
+1. Upload kid.php and point your browser to it.
 2. Enter the URL to your shortcuts file.
 3. Drag the bookmarklet onto your bookmarks bar.
 4. Click bookmarklet.
@@ -22,7 +22,7 @@ Usage
 Syntax
 ------
 
-shrt features the standard Shortwave/Quix tokens:
+kid features the standard Shortwave/Quix tokens:
 
 * ``%s`` - will be replaced by any arguments you provide.
 * ``%d`` - the domain of the current site.
@@ -88,17 +88,17 @@ called *after* all other positional arguments have been given.
 Compatibility
 -------------
 
-shrt *should* be able to read your Shortwave and Quix files, but obviously
-neither will be able to parse the extra syntax shrt provides.
+kid *should* be able to read your Shortwave and Quix files, but obviously
+neither will be able to parse the extra syntax kid provides.
 
-If shrt *can't* correctly parse one of these files, it's a bug.
+If kid *can't* correctly parse one of these files, it's a bug.
 
 
 
 Configuration
 -------------
 
-shrt has the ability to dynamically change it's settings based on your
+kid has the ability to dynamically change it's settings based on your
 shortcuts file.
 
 The syntax is as follows:
@@ -135,8 +135,8 @@ Notes
 * JavaScript is required.
 * When upgrading to a new version or changing settings, an update to your
   bookmarklet may be required.
-* shrt is not optimized. It's probably nowhere near the speed it could be.
-* shrt has **no** XSS/CSRF protection. This shouldn't be a problem unless you're
+* kid is not optimized. It's probably nowhere near the speed it could be.
+* kid has **no** XSS/CSRF protection. This shouldn't be a problem unless you're
   running with an unknown shortcuts file.
 
 
@@ -145,4 +145,3 @@ Todo
 ----
 
 * Update help page to better show search arguments.
-* Come up with a better name
