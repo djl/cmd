@@ -298,7 +298,8 @@ function remove_numeric_keys(&$array)
 
 function show_help()
 {
-    return isset($_GET['f']) && isset($_GET['c']) && trim($_GET['c']) == HELP_TRIGGER;
+    $matches = preg_match(sprintf("/%s/i", HELP_TRIGGER), trim($_GET['c']));
+    return isset($_GET['f']) && isset($_GET['c']) && $matches;
 }
 
 function title()
