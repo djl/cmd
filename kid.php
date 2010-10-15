@@ -63,10 +63,11 @@ function get_file($url)
         die("<p><strong class=\"error\">Warning:</strong> The URL <strong>$url</strong> did not match the required pattern.</p>");
     }
     $ch = curl_init();
-    curl_setopt_array($ch, array(CURLOPT_CONNECTTIMEOUT => 3,
+    curl_setopt_array($ch, array(CURLOPT_CONNECTTIMEOUT => 60,
                                  CURLOPT_FAILONERROR => TRUE,
                                  CURLOPT_HEADER => FALSE,
                                  CURLOPT_RETURNTRANSFER => 1,
+                                 CURLOPT_TIMEOUT => 60,
                                  CURLOPT_URL => $url,
                                  CURLOPT_USERAGENT => USERAGENT));
     $data = curl_exec($ch);
