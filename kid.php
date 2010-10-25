@@ -111,6 +111,11 @@ function get_url($shortcut_url, $args, $blargs, $command)
     return $shortcut_url;
 }
 
+function e($output)
+{
+    return htmlspecialchars($output, ENT_NOQUOTES);
+}
+
 function parse_default($url, $args, $blargs, $command)
 {
     $pattern = '/(%{[\w|\p{P}]+})/';
@@ -357,14 +362,14 @@ if (isset($_REQUEST['c']) and isset($_GET['f']))
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title><?php echo NAME ?></title>
+    <title><?php echo e(NAME); ?></title>
     <style type="text/css">
     *{margin:0;padding:0;}
-    html{background:#fff;border-top:4px solid #<?php echo COLOR; ?>;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
+    html{background:#fff;border-top:4px solid #<?php echo e(COLOR); ?>;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
     body{margin:4em auto;width:50em;}
     h1{font-size:3em;line-height:3em;margin-bottom:1em;text-shadow: 0 -1px 1px #FFF;}
     h1 a:link,h1 a:visited{color:black;text-decoration:none;}
-    h1 a:hover,h1 a:active,h1 a:focus{color:#<?php echo COLOR; ?>;}
+    h1 a:hover,h1 a:active,h1 a:focus{color:#<?php echo e(COLOR); ?>;}
     h2{font-size:2em;font-weight:bold;margin:3em 0 0.5em;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
     label,.out{line-height:1.8em !important;text-shadow: 0 -1px 1px #FFF;}
@@ -372,15 +377,15 @@ if (isset($_REQUEST['c']) and isset($_GET['f']))
     em{color:#bbb;font-style:normal;font-weight:normal;}
     p{font-size:1.4em;margin:0 0 2em;line-height:2em;}
     p.note{font-size:1.1em;margin-top:10em;padding:1em;}
-    a{color:#<?php echo COLOR; ?>;}
+    a{color:#<?php echo e(COLOR); ?>;}
     a:hover{color:black;}
-    a#link{background:#<?php echo COLOR; ?>;font-size:14px;color:#fff;padding:4px;text-shadow: 1px 1px 1px #<?php echo COLOR; ?>;text-decoration:none;}
+    a#link{background:#<?php echo e(COLOR); ?>;font-size:14px;color:#fff;padding:4px;text-shadow: 1px 1px 1px #<?php echo e(COLOR); ?>;text-decoration:none;}
     a#link:hover{background:black;text-shadow:1px 1px 1px black;}
     table{font-size:1.4em;margin:4em auto 6em;width:100%;}
     td{padding:10px;}
     code {color:#777;font: 1.1em consolas,"panic sans","bitstream vera sans","courier new",monaco,monospace;}
     label{color:#bbb;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
-    .red{color:#<?php echo COLOR; ?> !important;}
+    .red{color:#<?php echo e(COLOR); ?> !important;}
     .left{text-align:left;}
     .alt{background:#eee;}
     .error{color:red;font-weight:bold;}
@@ -392,7 +397,7 @@ if (isset($_REQUEST['c']) and isset($_GET['f']))
     </script>
 </head>
 <body>
-    <header><h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>"><?php echo NAME ?></a> <em><?php echo title(); ?></em></h1></header>
+    <header><h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>"><?php echo e(NAME); ?></a> <em><?php echo e(title()); ?></em></h1></header>
     <?php if (show_help()): ?>
 
         <!-- <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p> -->
@@ -402,8 +407,8 @@ if (isset($_REQUEST['c']) and isset($_GET['f']))
             <?php if ($shortcut['group_name'] != $previous || $count < 1): ?>
                 <?php if ($shortcut['group_name'] != $previous): ?></table><?php endif; ?>
                 <header>
-                    <h2><?php echo $shortcut['group_name']; ?></h2>
-                    <?php if ($shortcut['group_description']): ?><p class="lite"><?php echo $shortcut['group_description']; ?></p><?php endif; ?>
+                    <h2><?php echo e($shortcut['group_name']); ?></h2>
+                    <?php if ($shortcut['group_description']): ?><p class="lite"><?php echo e($shortcut['group_description']); ?></p><?php endif; ?>
                 </header>
                 <table cellspacing="0">
                 <thead>
@@ -414,8 +419,8 @@ if (isset($_REQUEST['c']) and isset($_GET['f']))
                 </thead>
             <?php endif; ?>
             <tr<?php if ($count % 2): ?> class="alt"<?php endif; ?>>
-                <td><code><?php echo $shortcut['trigger'] ?></code></td>
-                <td><?php echo $shortcut['title'] ?><?php if ($shortcut['search']): ?> <span class="red">*</span><?php endif; ?></td>
+                <td><code><?php echo e($shortcut['trigger']) ?></code></td>
+                <td><?php echo e($shortcut['title']) ?><?php if ($shortcut['search']): ?> <span class="red">*</span><?php endif; ?></td>
             </tr>
             <?php $count++; ?>
             <?php $previous = $shortcut['group_name']; ?>
@@ -425,7 +430,7 @@ if (isset($_REQUEST['c']) and isset($_GET['f']))
         <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
             <label for="custom" id="label" class="out">shortcuts file:</label><input<?php if (IS_LOCKED): ?> disabled="disabled" <?php endif; ?> type="text" name="custom" value="http://" id="custom">
         </form>
-        <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo HELP_TRIGGER ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t;if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo NAME ?></a>
+        <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo e(HELP_TRIGGER); ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echourl() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t;if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo e(NAME); ?></a>
     <?php endif; ?>
 </body>
 </html>

@@ -136,8 +136,6 @@ Notes
 * When upgrading to a new version or changing settings, an update to your
   bookmarklet may be required.
 * kid is not optimized. It's probably nowhere near the speed it could be.
-* kid has **no** XSS/CSRF protection. This shouldn't be a problem unless you're
-  running with an unknown shortcuts file.
 
 
 
