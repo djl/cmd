@@ -13,6 +13,11 @@ define('USERAGENT', 'Grabbing your shortcuts. (http://github.com/xvzf/kid)', TRU
 
 ini_set('user_agent', USERAGENT);
 
+function e($output)
+{
+    return htmlspecialchars($output, ENT_NOQUOTES);
+}
+
 function encode(&$val)
 {
     $val = urlencode($val);
@@ -109,11 +114,6 @@ function get_url($shortcut_url, $args, $blargs, $command)
         $shortcut_url = $filter($shortcut_url, $args, $blargs, $command);
     }
     return $shortcut_url;
-}
-
-function e($output)
-{
-    return htmlspecialchars($output, ENT_NOQUOTES);
 }
 
 function parse_default($url, $args, $blargs, $command)
