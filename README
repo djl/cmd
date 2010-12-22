@@ -43,6 +43,11 @@ Plus some extras:
 Blocks
 ------
 
+Warning! Blocks are very experimental (read: buggy and not implemented very well).
+They may change, break or disappear completely in favour of something better.
+I would not recommend relying on them too heavily for now.
+
+
 Nested blocks allow you to supply search terms out of order and allows
 selective application of certain rules based on search terms.
 
