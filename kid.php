@@ -106,8 +106,8 @@ function get_url($shortcut_url, $args, $blargs, $command)
 {
     $filters = array('parse_blocks',
                      'parse_optional',
-                     'parse_simple',
-                     'parse_default');
+                     'parse_default',
+                     'parse_simple');
 
     foreach ($filters as $filter)
     {
