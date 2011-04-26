@@ -354,7 +354,7 @@ if (isset($_REQUEST['c']) and isset($_GET['f']))
     // go!
     if (!show_help())
     {
-        header('Location: ' . $url);
+        header('Location: ' . $url, true, 301);
     }
 }
 ?>
