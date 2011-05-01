@@ -306,11 +306,8 @@ function show_help()
 {
     if (isset($_GET['c']) && isset($_GET['f']))
     {
-        $matches = preg_match(sprintf("/%s/i", HELP_TRIGGER), trim($_GET['c']));
-        if($matches)
-        {
-            return true;
-        }
+        $parts = explode(" ", trim($_GET['c']), 2);
+        return $parts[2] == HELP_TRIGGER;
     }
     return false;
 }
