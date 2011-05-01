@@ -307,7 +307,7 @@ function show_help()
     if (isset($_GET['c']) && isset($_GET['f']))
     {
         $parts = explode(" ", trim($_GET['c']), 2);
-        return $parts[2] == HELP_TRIGGER;
+        return $parts[0] == HELP_TRIGGER;
     }
     return false;
 }
