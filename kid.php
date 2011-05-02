@@ -325,7 +325,7 @@ function url()
 }
 
 // Go go gadget shortcut!
-if (isset($_REQUEST['c']) and isset($_GET['f']))
+if (isset($_REQUEST['c'], $_GET['f']))
 {
     // compensate for JavaScript's odd escaping
     // we need to use $_REQUEST here because $_GET is automatically urldecoded
