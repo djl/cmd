@@ -33,6 +33,7 @@ kid features the standard Shortwave/Quix tokens:
 Plus some extras:
 
 * ``%c`` - the full given command.
+* ``%l`` - any highlighted text on the current page
 * ``%{kittens}`` - a positional argument, to be optionally overridden.
 * ``%{name:content}`` - a block. If the name is given in the command,
   ``content`` is parsed along with the given arguments. Otherwise it is ignored.
