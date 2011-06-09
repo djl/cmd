@@ -1,4 +1,5 @@
 <?php
+define('ALLOWED_PROTOCOLS', '!https?://!');
 define('ARGUMENT_DELIMITER', ',', TRUE);
 define('COLOR', 'c86f4d', TRUE);
 define('COMMENT', '>', TRUE);
@@ -332,6 +333,12 @@ if (isset($_REQUEST['c'], $_GET['f']))
     // we need to use $_REQUEST here because $_GET is automatically urldecoded
     $command = stripslashes($_REQUEST['c']);
     $file = stripslashes($_GET['f']);
+
+    // make sure only http/https protocols are allowed
+    if (!preg_match(ALLOWED_PROTOCOLS, $file))
+    {
+        die(sprintf("Invalid URL: <strong>%s</strong>", $file));
+    }
 
     // parse the shortcuts file
     $parsed = parse_shortcut_file($file);
