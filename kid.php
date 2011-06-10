@@ -79,7 +79,7 @@ function get_file($url)
     $data = curl_exec($ch);
     if(curl_error($ch))
     {
-        $error = sprintf("<p>%s couldn't grab your shorcuts file because:<br><br><strong>%s</strong></p>", NAME, curl_error($ch));
+        $error = sprintf("<p>%s couldn't grab your shortcuts file because:<br><br><strong>%s</strong></p>", NAME, curl_error($ch));
         die($error);
     }
     curl_close($ch);
