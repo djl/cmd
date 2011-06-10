@@ -35,59 +35,7 @@ Plus some extras:
 * ``%c`` - the full given command.
 * ``%l`` - any highlighted text on the current page
 * ``%{kittens}`` - a positional argument, to be optionally overridden.
-* ``%{name:content}`` - a block. If the name is given in the command,
-  ``content`` is parsed along with the given arguments. Otherwise it is ignored.
 * ``$ OPTION VALUE`` - a custom configuration option
-
-
-
-Blocks
-------
-
-Warning! Blocks are very experimental (read: buggy and not implemented very well).
-They may change, break or disappear completely in favour of something better.
-I would not recommend relying on them too heavily for now.
-
-
-Nested blocks allow you to supply search terms out of order and allows
-selective application of certain rules based on search terms.
-
-Defining a section looks like this:
-
-::
-
-    %{name:content}
-
-
-The ``name`` is what you'll use to pass arguments to your block. ``content``
-is what will be applied. Blocks are effectively nested shortcuts.
-
-Here's a full example of a shortcut with a block:
-
-gh http://github.com/search?q=%s&type=Everything%{lang:&language=%s} GitHub Search
-
-
-When calling the above shortcut without a block (e.g. ``gh flask``), the
-``&language=%s`` section is *not* applied.
-
-Calling the shortcut with a block, like so:
-
-::
-
-    gh flask,lang=python
-
-
-Will result in the following URL:
-
-::
-
-    http://github.com/search?q=flask&type=Everything&language=python
-
-
-
-You can pass multiple arguments to a single block by separating them with
-a comma (or your choice of ``ARGUMENT_DELIMITER``), but blocks must be
-called *after* all other positional arguments have been given.
 
 
 
