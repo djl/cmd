@@ -293,19 +293,16 @@ function url()
     label{font-size:1.6em;}
     em{color:#bbb;font-style:normal;font-weight:normal;}
     p{font-size:1.4em;margin:0 0 2em;line-height:2em;}
-    p.note{font-size:1.1em;margin-top:10em;padding:1em;}
     a{color:#<?php echo e(COLOR); ?>;}
     a:hover{color:black;}
     a#link{background:#<?php echo e(COLOR); ?>;font-size:14px;color:#fff;padding:4px;text-shadow: 1px 1px 1px #<?php echo e(COLOR); ?>;text-decoration:none;}
     a#link:hover{background:black;text-shadow:1px 1px 1px black;}
     table{font-size:1.4em;margin:4em auto 6em;width:100%;}
     td{padding:10px;}
-    code {color:#777;font: 1.1em consolas,"panic sans","bitstream vera sans","courier new",monaco,monospace;}
+    code {color:#777;font: 1.1em "Bitstream Vera Sans Mono","Courier New",Monaco,monospace;}
     label{color:#bbb;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
-    .red{color:#<?php echo e(COLOR); ?> !important;}
-    .left{text-align:left;}
+    .red{color:#<?php echo e(COLOR); ?> !important;font-size:1.5em;}
     .alt{background:#eee;}
-    .error{color:red;font-weight:bold;}
     .lite{color:#777;margin: 0;}
     </style>
     <script type="text/javascript">
@@ -314,10 +311,8 @@ function url()
     </script>
 </head>
 <body>
-    <header><h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>"><?php echo e(NAME); ?></a> <em><?php echo e(title()); ?></em></h1></header>
+    <h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>"><?php echo e(NAME); ?></a> <em><?php echo e(title()); ?></em></h1>
     <?php
-
-    // Go go gadget shortcut!
     if (isset($_REQUEST['c'], $_GET['f']))
     {
         // compensate for JavaScript's odd escaping
@@ -325,10 +320,7 @@ function url()
         $command = stripslashes($_REQUEST['c']);
         $file = stripslashes($_GET['f']);
 
-        // parse the shortcuts file
         $parsed = parse_shortcut_file($file);
-
-        // config values
         foreach($parsed['config'] as $k => $v)
         {
             // this exploits a bug (or feature?) in PHP:
@@ -350,9 +342,7 @@ function url()
 
     ?>
     <?php if (show_help()): ?>
-
-        <!-- <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p> -->
-
+        <p><span class="red">*</span> triggers may be followed by a search term</p>
         <?php $count = 0; $previous = null; ?>
         <?php foreach($parsed['shortcuts'] as $shortcut): ?>
             <?php if ($shortcut['group_name'] != $previous || $count < 1): ?>
