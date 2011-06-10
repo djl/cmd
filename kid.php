@@ -1,5 +1,4 @@
 <?php
-define('ALLOWED_PROTOCOLS', '!https?://!');
 define('ARGUMENT_DELIMITER', ',', TRUE);
 define('COLOR', 'c86f4d', TRUE);
 define('COMMENT', '>', TRUE);
@@ -9,6 +8,7 @@ define('HELP_TITLE', 'your shortcuts', TRUE);
 define('HELP_TRIGGER', 'help', TRUE);
 define('IS_LOCKED', FALSE, TRUE);
 define('NAME', 'kid', TRUE);
+define('PROTOCOLS', CURLPROTO_HTTP|CURLPROTO_HTTPS);
 define('TITLE', 'bookmarklet shortcuts', TRUE);
 define('USERAGENT', 'Grabbing your shortcuts. (http://github.com/xvzf/kid)', TRUE);
 
@@ -75,7 +75,8 @@ function get_file($url)
                                  CURLOPT_RETURNTRANSFER => 1,
                                  CURLOPT_TIMEOUT => 60,
                                  CURLOPT_URL => $url,
-                                 CURLOPT_USERAGENT => USERAGENT));
+                                 CURLOPT_USERAGENT => USERAGENT,
+                                 CURLOPT_PROTOCOLS => PROTOCOLS));
     $data = curl_exec($ch);
     if(curl_error($ch))
     {
@@ -333,12 +334,6 @@ if (isset($_REQUEST['c'], $_GET['f']))
     // we need to use $_REQUEST here because $_GET is automatically urldecoded
     $command = stripslashes($_REQUEST['c']);
     $file = stripslashes($_GET['f']);
-
-    // make sure only http/https protocols are allowed
-    if (!preg_match(ALLOWED_PROTOCOLS, $file))
-    {
-        die(sprintf("Invalid URL: <strong>%s</strong>", $file));
-    }
 
     // parse the shortcuts file
     $parsed = parse_shortcut_file($file);
