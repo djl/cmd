@@ -2,10 +2,10 @@ kid
 ====
 
 kid is an extensible bookmarklet command thing. It's similar to
-Shortwave_ and `Quix`_.
+[Shortwave][shortwave] and [Quix][quix].
 
-.. _Shortwave: http://shortwaveapp.com
-.. _Quix: http://quixapp.com
+[shortwave]: http://shortwaveapp.com
+[quix]: http://quixapp.com
 
 
 
@@ -24,11 +24,11 @@ Syntax
 
 kid features the standard Shortwave/Quix tokens:
 
-* ``%s`` - will be replaced by any arguments you provide.
-* ``%d`` - the domain of the current site.
-* ``%r`` - the full URL of the current site.
-* ``%t`` - the title of the current page
-* ``>`` - comment to the end of the line.
+* `%s` - will be replaced by any arguments you provide.
+* `%d` - the domain of the current site.
+* `%r` - the full URL of the current site.
+* `%t` - the title of the current page
+* ``>` - comment to the end of the line.
 
 Plus some extras:
 
@@ -36,6 +36,28 @@ Plus some extras:
 * ``%l`` - any highlighted text on the current page
 * ``%{kittens}`` - a positional argument, to be optionally overridden.
 * ``$ OPTION VALUE`` - a custom configuration option
+
+
+
+Configuration
+-------------
+
+kid has the ability to dynamically change it's settings based on your
+shortcuts file.
+
+The syntax is as follows:
+
+    $ CONFIGURATION_OPTION VALUE
+
+
+That is a dollar sign (``$``) followed the configuration option you'd
+like to set and the value you'd like to set it to.
+
+Say you'd like to change the help trigger to a question mark. Place the
+following line somewhere in your shortcuts file:
+
+    $ HELP_TRIGGER ?
+
 
 
 
@@ -49,44 +71,7 @@ If kid *can't* correctly parse one of these files, it's a bug.
 
 
 
-Configuration
--------------
-
-kid has the ability to dynamically change it's settings based on your
-shortcuts file.
-
-The syntax is as follows:
-
-::
-
-    $ CONFIGURATION_OPTION VALUE
-
-
-That is a dollar sign (``$``) followed the configuration option you'd
-like to set and the value you'd like to set it to.
-
-Say you'd like to change the help trigger to a question mark. Place the
-following line somewhere in your shortcuts file:
-
-::
-
-    $ HELP_TRIGGER ?
-
-
-
-
 Examples
 -----------
 
 See examples.txt.
-
-
-
-Notes
------
-
-* PHP must be compiled --with-curl
-* JavaScript is required.
-* When upgrading to a new version or changing settings, an update to your
-  bookmarklet may be required.
-* kid is not optimised. It's probably nowhere near the speed it could be.
