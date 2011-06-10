@@ -8,9 +8,7 @@ define('HELP_TRIGGER', 'help', TRUE);
 define('NAME', 'kid', TRUE);
 define('PROTOCOLS', CURLPROTO_HTTP|CURLPROTO_HTTPS);
 define('TITLE', 'bookmarklet shortcuts', TRUE);
-define('USERAGENT', 'Grabbing your shortcuts. (http://github.com/xvzf/kid)', TRUE);
-
-ini_set('user_agent', USERAGENT);
+define('USERAGENT', 'kid (https://github.com/xvzf/kid)', TRUE);
 
 function e($output)
 {
