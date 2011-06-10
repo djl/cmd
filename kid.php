@@ -25,6 +25,9 @@ function encode(&$val)
 function error($error)
 {
     global $CFG;
+
+    $message = sprintf("<p><strong>%s couldn't grab your shortcuts file because:</strong></p>", e($CFG['NAME']));
+    $message = sprintf("%s<p><code>%s</code></p>", $message, e($error));
     die($message);
 }
 
