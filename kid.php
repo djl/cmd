@@ -3,7 +3,6 @@ define('ARGUMENT_DELIMITER', ',', TRUE);
 define('COLOR', 'c86f4d', TRUE);
 define('COMMENT', '>', TRUE);
 define('DEFAULT_URL', 'http://www.google.com/search?q=%c', TRUE);
-define('FILE_MATCH', '', TRUE);
 define('HELP_TITLE', 'your shortcuts', TRUE);
 define('HELP_TRIGGER', 'help', TRUE);
 define('NAME', 'kid', TRUE);
@@ -70,10 +69,6 @@ function get_args_from_command($command)
 
 function get_file($url)
 {
-    if (FILE_MATCH != '' && @preg_match(FILE_MATCH, $url) == FALSE)
-    {
-        error("The URL $url did not match the required pattern.");
-    }
     $ch = curl_init();
     curl_setopt_array($ch, array(CURLOPT_CONNECTTIMEOUT => 60,
                                  CURLOPT_FAILONERROR => TRUE,
