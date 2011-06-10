@@ -24,6 +24,13 @@ function encode(&$val)
     $val = urlencode($val);
 }
 
+function error($error)
+{
+    $message = sprintf("<p><strong>%s couldn't grab your shortcuts file because:</strong></p>", NAME);
+    $message = sprintf("%s<p><code>%s</code></p>", $message, $error);
+    die($message);
+}
+
 function get_args_from_command($command)
 {
     $args = preg_replace('/\s\s+/', ' ', trim($command));
@@ -64,9 +71,9 @@ function get_args_from_command($command)
 
 function get_file($url)
 {
-    if (FILE_MATCH != '' && preg_match(FILE_MATCH, $url) == FALSE)
+    if (FILE_MATCH != '' && @preg_match(FILE_MATCH, $url) == FALSE)
     {
-        die("<p><strong class=\"error\">Warning:</strong> The URL <strong>$url</strong> did not match the required pattern.</p>");
+        error("The URL $url did not match the required pattern.");
     }
     $ch = curl_init();
     curl_setopt_array($ch, array(CURLOPT_CONNECTTIMEOUT => 60,
@@ -80,8 +87,7 @@ function get_file($url)
     $data = curl_exec($ch);
     if(curl_error($ch))
     {
-        $error = sprintf("<p>%s couldn't grab your shortcuts file because:<br><br><strong>%s</strong></p>", NAME, curl_error($ch));
-        die($error);
+        error(curl_error($ch));
     }
     curl_close($ch);
     return $data;
@@ -326,37 +332,6 @@ function url()
     $protocol = array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
     return $protocol.'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 }
-
-// Go go gadget shortcut!
-if (isset($_REQUEST['c'], $_GET['f']))
-{
-    // compensate for JavaScript's odd escaping
-    // we need to use $_REQUEST here because $_GET is automatically urldecoded
-    $command = stripslashes($_REQUEST['c']);
-    $file = stripslashes($_GET['f']);
-
-    // parse the shortcuts file
-    $parsed = parse_shortcut_file($file);
-
-    // config values
-    foreach($parsed['config'] as $k => $v)
-    {
-        // this exploits a bug (or feature?) in PHP:
-        // when constants are defined without case-sensitivity it is
-        // possible to redefine them without throwing errors
-        define(strtoupper($k), $v);
-    }
-
-    $args = get_args_from_command($command);
-    $shortcut = get_shortcut($parsed['shortcuts'], $args['trigger']);
-    $url = get_url($shortcut['url'], $args['args'], $args['blargs'], $command);
-
-    // go!
-    if (!show_help())
-    {
-        header('Location: ' . $url, true, 301);
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -398,6 +373,40 @@ if (isset($_REQUEST['c'], $_GET['f']))
 </head>
 <body>
     <header><h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>"><?php echo e(NAME); ?></a> <em><?php echo e(title()); ?></em></h1></header>
+    <?php
+
+    // Go go gadget shortcut!
+    if (isset($_REQUEST['c'], $_GET['f']))
+    {
+        // compensate for JavaScript's odd escaping
+        // we need to use $_REQUEST here because $_GET is automatically urldecoded
+        $command = stripslashes($_REQUEST['c']);
+        $file = stripslashes($_GET['f']);
+
+        // parse the shortcuts file
+        $parsed = parse_shortcut_file($file);
+
+        // config values
+        foreach($parsed['config'] as $k => $v)
+        {
+            // this exploits a bug (or feature?) in PHP:
+            // when constants are defined without case-sensitivity it is
+            // possible to redefine them without throwing errors
+            define(strtoupper($k), $v);
+        }
+
+        $args = get_args_from_command($command);
+        $shortcut = get_shortcut($parsed['shortcuts'], $args['trigger']);
+        $url = get_url($shortcut['url'], $args['args'], $args['blargs'], $command);
+
+        // go!
+        if (!show_help())
+        {
+            header('Location: ' . $url, true, 301);
+        }
+    }
+
+    ?>
     <?php if (show_help()): ?>
 
         <!-- <p><span class="red">*</span> triggers may be followed by a search term. e.g. <code>i stanley kubrick</code></p> -->
