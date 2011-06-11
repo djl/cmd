@@ -60,8 +60,8 @@ function get_file($url)
 
     $ch = curl_init();
     curl_setopt_array($ch, array(CURLOPT_CONNECTTIMEOUT => 60,
-                                 CURLOPT_FAILONERROR => TRUE,
-                                 CURLOPT_HEADER => FALSE,
+                                 CURLOPT_FAILONERROR => true,
+                                 CURLOPT_HEADER => false,
                                  CURLOPT_RETURNTRANSFER => 1,
                                  CURLOPT_TIMEOUT => 60,
                                  CURLOPT_URL => $url,
@@ -184,7 +184,7 @@ function parse_shortcut_file($file)
                     if (!$last_was_group)
                     {
                         $group_name = $splits[0];
-                        $last_was_group = TRUE;
+                        $last_was_group = true;
                     }
                     else
                     {
