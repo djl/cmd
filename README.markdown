@@ -28,14 +28,14 @@ kid features the standard Shortwave/Quix tokens:
 * `%d` - the domain of the current site.
 * `%r` - the full URL of the current site.
 * `%t` - the title of the current page
-* ``>` - comment to the end of the line.
+* `>` - comment to the end of the line.
 
 Plus some extras:
 
-* ``%c`` - the full given command.
-* ``%l`` - any highlighted text on the current page
-* ``%{kittens}`` - a positional argument, to be optionally overridden.
-* ``$ OPTION VALUE`` - a custom configuration option
+* `%c` - the full given command.
+* `%l` - any highlighted text on the current page
+* `%{kittens}` - a positional argument, to be optionally overridden.
+* `$ OPTION VALUE` - a custom configuration option
 
 
 
@@ -50,7 +50,7 @@ The syntax is as follows:
     $ CONFIGURATION_OPTION VALUE
 
 
-That is a dollar sign (``$``) followed the configuration option you'd
+That is a dollar sign (`$`) followed the configuration option you'd
 like to set and the value you'd like to set it to.
 
 Say you'd like to change the help trigger to a question mark. Place the
