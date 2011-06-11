@@ -1,5 +1,5 @@
 <?php
-$CFG = array(
+$GLOBALS['cfg'] = array(
     'ARGUMENT_DELIMITER' => ',',
     'COLOR' => 'c86f4d',
     'COMMENT' => '>',
@@ -24,17 +24,13 @@ function encode(&$val)
 
 function error($error)
 {
-    global $CFG;
-
-    $message = sprintf("<p><strong>%s couldn't grab your shortcuts file because:</strong></p>", e($CFG['NAME']));
+    $message = sprintf("<p><strong>%s couldn't grab your shortcuts file because:</strong></p>", e($GLOBALS['cfg']['NAME']));
     $message = sprintf("%s<p><code>%s</code></p>", $message, e($error));
     die($message);
 }
 
 function get_args_from_command($command)
 {
-    global $CFG;
-
     $args = preg_replace('/\s\s+/', ' ', trim($command));
     preg_match_named('/^(?<trigger>(\w|\p{P})+)(\s+(?<args>.*))?/', $args, $matches);
     if (!$matches){ return; }
@@ -45,7 +41,7 @@ function get_args_from_command($command)
     }
 
     $matches['trigger'] = strtolower($matches['trigger']);
-    $arguments = explode($CFG['ARGUMENT_DELIMITER'], $matches['args']);
+    $arguments = explode($GLOBALS['cfg']['ARGUMENT_DELIMITER'], $matches['args']);
 
     array_walk($arguments, 'encode');
 
@@ -56,8 +52,6 @@ function get_args_from_command($command)
 
 function get_file($url)
 {
-    global $CFG;
-
     $ch = curl_init();
     curl_setopt_array($ch, array(CURLOPT_CONNECTTIMEOUT => 60,
                                  CURLOPT_FAILONERROR => true,
@@ -65,8 +59,8 @@ function get_file($url)
                                  CURLOPT_RETURNTRANSFER => 1,
                                  CURLOPT_TIMEOUT => 60,
                                  CURLOPT_URL => $url,
-                                 CURLOPT_USERAGENT => $CFG['USERAGENT'],
-                                 CURLOPT_PROTOCOLS => $CFG['PROTOCOLS']));
+                                 CURLOPT_USERAGENT => $GLOBALS['cfg']['USERAGENT'],
+                                 CURLOPT_PROTOCOLS => $GLOBALS['cfg']['PROTOCOLS']));
     $data = curl_exec($ch);
     if(curl_error($ch))
     {
@@ -152,8 +146,6 @@ function parse_optional($url, $args, $command)
 
 function parse_shortcut_file($file)
 {
-    global $CFG;
-
     $file = get_file($file);
     $lines = explode("\n", $file);
 
@@ -169,7 +161,7 @@ function parse_shortcut_file($file)
         $line = preg_replace('/(\s{2,}|\t)/', ' ', trim($line));
 
         // Ignore blank lines, comments and '#kill-defaults' lines
-        $ignore = sprintf('/^%s|#kill-defaults/', $CFG['COMMENT']);
+        $ignore = sprintf('/^%s|#kill-defaults/', $GLOBALS['cfg']['COMMENT']);
         if (!$line || preg_match($ignore, $line)) continue;
 
         // groups/config lines
@@ -263,22 +255,18 @@ function remove_numeric_keys(&$array)
 
 function show_help()
 {
-    global $CFG;
-
     if (isset($_GET['c']) && isset($_GET['f']))
     {
         $parts = explode(" ", trim($_GET['c']), 2);
-        return $parts[0] == $CFG['HELP_TRIGGER'];
+        return $parts[0] == $GLOBALS['cfg']['HELP_TRIGGER'];
     }
     return false;
 }
 
 function title()
 {
-    global $CFG;
-
-    if (show_help()) { return $CFG['HELP_TITLE']; }
-    return $CFG['TITLE'];
+    if (show_help()) { return $GLOBALS['cfg']['HELP_TITLE']; }
+    return $GLOBALS['cfg']['TITLE'];
 }
 
 function url()
@@ -291,29 +279,29 @@ function url()
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title><?php echo e($CFG['NAME']); ?></title>
+    <title><?php echo e($GLOBALS['cfg']['NAME']); ?></title>
     <style type="text/css">
     *{margin:0;padding:0;}
-    html{background:#fff;border-top:4px solid #<?php echo e($CFG['COLOR']); ?>;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
+    html{background:#fff;border-top:4px solid #<?php echo e($GLOBALS['cfg']['COLOR']); ?>;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
     body{margin:4em auto;width:50em;}
     h1{font-size:3em;line-height:3em;margin-bottom:1em;text-shadow: 0 -1px 1px #FFF;}
     h1 a:link,h1 a:visited{color:black;text-decoration:none;}
-    h1 a:hover,h1 a:active,h1 a:focus{color:#<?php echo e($CFG['COLOR']); ?>;}
+    h1 a:hover,h1 a:active,h1 a:focus{color:#<?php echo e($GLOBALS['cfg']['COLOR']); ?>;}
     h2{font-size:2em;font-weight:bold;margin:3em 0 0.5em;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
     label,.out{line-height:1.8em !important;text-shadow: 0 -1px 1px #FFF;}
     label{font-size:1.6em;}
     em{color:#bbb;font-style:normal;font-weight:normal;}
     p{font-size:1.4em;margin:0 0 2em;line-height:2em;}
-    a{color:#<?php echo e($CFG['COLOR']); ?>;}
+    a{color:#<?php echo e($GLOBALS['cfg']['COLOR']); ?>;}
     a:hover{color:black;}
-    a#link{background:#<?php echo e($CFG['COLOR']); ?>;font-size:14px;color:#fff;padding:4px;text-shadow: 1px 1px 1px #<?php echo e($CFG['COLOR']); ?>;text-decoration:none;}
+    a#link{background:#<?php echo e($GLOBALS['cfg']['COLOR']); ?>;font-size:14px;color:#fff;padding:4px;text-shadow: 1px 1px 1px #<?php echo e($GLOBALS['cfg']['COLOR']); ?>;text-decoration:none;}
     a#link:hover{background:black;text-shadow:1px 1px 1px black;}
     table{font-size:1.4em;margin:4em auto 6em;width:100%;}
     td{padding:10px;}
     code {color:#777;font: 1.1em "Bitstream Vera Sans Mono","Courier New",Monaco,monospace;}
     label{color:#bbb;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
-    .red{color:#<?php echo e($CFG['COLOR']); ?> !important;font-size:1.5em;}
+    .red{color:#<?php echo e($GLOBALS['cfg']['COLOR']); ?> !important;font-size:1.5em;}
     .alt{background:#eee;}
     .lite{color:#777;margin: 0;}
     </style>
@@ -323,7 +311,7 @@ function url()
     </script>
 </head>
 <body>
-    <h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>"><?php echo e($CFG['NAME']); ?></a> <em><?php echo e(title()); ?></em></h1>
+    <h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>"><?php echo e($GLOBALS['cfg']['NAME']); ?></a> <em><?php echo e(title()); ?></em></h1>
     <?php
     if (isset($_REQUEST['c'], $_GET['f']))
     {
@@ -335,7 +323,7 @@ function url()
         $parsed = parse_shortcut_file($file);
         foreach($parsed['config'] as $k => $v)
         {
-            $CFG[$k] = $v;
+            $GLOBALS['cfg'][$k] = $v;
         }
 
         $args = get_args_from_command($command);
@@ -380,7 +368,7 @@ function url()
         <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
             <label for="custom" id="label" class="out">shortcuts file:</label><input type="text" name="custom" value="http://" id="custom">
         </form>
-        <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo e($CFG['HELP_TRIGGER']); ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t+'&l='+document.getSelection();if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo e($CFG['NAME']); ?></a>
+        <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo e($GLOBALS['cfg']['HELP_TRIGGER']); ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t+'&l='+document.getSelection();if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo e($GLOBALS['cfg']['NAME']); ?></a>
     <?php endif; ?>
 </body>
 </html>
