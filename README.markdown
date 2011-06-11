@@ -35,29 +35,6 @@ Plus some extras:
 * `%c` - the full given command.
 * `%l` - any highlighted text on the current page
 * `%{kittens}` - a positional argument, to be optionally overridden.
-* `$ OPTION VALUE` - a custom configuration option
-
-
-
-Configuration
--------------
-
-kid has the ability to dynamically change it's settings based on your
-shortcuts file.
-
-The syntax is as follows:
-
-    $ CONFIGURATION_OPTION VALUE
-
-
-That is a dollar sign (`$`) followed the configuration option you'd
-like to set and the value you'd like to set it to.
-
-Say you'd like to change the help trigger to a question mark. Place the
-following line somewhere in your shortcuts file:
-
-    $ HELP_TRIGGER ?
-
 
 
 

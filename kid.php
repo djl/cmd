@@ -149,10 +149,7 @@ function parse_shortcut_file($file)
     $file = get_file($file);
     $lines = explode("\n", $file);
 
-    // stuff we'll return
     $shortcuts = array();
-    $config = array();
-
     $last_was_group = false;
     $previous = $group_name = $group_description = null;
     foreach ($lines as $line)
@@ -164,38 +161,22 @@ function parse_shortcut_file($file)
         $ignore = sprintf('/^%s|#kill-defaults/', $GLOBALS['cfg']['COMMENT']);
         if (!$line || preg_match($ignore, $line)) continue;
 
-        // groups/config lines
-        if (preg_match('/^(@|\$)/', $line))
+        // @group lines
+        if (preg_match('/^@/', $line))
         {
-            if (preg_match('/^@/', $line))
+            // parse out the name/description
+            $splits = preg_split('/^@/', $line, 0, PREG_SPLIT_NO_EMPTY);
+            if ($splits)
             {
-                // parse out the name/description
-                $splits = preg_split('/^@/', $line, 0, PREG_SPLIT_NO_EMPTY);
-                if ($splits)
+                if (!$last_was_group)
                 {
-                    if (!$last_was_group)
-                    {
-                        $group_name = $splits[0];
-                        $last_was_group = true;
-                    }
-                    else
-                    {
-                        $last_was_group = false;
-                        $group_description = $splits[0];
-                    }
+                    $group_name = $splits[0];
+                    $last_was_group = true;
                 }
-            }
-            else
-            {
-                preg_match_named('/^\$(\s)+(?<key>(\w|\p{P})+)(\s+)(?<value>.*)$/', $line, $matches);
-                $config_last = "";
-                foreach ($matches as $match)
+                else
                 {
-                    if ($config_last && $match)
-                    {
-                        $config[$config_last] = $match;
-                    }
-                    $config_last = $match;
+                    $last_was_group = false;
+                    $group_description = $splits[0];
                 }
             }
         }
@@ -212,8 +193,7 @@ function parse_shortcut_file($file)
             $group_description = "";
         }
     }
-    return array('shortcuts' => $shortcuts,
-                 'config' => $config);
+    return $shortcuts;
 }
 
 function parse_simple($url, $args, $command)
@@ -320,14 +300,9 @@ function url()
         $command = stripslashes($_REQUEST['c']);
         $file = stripslashes($_GET['f']);
 
-        $parsed = parse_shortcut_file($file);
-        foreach($parsed['config'] as $k => $v)
-        {
-            $GLOBALS['cfg'][$k] = $v;
-        }
-
+        $shortcuts = parse_shortcut_file($file);
         $args = get_args_from_command($command);
-        $shortcut = get_shortcut($parsed['shortcuts'], $args['trigger']);
+        $shortcut = get_shortcut($shortcuts, $args['trigger']);
         $url = get_url($shortcut['url'], $args['args'], $command);
 
         // go!
@@ -341,7 +316,7 @@ function url()
     <?php if (show_help()): ?>
         <p><span class="red">*</span> triggers may be followed by a search term</p>
         <?php $count = 0; $previous = null; ?>
-        <?php foreach($parsed['shortcuts'] as $shortcut): ?>
+        <?php foreach($shortcuts as $shortcut): ?>
             <?php if ($shortcut['group_name'] != $previous || $count < 1): ?>
                 <?php if ($shortcut['group_name'] != $previous): ?></table><?php endif; ?>
                 <header>
