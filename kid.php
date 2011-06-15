@@ -211,13 +211,6 @@ function preg_match_named($pattern, $subject, &$matches, $flags=null, $offset=nu
     return $c;
 }
 
-function preg_match_all_named($pattern, $subject, &$matches, $flags=null, $offset=null)
-{
-    $c = preg_match_all($pattern, $subject, $matches, $flags, $offset);
-    $matches = remove_numeric_keys($matches);
-    return $c;
-}
-
 function remove_numeric_keys(&$array)
 {
     foreach ($array as $key => $value)
