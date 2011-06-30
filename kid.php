@@ -196,11 +196,10 @@ function parse_shortcut_file($file)
 
 function parse_simple($url, $args, $command)
 {
-    $url = preg_replace("/%d/", $_GET['d'], $url);
-    $url = preg_replace("/%r/", $_GET['r'], $url);
-    $url = preg_replace("/%t/", $_GET['t'], $url);
-    $url = preg_replace("/%c/", $_GET['c'], $url);
-    $url = preg_replace("/%l/", $_GET['l'], $url);
+    $get_args = array("c", "d", "l", "r", "t");
+    foreach ($get_args as $a) {
+        $url = str_replace("%" . $a, $_GET[$a], $url);
+    }
     return $url;
 }
 
