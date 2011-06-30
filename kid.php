@@ -30,7 +30,7 @@ function error($error)
 function get_args_from_command($command)
 {
     $args = preg_replace('/\s\s+/', ' ', trim($command));
-    preg_match_named('/^(?<trigger>(\w|\p{P})+)(\s+(?<args>.*))?/', $args, $matches);
+    preg_match('/^(?<trigger>(\w|\p{P})+)(\s+(?<args>.*))?/', $args, $matches);
     if (!$matches){ return; }
 
     if (!array_key_exists('args', $matches))
@@ -110,7 +110,7 @@ function parse_default($url, $args, $command)
          {
             if (preg_match($pattern, $part))
             {
-                if (preg_match_named('/(?<wrap>%{(?<value>[\w|\p{P}]+)})/', $part, $matches))
+                if (preg_match('/(?<wrap>%{(?<value>[\w|\p{P}]+)})/', $part, $matches))
                 {
                     $part = $matches['value'];
                 }
@@ -202,26 +202,6 @@ function parse_simple($url, $args, $command)
     $url = preg_replace("/%c/", $_GET['c'], $url);
     $url = preg_replace("/%l/", $_GET['l'], $url);
     return $url;
-}
-
-function preg_match_named($pattern, $subject, &$matches, $flags=null, $offset=null)
-{
-    $c = preg_match($pattern, $subject, $matches, $flags, $offset);
-    $matches = remove_numeric_keys($matches);
-    return $c;
-}
-
-function remove_numeric_keys(&$array)
-{
-    foreach ($array as $key => $value)
-    {
-        if (is_int($key))
-        {
-            unset($array[$key]);
-        }
-    }
-    return $array;
-
 }
 
 function show_help()
