@@ -229,7 +229,7 @@ function show_help()
     if (isset($_GET['c']) && isset($_GET['f']))
     {
         $parts = explode(" ", trim($_GET['c']), 2);
-        return $parts[0] == preg_match(sprintf("/%s/i", HELP_TRIGGER));
+        return strtolower($parts[0]) == strtolower(HELP_TRIGGER);
     }
     return false;
 }
