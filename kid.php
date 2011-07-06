@@ -64,6 +64,9 @@ function get_url($url, $args, $command)
 
     // defaults arguments
     // %{something}
+    if ($args != "") {
+        $url = preg_replace('/(%{)(.*)(})/', '$1'.$args.'$3', $url);
+    }
     $url = preg_replace('/(%{(.*)})/', '$2', $url);
 
     // the $_GET arguments
