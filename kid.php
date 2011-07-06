@@ -8,6 +8,27 @@ define('PROTOCOLS', CURLPROTO_HTTP|CURLPROTO_HTTPS);
 define('TITLE', 'bookmarklet shortcuts');
 define('USERAGENT', 'kid (https://github.com/xvzf/kid)');
 
+function build_url($url, $arg, $command)
+{
+    // replace %s with the argument
+    $url = str_replace("%s", $arg, $url);
+
+    // defaults arguments
+    // %{something}
+    if ($arg != "") {
+        $url = preg_replace('/(%{)(.*)(})/', '$1'.$arg.'$3', $url);
+    }
+    $url = preg_replace('/(%{(.*)})/', '$2', $url);
+
+    // the $_GET arguments
+    $gets = array("c", "d", "l", "r", "t");
+    foreach ($gets as $a) {
+        $url = str_replace("%" . $a, $_GET[$a], $url);
+    }
+
+    return $url;
+}
+
 function e($output)
 {
     return htmlspecialchars($output, ENT_NOQUOTES);
@@ -55,27 +76,6 @@ function get_shortcut($shortcuts, $trigger)
     {
         return DEFAULT_URL;
     }
-}
-
-function get_url($url, $args, $command)
-{
-    // replace %s with the argument
-    $url = str_replace("%s", $args, $url);
-
-    // defaults arguments
-    // %{something}
-    if ($args != "") {
-        $url = preg_replace('/(%{)(.*)(})/', '$1'.$args.'$3', $url);
-    }
-    $url = preg_replace('/(%{(.*)})/', '$2', $url);
-
-    // the $_GET arguments
-    $gets = array("c", "d", "l", "r", "t");
-    foreach ($gets as $a) {
-        $url = str_replace("%" . $a, $_GET[$a], $url);
-    }
-
-    return $url;
 }
 
 function parse_shortcut_file($file)
@@ -179,7 +179,7 @@ function url()
         $shortcuts = parse_shortcut_file($file);
         @list($trigger, $argument) = explode(" ", $command, 2);
         $shortcut = get_shortcut($shortcuts, $trigger);
-        $url = get_url($shortcut['url'], urlencode($argument), $command);
+        $url = build_url($shortcut['url'], urlencode($argument), $command);
 
         // go!
         if (!show_help())
