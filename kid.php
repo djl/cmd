@@ -82,48 +82,26 @@ function parse_shortcut_file($file)
     $lines = explode("\n", $file);
 
     $shortcuts = array();
-    $last_was_group = false;
-    $previous = $group_name = $group_description = null;
+    $group = null;
     foreach ($lines as $line)
     {
-        // get rid of useless whitespace
         $line = preg_replace('/(\s{2,}|\t)/', ' ', trim($line));
-
-        // Ignore blank lines, comments and '#kill-defaults' lines
-        $ignore = sprintf('/^%s|#kill-defaults/', COMMENT);
+        $ignore = '/^>|#kill-defaults/';
         if (!$line || preg_match($ignore, $line)) continue;
 
-        // @group lines
-        if (preg_match('/^@/', $line))
+        if (strpos($line, '@') === 0)
         {
-            // parse out the name/description
-            $splits = preg_split('/^@/', $line, 0, PREG_SPLIT_NO_EMPTY);
-            if ($splits)
-            {
-                if (!$last_was_group)
-                {
-                    $group_name = $splits[0];
-                    $last_was_group = true;
-                }
-                else
-                {
-                    $last_was_group = false;
-                    $group_description = $splits[0];
-                }
-            }
+            $group = preg_replace('/^@/', '', $line);
+            continue;
         }
-        else
-        {
-            $segments = preg_split('/\s+/', $line, 3);
-            $takes_search = (strstr($segments[1], "%s") && $segments[0] != "*");
-            $shortcuts[$segments[0]] = array('trigger' => strtolower($segments[0]),
-                                             'url' => $segments[1],
-                                             'title' => $segments[2],
-                                             'search' => $takes_search,
-                                             'group_name' => $group_name,
-                                             'group_description' => $group_description);
-            $group_description = "";
-        }
+
+        $segments = explode(' ', $line, 3);
+        $takes_search = (strstr($segments[1], "%s") && $segments[0] != "*");
+        $shortcuts[$segments[0]] = array('trigger' => strtolower($segments[0]),
+                                         'url' => $segments[1],
+                                         'title' => $segments[2],
+                                         'search' => $takes_search,
+                                         'group' => $group);
     }
     return $shortcuts;
 }
@@ -213,11 +191,10 @@ function url()
         <p><span class="red">*</span> triggers may be followed by a search term</p>
         <?php $count = 0; $previous = null; ?>
         <?php foreach($shortcuts as $shortcut): ?>
-            <?php if ($shortcut['group_name'] != $previous || $count < 1): ?>
-                <?php if ($shortcut['group_name'] != $previous): ?></table><?php endif; ?>
+            <?php if ($shortcut['group'] != $previous || $count < 1): ?>
+                <?php if ($shortcut['group'] != $previous): ?></table><?php endif; ?>
                 <header>
-                    <h2><?php echo e($shortcut['group_name']); ?></h2>
-                    <?php if ($shortcut['group_description']): ?><p class="lite"><?php echo e($shortcut['group_description']); ?></p><?php endif; ?>
+                    <h2><?php echo e($shortcut['group']); ?></h2>
                 </header>
                 <table cellspacing="0">
                 <thead>
@@ -232,7 +209,7 @@ function url()
                 <td><?php echo e($shortcut['title']) ?><?php if ($shortcut['search']): ?> <span class="red">*</span><?php endif; ?></td>
             </tr>
             <?php $count++; ?>
-            <?php $previous = $shortcut['group_name']; ?>
+            <?php $previous = $shortcut['group']; ?>
         <?php endforeach; ?>
         </table>
     <?php else: ?>
