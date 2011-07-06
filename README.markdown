@@ -38,16 +38,6 @@ Plus some extras:
 
 
 
-Compatibility
--------------
-
-kid *should* be able to read your Shortwave and Quix files, but obviously
-neither will be able to parse the extra syntax kid provides.
-
-If kid *can't* correctly parse one of these files, it's a bug.
-
-
-
 Examples
 -----------
 
