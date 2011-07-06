@@ -1,6 +1,5 @@
 <?php
 define('COLOR', 'c86f4d');
-define('COMMENT', '>');
 define('DEFAULT_URL', 'http://www.google.com/search?q=%c');
 define('HELP_TITLE', 'your shortcuts');
 define('HELP_TRIGGER', 'help');
