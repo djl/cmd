@@ -15,37 +15,11 @@ function e($output)
     return htmlspecialchars($output, ENT_NOQUOTES);
 }
 
-function encode(&$val)
-{
-    $val = urlencode($val);
-}
-
 function error($error)
 {
     $message = sprintf("<p><strong>%s couldn't grab your shortcuts file because:</strong></p>", e(NAME));
     $message = sprintf("%s<p><code>%s</code></p>", $message, e($error));
     die($message);
-}
-
-function get_args_from_command($command)
-{
-    $args = preg_replace('/\s\s+/', ' ', trim($command));
-    preg_match('/^(?<trigger>(\w|\p{P})+)(\s+(?<args>.*))?/', $args, $matches);
-    if (!$matches){ return; }
-
-    if (!array_key_exists('args', $matches))
-    {
-        $matches['args'] = "";
-    }
-
-    $matches['trigger'] = strtolower($matches['trigger']);
-    $arguments = explode(ARGUMENT_DELIMITER, $matches['args']);
-
-    array_walk($arguments, 'encode');
-
-    $matches['command'] = $command;
-    $matches['args'] = $arguments;
-    return $matches;
 }
 
 function get_file($url)
@@ -85,60 +59,21 @@ function get_shortcut($shortcuts, $trigger)
     }
 }
 
-function get_url($shortcut_url, $args, $command)
+function get_url($url, $args, $command)
 {
-    $filters = array('parse_optional',
-                     'parse_default',
-                     'parse_simple');
+    // replace %s with the argument
+    $url = str_replace("%s", $args, $url);
 
-    foreach ($filters as $filter)
-    {
-        $shortcut_url = $filter($shortcut_url, $args, $command);
-    }
-    return $shortcut_url;
-}
+    // defaults arguments
+    // %{something}
+    $url = preg_replace('/(%{(.*)})/', '$2', $url);
 
-function parse_default($url, $args, $command)
-{
-    $pattern = '/(%{[\w|\p{P}]+})/';
-    if (preg_match($pattern, $url))
-    {
-         $parts = preg_split($pattern, $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-         $furl = array_shift($parts);
-         $count = 0;
-         foreach ($parts as $part)
-         {
-            if (preg_match($pattern, $part))
-            {
-                if (preg_match('/(?<wrap>%{(?<value>[\w|\p{P}]+)})/', $part, $matches))
-                {
-                    $part = $matches['value'];
-                }
-            }
-            if ($args[$count])
-            {
-                $furl .= $args[$count];
-            }
-            else
-            {
-                $furl .= $part;
-            }
-            $count++;
-         }
-         $url = $furl;
+    // the $_GET arguments
+    $gets = array("c", "d", "l", "r", "t");
+    foreach ($gets as $a) {
+        $url = str_replace("%" . $a, $_GET[$a], $url);
     }
-    return $url;
-}
 
-function parse_optional($url, $args, $command)
-{
-    $parts = preg_split('/(%s)/', $url, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-    $count = 0;
-    $url = "";
-    foreach($parts as $part)
-    {
-        $url .= str_replace('%s', $args[$count], $part);
-    }
     return $url;
 }
 
@@ -192,15 +127,6 @@ function parse_shortcut_file($file)
         }
     }
     return $shortcuts;
-}
-
-function parse_simple($url, $args, $command)
-{
-    $get_args = array("c", "d", "l", "r", "t");
-    foreach ($get_args as $a) {
-        $url = str_replace("%" . $a, $_GET[$a], $url);
-    }
-    return $url;
 }
 
 function show_help()
@@ -268,12 +194,13 @@ function url()
         // compensate for JavaScript's odd escaping
         // we need to use $_REQUEST here because $_GET is automatically urldecoded
         $command = stripslashes($_REQUEST['c']);
+        preg_replace('/\s\s+/', ' ', trim($command));
         $file = stripslashes($_GET['f']);
 
         $shortcuts = parse_shortcut_file($file);
-        $args = get_args_from_command($command);
-        $shortcut = get_shortcut($shortcuts, $args['trigger']);
-        $url = get_url($shortcut['url'], $args['args'], $command);
+        @list($trigger, $argument) = explode(" ", $command, 2);
+        $shortcut = get_shortcut($shortcuts, $trigger);
+        $url = get_url($shortcut['url'], urlencode($argument), $command);
 
         // go!
         if (!show_help())
