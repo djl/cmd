@@ -170,7 +170,7 @@ function url()
         // compensate for JavaScript's odd escaping
         // we need to use $_REQUEST here because $_GET is automatically urldecoded
         $command = stripslashes($_REQUEST['c']);
-        preg_replace('/\s\s+/', ' ', trim($command));
+        $command = preg_replace('/\s\s+/', ' ', trim($command));
         $file = stripslashes($_GET['f']);
 
         $shortcuts = parse_shortcut_file($file);
@@ -184,7 +184,6 @@ function url()
             header('Location: ' . $url, true, 301);
         }
     }
-
     ?>
     <?php if (show_help()): ?>
         <p><span class="red">*</span> triggers may be followed by a search term</p>
