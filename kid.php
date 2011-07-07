@@ -8,23 +8,21 @@ define('PROTOCOLS', CURLPROTO_HTTP|CURLPROTO_HTTPS);
 define('TITLE', 'bookmarklet shortcuts');
 define('USERAGENT', 'kid (https://github.com/xvzf/kid)');
 
+
 function build_url($url, $arg, $command)
 {
     // replace %s with the argument
     $url = str_replace("%s", $arg, $url);
-
-    // defaults arguments
-    // %{something}
-    if ($arg != "") {
-        $url = preg_replace('/(%{)(.*)(})/', '$1'.$arg.'$3', $url);
-    }
-    $url = preg_replace('/(%{(.*)})/', '$2', $url);
 
     // the $_GET arguments
     $gets = array("c", "d", "l", "r", "t");
     foreach ($gets as $a) {
         $url = str_replace("%" . $a, $_GET[$a], $url);
     }
+
+    // defaults arguments
+    $replace = $arg != "" ? $arg : '$2';
+    $url = preg_replace('/(%{)(.*)(})/', $replace, $url);
 
     return $url;
 }
