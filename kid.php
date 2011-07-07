@@ -29,6 +29,10 @@ function build_url($url, $arg, $command)
     return $url;
 }
 
+function clean($str) {
+    return preg_replace('/(\s{2,}|\t)/', ' ', trim($str));
+}
+
 function e($output)
 {
     return htmlspecialchars($output, ENT_NOQUOTES);
@@ -87,7 +91,7 @@ function parse_shortcut_file($file)
     $group = null;
     foreach ($lines as $line)
     {
-        $line = preg_replace('/(\s{2,}|\t)/', ' ', trim($line));
+        $line = clean($line);
         $ignore = '/^>|#kill-defaults/';
         if (!$line || preg_match($ignore, $line)) continue;
 
@@ -112,7 +116,7 @@ function show_help()
 {
     if (isset($_GET['c']) && isset($_GET['f']))
     {
-        $parts = explode(" ", trim($_GET['c']), 2);
+        $parts = explode(" ", clean($_GET['c']), 2);
         return strtolower($parts[0]) == strtolower(HELP_TRIGGER);
     }
     return false;
@@ -173,7 +177,7 @@ function url()
         // compensate for JavaScript's odd escaping
         // we need to use $_REQUEST here because $_GET is automatically urldecoded
         $command = stripslashes($_REQUEST['c']);
-        $command = preg_replace('/\s\s+/', ' ', trim($command));
+        $command = clean($command);
         $file = stripslashes($_GET['f']);
 
         $shortcuts = parse_shortcut_file($file);
