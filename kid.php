@@ -84,7 +84,7 @@ function get_shortcut($shortcuts, $trigger)
 function parse_shortcut_file($file)
 {
     $file = get_file($file);
-    $lines = explode('\n', $file);
+    $lines = explode("\n", $file);
 
     $shortcuts = array();
     $group = null;
