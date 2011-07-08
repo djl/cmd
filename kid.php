@@ -41,7 +41,7 @@ function error($error)
 {
     $message = sprintf("<p><strong>%s couldn't grab your shortcuts file because:</strong></p>", e(NAME));
     $message = sprintf("%s<p><code>%s</code></p>", $message, e($error));
-    die($message);
+    echo $message;
 }
 
 function get_file($url)
@@ -58,7 +58,7 @@ function get_file($url)
     $data = curl_exec($ch);
     if(curl_error($ch))
     {
-        error(curl_error($ch));
+        throw new Exception(curl_error($ch));
     }
     curl_close($ch);
     return $data;
@@ -171,6 +171,7 @@ function url()
 <body>
     <h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>"><?php echo e(NAME); ?></a> <em><?php echo e(title()); ?></em></h1>
     <?php
+    $error = false;
     if (isset($_REQUEST['c'], $_GET['f']))
     {
         // compensate for JavaScript's odd escaping
@@ -179,48 +180,61 @@ function url()
         $command = clean($command);
         $file = stripslashes($_GET['f']);
 
-        $shortcuts = parse_shortcut_file($file);
-        @list($trigger, $argument) = explode(' ', $command, 2);
-        $shortcut = get_shortcut($shortcuts, $trigger);
-        $url = build_url($shortcut['url'], urlencode($argument), $command);
+        $shortcuts = array();
 
-        // go!
-        if (!show_help())
+        try {
+            $shortcuts = parse_shortcut_file($file);
+        } catch (Exception $e) {
+            $error = true;
+            error($e->getMessage());
+        }
+
+        if ($shortcuts)
         {
-            header('Location: ' . $url, true, 301);
+            @list($trigger, $argument) = explode(' ', $command, 2);
+            $shortcut = get_shortcut($shortcuts, $trigger);
+            $url = build_url($shortcut['url'], urlencode($argument), $command);
+
+            // go!
+            if (!show_help())
+            {
+                header('Location: ' . $url, true, 301);
+            }
         }
     }
     ?>
-    <?php if (show_help()): ?>
-        <p><span class="red">*</span> triggers may be followed by a search term</p>
-        <?php $count = 0; $previous = null; ?>
-        <?php foreach($shortcuts as $shortcut): ?>
-            <?php if ($shortcut['group'] != $previous || $count < 1): ?>
-                <?php if ($shortcut['group'] != $previous): ?></table><?php endif; ?>
-                <header>
-                    <h2><?php echo e($shortcut['group']); ?></h2>
-                </header>
-                <table cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>Trigger</th>
-                        <th>Title</th>
-                    </tr>
-                </thead>
-            <?php endif; ?>
-            <tr<?php if ($count % 2): ?> class="alt"<?php endif; ?>>
-                <td><code><?php echo e($shortcut['trigger']) ?></code></td>
-                <td><?php echo e($shortcut['title']) ?><?php if ($shortcut['search']): ?> <span class="red">*</span><?php endif; ?></td>
-            </tr>
-            <?php $count++; ?>
-            <?php $previous = $shortcut['group']; ?>
-        <?php endforeach; ?>
-        </table>
-    <?php else: ?>
-        <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
-            <label for="custom" id="label" class="out">shortcuts file:</label><input type="text" name="custom" value="http://" id="custom">
-        </form>
-        <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo e(HELP_TRIGGER); ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t+'&l='+document.getSelection();if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo e(NAME); ?></a>
+    <?php if (!$error): ?>
+        <?php if (show_help()): ?>
+            <p><span class="red">*</span> triggers may be followed by a search term</p>
+            <?php $count = 0; $previous = null; ?>
+            <?php foreach($shortcuts as $shortcut): ?>
+                <?php if ($shortcut['group'] != $previous || $count < 1): ?>
+                    <?php if ($shortcut['group'] != $previous): ?></table><?php endif; ?>
+                    <header>
+                        <h2><?php echo e($shortcut['group']); ?></h2>
+                    </header>
+                    <table cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Trigger</th>
+                            <th>Title</th>
+                        </tr>
+                    </thead>
+                <?php endif; ?>
+                <tr<?php if ($count % 2): ?> class="alt"<?php endif; ?>>
+                    <td><code><?php echo e($shortcut['trigger']) ?></code></td>
+                    <td><?php echo e($shortcut['title']) ?><?php if ($shortcut['search']): ?> <span class="red">*</span><?php endif; ?></td>
+                </tr>
+                <?php $count++; ?>
+                <?php $previous = $shortcut['group']; ?>
+            <?php endforeach; ?>
+            </table>
+        <?php else: ?>
+            <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="get">
+                <label for="custom" id="label" class="out">shortcuts file:</label><input type="text" name="custom" value="http://" id="custom">
+            </form>
+            <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo e(HELP_TRIGGER); ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t+'&l='+document.getSelection();if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo e(NAME); ?></a>
+        <?php endif; ?>
     <?php endif; ?>
 </body>
 </html>
