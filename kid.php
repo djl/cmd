@@ -12,22 +12,23 @@ define('USERAGENT', 'kid (https://github.com/xvzf/kid)');
 function build_url($url, $arg, $command)
 {
     // replace %s with the argument
-    $url = str_replace("%s", $arg, $url);
+    $url = str_replace('%s', $arg, $url);
 
     // the $_GET arguments
-    $gets = array("c", "d", "l", "r", "t");
+    $gets = array('c', 'd', 'l', 'r', 't');
     foreach ($gets as $a) {
-        $url = str_replace("%" . $a, $_GET[$a], $url);
+        $url = str_replace('%' . $a, $_GET[$a], $url);
     }
 
     // defaults arguments
-    $replace = $arg != "" ? $arg : '$2';
+    $replace = $arg != '' ? $arg : '$2';
     $url = preg_replace('/(%{)(.*)(})/', $replace, $url);
 
     return $url;
 }
 
-function clean($str) {
+function clean($str)
+{
     return preg_replace('/(\s{2,}|\t)/', ' ', trim($str));
 }
 
@@ -83,7 +84,7 @@ function get_shortcut($shortcuts, $trigger)
 function parse_shortcut_file($file)
 {
     $file = get_file($file);
-    $lines = explode("\n", $file);
+    $lines = explode('\n', $file);
 
     $shortcuts = array();
     $group = null;
@@ -100,7 +101,7 @@ function parse_shortcut_file($file)
         }
 
         $segments = explode(' ', $line, 3);
-        $takes_search = (strstr($segments[1], "%s") && $segments[0] != "*");
+        $takes_search = (strstr($segments[1], '%s') && $segments[0] != '*');
         $shortcuts[$segments[0]] = array('trigger' => strtolower($segments[0]),
                                          'url' => $segments[1],
                                          'title' => $segments[2],
@@ -114,7 +115,7 @@ function show_help()
 {
     if (isset($_GET['c']) && isset($_GET['f']))
     {
-        $parts = explode(" ", clean($_GET['c']), 2);
+        $parts = explode(' ', clean($_GET['c']), 2);
         return strtolower($parts[0]) == strtolower(HELP_TRIGGER);
     }
     return false;
@@ -179,7 +180,7 @@ function url()
         $file = stripslashes($_GET['f']);
 
         $shortcuts = parse_shortcut_file($file);
-        @list($trigger, $argument) = explode(" ", $command, 2);
+        @list($trigger, $argument) = explode(' ', $command, 2);
         $shortcut = get_shortcut($shortcuts, $trigger);
         $url = build_url($shortcut['url'], urlencode($argument), $command);
 
