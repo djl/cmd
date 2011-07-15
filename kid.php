@@ -56,7 +56,7 @@ function get_file($url)
                                  CURLOPT_USERAGENT => USERAGENT,
                                  CURLOPT_PROTOCOLS => PROTOCOLS));
     $data = curl_exec($ch);
-    if(curl_error($ch))
+    if (curl_error($ch))
     {
         throw new Exception(curl_error($ch));
     }
