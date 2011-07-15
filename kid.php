@@ -193,6 +193,7 @@ function url()
         if ($shortcuts)
         {
             @list($trigger, $argument) = explode(' ', $command, 2);
+            $trigger = strtolower($trigger);
             $shortcut = get_shortcut($shortcuts, $trigger);
             $url = build_url($shortcut['url'], urlencode($argument), $command);
 
