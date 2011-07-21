@@ -1,5 +1,5 @@
 > Here's looking at you, kid
-> http://github.com/xvzf/kid/
+> http://github.com/djl/kid/
 
 g     http://www.google.com/search?q=%s                               Google Search
 gf    http://www.gamefaqs.com/search/index.html?game=%s               GameFAQs

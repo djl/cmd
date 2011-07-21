@@ -6,7 +6,7 @@ define('HELP_TRIGGER', 'help');
 define('NAME', 'kid');
 define('PROTOCOLS', CURLPROTO_HTTP|CURLPROTO_HTTPS);
 define('TITLE', 'bookmarklet shortcuts');
-define('USERAGENT', 'kid (https://github.com/xvzf/kid)');
+define('USERAGENT', 'kid (https://github.com/djl/kid)');
 
 
 function build_url($url, $arg, $command)
