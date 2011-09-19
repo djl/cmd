@@ -170,7 +170,7 @@ function url()
     </script>
 </head>
 <body>
-    <h1><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>"><?php echo e(NAME); ?></a> <em><?php echo e(title()); ?></em></h1>
+    <h1><a href="<?php echo $_SERVER['REQUEST_URI'] ?>"><?php echo e(NAME); ?></a> <em><?php echo e(title()); ?></em></h1>
     <?php
     $error = false;
     if (isset($_REQUEST['c'], $_GET['f']))
