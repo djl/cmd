@@ -131,7 +131,7 @@ function title()
 function url()
 {
     $protocol = array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
-    return $protocol.'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+    return $protocol.'://'.$_SERVER['HTTP_HOST'].parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 }
 ?>
 <!DOCTYPE html>
@@ -170,7 +170,7 @@ function url()
     </script>
 </head>
 <body>
-    <h1><a href="<?php echo $_SERVER['REQUEST_URI'] ?>"><?php echo e(NAME); ?></a> <em><?php echo e(title()); ?></em></h1>
+    <h1><a href="<?php echo url() ?>"><?php echo e(NAME); ?></a> <em><?php echo e(title()); ?></em></h1>
     <?php
     $error = false;
     if (isset($_REQUEST['c'], $_GET['f']))
