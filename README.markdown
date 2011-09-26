@@ -33,7 +33,6 @@ kid features the standard Shortwave/Quix tokens:
 Plus some extras:
 
 * `%c` - the full given command.
-* `%l` - any highlighted text on the current page
 * `%{kittens}` - a default argument. If no argument is passed, `kittens` will
 be used.
 
