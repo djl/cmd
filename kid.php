@@ -9,8 +9,7 @@ define('TITLE', 'bookmarklet shortcuts');
 define('USERAGENT', 'kid (https://github.com/djl/kid)');
 
 
-function build_url($url, $arg, $command)
-{
+function build_url($url, $arg, $command) {
     // replace %s with the argument
     $url = str_replace('%s', $arg, $url);
 
@@ -27,25 +26,21 @@ function build_url($url, $arg, $command)
     return $url;
 }
 
-function clean($str)
-{
+function clean($str) {
     return preg_replace('/(\s{2,}|\t)/', ' ', trim($str));
 }
 
-function e($output)
-{
+function e($output) {
     return htmlspecialchars($output, ENT_NOQUOTES);
 }
 
-function error($error)
-{
+function error($error) {
     $message = sprintf("<p><strong>%s couldn't grab your shortcuts file because:</strong></p>", e(NAME));
     $message = sprintf("%s<p><code>%s</code></p>", $message, e($error));
     echo $message;
 }
 
-function get_file($url)
-{
+function get_file($url) {
     $ch = curl_init();
     curl_setopt_array($ch, array(CURLOPT_CONNECTTIMEOUT => 60,
                                  CURLOPT_FAILONERROR => true,
@@ -56,8 +51,7 @@ function get_file($url)
                                  CURLOPT_USERAGENT => USERAGENT,
                                  CURLOPT_PROTOCOLS => PROTOCOLS));
     $data = curl_exec($ch);
-    if (curl_error($ch))
-    {
+    if (curl_error($ch)) {
         throw new Exception(curl_error($ch));
     }
     curl_close($ch);
@@ -65,37 +59,28 @@ function get_file($url)
 }
 
 
-function get_shortcut($shortcuts, $trigger)
-{
-    if (array_key_exists($trigger, $shortcuts))
-    {
+function get_shortcut($shortcuts, $trigger) {
+    if (array_key_exists($trigger, $shortcuts)) {
         return $shortcuts[$trigger];
-    }
-    else if (array_key_exists('*', $shortcuts))
-    {
+    } else if (array_key_exists('*', $shortcuts)) {
         return $shortcuts['*'];
-    }
-    else
-    {
+    } else {
         return DEFAULT_URL;
     }
 }
 
-function parse_shortcut_file($file)
-{
+function parse_shortcut_file($file) {
     $file = get_file($file);
     $lines = explode("\n", $file);
 
     $shortcuts = array();
     $group = null;
-    foreach ($lines as $line)
-    {
+    foreach ($lines as $line) {
         $line = clean($line);
         $ignore = '/^>|#kill-defaults/';
         if (!$line || preg_match($ignore, $line)) continue;
 
-        if (strpos($line, '@') === 0)
-        {
+        if (strpos($line, '@') === 0)  {
             $group = preg_replace('/^@/', '', $line);
             continue;
         }
@@ -112,24 +97,19 @@ function parse_shortcut_file($file)
     return $shortcuts;
 }
 
-function show_help()
-{
-    if (isset($_GET['c']) && isset($_GET['f']))
-    {
+function show_help() {
+    if (isset($_GET['c']) && isset($_GET['f'])) {
         $parts = explode(' ', clean($_GET['c']), 2);
         return strtolower($parts[0]) == strtolower(HELP_TRIGGER);
     }
     return false;
 }
 
-function title()
-{
-    if (show_help()) { return HELP_TITLE; }
-    return TITLE;
+function title() {
+    return show_help() ? HELP_TITLE : TITLE;
 }
 
-function url()
-{
+function url() {
     $protocol = 'http';
     $ssl_headers = array('HTTPS' => 'on', 'HTTP_X_FORWARDED_PROTO' => 'https');
     foreach ($ssl_headers as $key => $value) {
@@ -180,8 +160,7 @@ function url()
     <h1><a href="<?php echo url() ?>"><?php echo e(NAME); ?></a> <em><?php echo e(title()); ?></em></h1>
     <?php
     $error = false;
-    if (isset($_REQUEST['c'], $_GET['f']))
-    {
+    if (isset($_GET['c'], $_GET['f'])) {
         // compensate for JavaScript's odd escaping
         // we need to use $_REQUEST here because $_GET is automatically urldecoded
         $command = stripslashes($_REQUEST['c']);
@@ -197,16 +176,14 @@ function url()
             error($e->getMessage());
         }
 
-        if ($shortcuts)
-        {
+        if ($shortcuts) {
             @list($trigger, $argument) = explode(' ', $command, 2);
             $trigger = strtolower($trigger);
             $shortcut = get_shortcut($shortcuts, $trigger);
             $url = build_url($shortcut['url'], urlencode($argument), $command);
 
             // go!
-            if (!show_help())
-            {
+            if (!show_help()) {
                 header('Location: ' . $url, true, 301);
             }
         }
