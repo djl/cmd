@@ -161,11 +161,8 @@ function url() {
     <?php
     $error = false;
     if (isset($_GET['c'], $_GET['f'])) {
-        // compensate for JavaScript's odd escaping
-        // we need to use $_REQUEST here because $_GET is automatically urldecoded
-        $command = stripslashes($_REQUEST['c']);
-        $command = clean($command);
-        $file = stripslashes($_GET['f']);
+        $command = clean($_GET['c']);
+        $file = $_GET['f'];
 
         $shortcuts = array();
 
