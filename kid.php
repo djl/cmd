@@ -120,6 +120,32 @@ function url() {
     }
     return $protocol.'://'.$_SERVER['HTTP_HOST'].parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 }
+
+// GO!
+$error = null;
+if (isset($_GET['c'], $_GET['f'])) {
+    $command = clean($_GET['c']);
+    $file = $_GET['f'];
+
+    $shortcuts = array();
+
+    try {
+        $shortcuts = parse_shortcut_file($file);
+        if ($shortcuts) {
+            @list($trigger, $argument) = explode(' ', $command, 2);
+            $trigger = strtolower($trigger);
+            $shortcut = get_shortcut($shortcuts, $trigger);
+            $url = build_url($shortcut['url'], urlencode($argument), $command);
+            // go!
+            if (!show_help()) {
+                header('Location: ' . $url, true, 301);
+            }
+        }
+    } catch (Exception $e) {
+        $error = $e;
+    }
+
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -143,7 +169,7 @@ function url() {
     a:hover{color:black;}
     a#link{background:#<?php echo e(COLOR); ?>;font-size:14px;color:#fff;padding:4px;text-shadow: 1px 1px 1px #<?php echo e(COLOR); ?>;text-decoration:none;}
     a#link:hover{background:black;text-shadow:1px 1px 1px black;}
-    table{font-size:1.4em;margin:4em auto 6em;width:100%;}
+    table{border-spacing:0;font-size:1.4em;margin:4em auto 6em;width:100%;}
     td{padding:10px;}
     code {color:#777;font: 1.1em "Bitstream Vera Sans Mono","Courier New",Monaco,monospace;}
     label{color:#bbb;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
@@ -158,45 +184,17 @@ function url() {
 </head>
 <body>
     <h1><a href="<?php echo url() ?>"><?php echo e(NAME); ?></a> <em><?php echo e(title()); ?></em></h1>
-    <?php
-    $error = false;
-    if (isset($_GET['c'], $_GET['f'])) {
-        $command = clean($_GET['c']);
-        $file = $_GET['f'];
-
-        $shortcuts = array();
-
-        try {
-            $shortcuts = parse_shortcut_file($file);
-        } catch (Exception $e) {
-            $error = true;
-            error($e->getMessage());
-        }
-
-        if ($shortcuts) {
-            @list($trigger, $argument) = explode(' ', $command, 2);
-            $trigger = strtolower($trigger);
-            $shortcut = get_shortcut($shortcuts, $trigger);
-            $url = build_url($shortcut['url'], urlencode($argument), $command);
-
-            // go!
-            if (!show_help()) {
-                header('Location: ' . $url, true, 301);
-            }
-        }
-    }
-    ?>
-    <?php if (!$error): ?>
+    <?php if ($error): ?>
+        <?php error($error->getMessage()); ?>
+    <?php else: ?>
         <?php if (show_help()): ?>
             <p><span class="red">*</span> triggers may be followed by a search term</p>
             <?php $count = 0; $previous = null; ?>
             <?php foreach($shortcuts as $shortcut): ?>
                 <?php if ($shortcut['group'] != $previous || $count < 1): ?>
                     <?php if ($shortcut['group'] != $previous): ?></table><?php endif; ?>
-                    <header>
-                        <h2><?php echo e($shortcut['group']); ?></h2>
-                    </header>
-                    <table cellspacing="0">
+                    <?php if ($shortcut['group'] != "" ): ?><h2><?php echo e($shortcut['group']); ?></h2><?php endif; ?>
+                    <table>
                     <thead>
                         <tr>
                             <th>Trigger</th>
