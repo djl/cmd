@@ -130,7 +130,14 @@ function title()
 
 function url()
 {
-    $protocol = array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
+    $protocol = 'http';
+    $ssl_headers = array('HTTPS' => 'on', 'HTTP_X_FORWARDED_PROTO' => 'https');
+    foreach ($ssl_headers as $key => $value) {
+        if (array_key_exists($key, $_SERVER) && $_SERVER[$key] == $value) {
+            $protocol = 'https';
+            break;
+        }
+    }
     return $protocol.'://'.$_SERVER['HTTP_HOST'].parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 }
 ?>
