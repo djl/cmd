@@ -205,8 +205,7 @@ if (isset($_GET['c'], $_GET['f'])) {
                     <td><code><?php echo e($shortcut['trigger']) ?></code></td>
                     <td><?php echo e($shortcut['title']) ?><?php if ($shortcut['search']): ?> <span class="red">*</span><?php endif; ?></td>
                 </tr>
-                <?php $count++; ?>
-                <?php $previous = $shortcut['group']; ?>
+                <?php $count++; $previous = $shortcut['group']; ?>
             <?php endforeach; ?>
             </table>
         <?php else: ?>
