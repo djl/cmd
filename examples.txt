@@ -3,7 +3,7 @@
 
 g     http://www.google.com/search?q=%s                               Google Search
 gf    http://www.gamefaqs.com/search/index.html?game=%s               GameFAQs
-gh    http://github.com/search?q=%s&language=%s                       GitHub
+gh    http://github.com/search?q=%s                                   GitHub
 h     http://www.hulu.com/videos/search?query=%s                      Hulu
 i     http://www.imdb.com/Find?select=All&for=%s                      IMDb
 ip    http://www.whatismyip.org/                                      IP
@@ -16,10 +16,8 @@ t     http://thesaurus.reference.com/browse/%s                        Thesaurus
 tw    http://search.twitter.com/search?q=%s                           Twitter Search
 u     http://www.urbandictionary.com/define.php?term=%s               Urban Dictionary
 v     http://vimeo.com/videos/search:%s                               Vimeo
-w     http://en.wikipedia.org/wiki/Special:Search?search=%s           Wikipedia Search
+w     https://en.wikipedia.org/w/index.php?search=%s                  Wikipedia Search
 wb    http://web.archive.org/web/*/http://%{%d}                       Wayback Machine
 whois http://whois.domaintools.com/%s                                 Whois
-wq    http://en.wikiquote.org/wiki/Special:Search?search=%s           Wikiquote Search
 y     http://www.youtube.com/results.php?search_query=%s              YouTube Search
-/.    http://slashdot.org                                             Slashdot
-*     http://www.google.com/search?q=%c                               Untriggered search
+*     https://www.google.com/search?q=%c                              Untriggered search
