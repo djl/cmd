@@ -8,21 +8,13 @@ define('PROTOCOLS', CURLPROTO_HTTP|CURLPROTO_HTTPS);
 define('TITLE', 'bookmarklet shortcuts');
 define('USERAGENT', 'kid (https://github.com/djl/kid)');
 
-
 function build_url($url, $arg, $command) {
-    // replace %s with the argument
     $url = str_replace('%s', $arg, $url);
-
-    // the $_GET arguments
-    $gets = array('c', 'd', 'r', 't');
-    foreach ($gets as $a) {
+    foreach (array('c', 'd', 'r', 't') as $a) {
         $url = str_replace('%' . $a, $_GET[$a], $url);
     }
-
-    // defaults arguments
     $replace = $arg != '' ? $arg : '$2';
     $url = preg_replace('/(%{)(.*)(})/', $replace, $url);
-
     return $url;
 }
 
@@ -58,7 +50,6 @@ function get_file($url) {
     return $data;
 }
 
-
 function get_shortcut($shortcuts, $trigger) {
     if (array_key_exists($trigger, $shortcuts)) {
         return $shortcuts[$trigger];
@@ -72,19 +63,15 @@ function get_shortcut($shortcuts, $trigger) {
 function parse_shortcut_file($file) {
     $file = get_file($file);
     $lines = explode("\n", $file);
-
     $shortcuts = array();
     $group = null;
     foreach ($lines as $line) {
         $line = clean($line);
-        $ignore = '/^>|#kill-defaults/';
-        if (!$line || preg_match($ignore, $line)) continue;
-
+        if (!$line || preg_match('/^>|#kill-defaults/', $line)) continue;
         if (strpos($line, '@') === 0)  {
-            $group = preg_replace('/^@/', '', $line);
+            $group = str_replace('@', '', $line);
             continue;
         }
-
         $segments = explode(' ', $line, 3);
         $takes_search = (strstr($segments[1], '%s') && $segments[0] != '*');
         $segments[0] = strtolower($segments[0]);
@@ -105,10 +92,6 @@ function show_help() {
     return false;
 }
 
-function title() {
-    return show_help() ? HELP_TITLE : TITLE;
-}
-
 function url() {
     $protocol = 'http';
     $ssl_headers = array('HTTPS' => 'on', 'HTTP_X_FORWARDED_PROTO' => 'https');
@@ -126,9 +109,7 @@ $error = null;
 if (isset($_GET['c'], $_GET['f'])) {
     $command = clean($_GET['c']);
     $file = $_GET['f'];
-
     $shortcuts = array();
-
     try {
         $shortcuts = parse_shortcut_file($file);
         if ($shortcuts) {
@@ -136,7 +117,6 @@ if (isset($_GET['c'], $_GET['f'])) {
             $trigger = strtolower($trigger);
             $shortcut = get_shortcut($shortcuts, $trigger);
             $url = build_url($shortcut['url'], urlencode($argument), $command);
-            // go!
             if (!show_help()) {
                 header('Location: ' . $url, true, 301);
             }
@@ -152,7 +132,6 @@ if (isset($_GET['c'], $_GET['f'])) {
     <meta charset="UTF-8">
     <title><?php echo e(NAME); ?></title>
     <style type="text/css">
-    *{margin:0;padding:0;}
     html{background:#fff;border-top:4px solid #<?php echo e(COLOR); ?>;color:black;font:62.5% Helvetica,sans-serif;text-align:center;}
     body{margin:4em auto;width:50em;}
     h1{font-size:3em;line-height:3em;margin-bottom:1em;text-shadow: 0 -1px 1px #FFF;}
@@ -160,8 +139,7 @@ if (isset($_GET['c'], $_GET['f'])) {
     h1 a:hover,h1 a:active,h1 a:focus{color:#<?php echo e(COLOR); ?>;}
     h2{font-size:2em;font-weight:bold;margin:3em 0 0.5em;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
-    label,.out{line-height:1.8em !important;text-shadow: 0 -1px 1px #FFF;}
-    label{font-size:1.6em;}
+    label{color:#bbb;float:left;font-size:1.6em;font-weight:bold;line-height:1.8em !important;margin-left:-220px;text-align:right;text-shadow: 0 -1px 1px #FFF;width:200px;}
     em{color:#bbb;font-style:normal;font-weight:normal;}
     p{font-size:1.4em;margin:0 0 2em;line-height:2em;}
     a{color:#<?php echo e(COLOR); ?>;}
@@ -170,19 +148,14 @@ if (isset($_GET['c'], $_GET['f'])) {
     a#link:hover{background:black;text-shadow:1px 1px 1px black;}
     table{border-spacing:0;font-size:1.4em;margin:4em auto 6em;width:100%;}
     td{padding:10px;}
-    code {color:#777;font: 1.1em "Bitstream Vera Sans Mono","Courier New",Monaco,monospace;}
-    label{color:#bbb;float:left;font-weight:bold;line-height:1.4em;margin-left:-220px;width:200px;text-align:right;}
+    code{color:#777;font:bold 1.1em "Bitstream Vera Sans Mono","Courier New",monospace;}
     .red{color:#<?php echo e(COLOR); ?> !important;font-size:1.5em;}
     .alt{background:#eee;}
-    .lite{color:#777;margin: 0;}
     </style>
-    <script type="text/javascript">
-        function $(id){return document.getElementById(id)};
-        window.onload = function() { $("custom").onkeyup = function () { $('link').href = $('link').href.replace(/&f=(.*?)'/,'&f='+this.value+"'")}; }
-    </script>
+    <script type="text/javascript">window.onload = function() { document.getElementById("custom").onkeyup = function () { document.getElementById('link').href = document.getElementById('link').href.replace(/&f=(.*?)'/,'&f='+this.value+"'")}; }</script>
 </head>
 <body>
-    <h1><a href="<?php echo url() ?>"><?php echo e(NAME); ?></a> <em><?php echo e(title()); ?></em></h1>
+    <h1><a href="<?php echo url() ?>"><?php echo e(NAME); ?></a> <em><?php echo e(show_help() ? HELP_TITLE : TITLE); ?></em></h1>
     <?php if ($error): ?>
         <?php error($error->getMessage()); ?>
     <?php else: ?>
