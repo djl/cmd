@@ -18,6 +18,6 @@ u     http://www.urbandictionary.com/define.php?term=%s               Urban Dict
 v     http://vimeo.com/videos/search:%s                               Vimeo
 w     https://en.wikipedia.org/w/index.php?search=%s                  Wikipedia Search
 wb    http://web.archive.org/web/*/http://%{%d}                       Wayback Machine
-whois http://whois.domaintools.com/%s                                 Whois
+whois http://whois.domaintools.com/%{%d}                              Whois
 y     http://www.youtube.com/results.php?search_query=%s              YouTube Search
 *     https://www.google.com/search?q=%c                              Untriggered search

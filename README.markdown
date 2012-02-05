@@ -1,5 +1,5 @@
 kid
-====
+===
 
 kid is an extensible bookmarklet command thing. It's similar to
 [Shortwave][shortwave] and [Quix][quix].
