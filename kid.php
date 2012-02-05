@@ -73,7 +73,7 @@ function parse_shortcut_file($file) {
             continue;
         }
         $segments = explode(' ', $line, 3);
-        $takes_search = (strstr($segments[1], '%s') && $segments[0] != '*');
+        $takes_search = (preg_match('/(%{.*})|%s/', $segments[1]) && $segments[0] != '*');
         $segments[0] = strtolower($segments[0]);
         $shortcuts[$segments[0]] = array('trigger' => $segments[0],
                                          'url' => $segments[1],
