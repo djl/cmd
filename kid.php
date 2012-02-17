@@ -137,7 +137,7 @@ if (isset($_GET['c'], $_GET['f'])) {
     h1{font-size:3em;line-height:3em;margin-bottom:1em;text-shadow: 0 -1px 1px #FFF;}
     h1 a:link,h1 a:visited{color:black;text-decoration:none;}
     h1 a:hover,h1 a:active,h1 a:focus{color:#<?php echo e(COLOR); ?>;}
-    h2{font-size:2em;font-weight:bold;margin:3em 0 0.5em;}
+    h2{font-size:3em;font-weight:bold;margin:3em 0 0.5em;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
     label{color:#bbb;float:left;font-size:1.6em;font-weight:bold;line-height:1.8em !important;margin-left:-220px;text-align:right;text-shadow: 0 -1px 1px #FFF;width:200px;}
     em{color:#bbb;font-style:normal;font-weight:normal;}
@@ -149,7 +149,7 @@ if (isset($_GET['c'], $_GET['f'])) {
     table{border-spacing:0;font-size:1.4em;margin:4em auto 6em;width:100%;}
     td{padding:10px;}
     code{color:#777;font:bold 1.1em "Bitstream Vera Sans Mono","Courier New",monospace;}
-    .red{color:#<?php echo e(COLOR); ?> !important;font-size:1.5em;}
+    .highlight{color:#<?php echo e(COLOR); ?> !important;font-size:1.5em;}
     .alt{background:#eee;}
     </style>
     <script type="text/javascript">window.onload = function() { document.getElementById("custom").onkeyup = function () { document.getElementById('link').href = document.getElementById('link').href.replace(/&f=(.*?)'/,'&f='+this.value+"'")}; }</script>
@@ -160,7 +160,7 @@ if (isset($_GET['c'], $_GET['f'])) {
         <?php error($error->getMessage()); ?>
     <?php else: ?>
         <?php if (show_help()): ?>
-            <p><span class="red">*</span> triggers may be followed by a search term</p>
+            <p><span class="highlight">*</span> triggers may be followed by a search term</p>
             <?php $count = 0; $previous = null; ?>
             <?php foreach($shortcuts as $shortcut): ?>
                 <?php if ($shortcut['group'] != $previous || $count < 1): ?>
@@ -176,7 +176,7 @@ if (isset($_GET['c'], $_GET['f'])) {
                 <?php endif; ?>
                 <tr<?php if ($count % 2): ?> class="alt"<?php endif; ?>>
                     <td><code><?php echo e($shortcut['trigger']) ?></code></td>
-                    <td><?php echo e($shortcut['title']) ?><?php if ($shortcut['search']): ?> <span class="red">*</span><?php endif; ?></td>
+                    <td><?php echo e($shortcut['title']) ?><?php if ($shortcut['search']): ?> <span class="highlight">*</span><?php endif; ?></td>
                 </tr>
                 <?php $count++; $previous = $shortcut['group']; ?>
             <?php endforeach; ?>
