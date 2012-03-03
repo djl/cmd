@@ -1,16 +1,13 @@
-> Here's looking at you, kid
-> http://github.com/djl/kid/
-
-g     http://www.google.com/search?q=%s                               Google Search
+g     https://www.google.com/search?q=%s                              Google Search
 gf    http://www.gamefaqs.com/search/index.html?game=%s               GameFAQs
-gh    http://github.com/search?q=%s                                   GitHub
+gh    https://github.com/search?q=%s                                  GitHub
 h     http://www.hulu.com/videos/search?query=%s                      Hulu
 i     http://www.imdb.com/Find?select=All&for=%s                      IMDb
 ip    http://www.whatismyip.org/                                      IP
 l     http://www.last.fm/search?m=all&q=%s                            Last.fm
-m     http://www.google.com/maps?q=%s                                 Google Maps
+m     https://www.google.com/maps?q=%s                                Google Maps
 rt    http://www.rottentomatoes.com/search/?search=%s                 Rotten Tomatoes Search
-s     http://www.google.com/search?q=site:%d%20%s                     Search the current site
+s     https://www.google.com/search?q=site:%d%20%s                    Search the current site
 so    http://stackoverflow.com/search?q=%s                            Stack Overflow
 t     http://thesaurus.reference.com/browse/%s                        Thesaurus
 tw    http://search.twitter.com/search?q=%s                           Twitter Search
@@ -19,5 +16,5 @@ v     http://vimeo.com/videos/search:%s                               Vimeo
 w     https://en.wikipedia.org/w/index.php?search=%s                  Wikipedia Search
 wb    http://web.archive.org/web/*/http://%{%d}                       Wayback Machine
 whois http://whois.domaintools.com/%{%d}                              Whois
-y     http://www.youtube.com/results.php?search_query=%s              YouTube Search
+y     https://www.youtube.com/results.php?search_query=%s             YouTube Search
 *     https://www.google.com/search?q=%c                              Untriggered search
