@@ -67,7 +67,7 @@ function parse_shortcut_file($file) {
     $group = null;
     foreach ($lines as $line) {
         $line = clean($line);
-        if (!$line || strpos($line, '>') == 0) continue;
+        if (!$line || strpos($line, '>') === 0) continue;
         if (strpos($line, '@') === 0)  {
             $group = str_replace('@', '', $line);
             continue;
