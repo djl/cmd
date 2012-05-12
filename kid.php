@@ -150,7 +150,7 @@ if (isset($_GET['c'], $_GET['f'])) {
     td{padding:10px;}
     code{color:#777;font:bold 1.1em "Bitstream Vera Sans Mono","Courier New",monospace;}
     .highlight{color:#<?php echo e(COLOR); ?> !important;font-size:1.5em;}
-    .alt{background:#eee;}
+    tr:nth-child(even){background:#eee;}
     </style>
     <?php if (!show_help()): ?><script type="text/javascript">window.onload = function() { document.getElementById("custom").onkeyup = function () { document.getElementById('link').href = document.getElementById('link').href.replace(/&f=(.*?)'/,'&f='+this.value+"'")}; }</script><?php endif; ?>
 </head>
@@ -161,9 +161,9 @@ if (isset($_GET['c'], $_GET['f'])) {
     <?php else: ?>
         <?php if (show_help()): ?>
             <p><span class="highlight">*</span> triggers may be followed by a search term</p>
-            <?php $count = 0; $previous = null; ?>
+            <?php $first = true; $previous = null; ?>
             <?php foreach($shortcuts as $shortcut): ?>
-                <?php if ($shortcut['group'] != $previous || $count < 1): ?>
+                <?php if ($shortcut['group'] != $previous || $first == true): ?>
                     <?php if ($shortcut['group'] != $previous): ?></table><?php endif; ?>
                     <?php if ($shortcut['group'] != "" ): ?><h2><?php echo e($shortcut['group']); ?></h2><?php endif; ?>
                     <table>
@@ -174,11 +174,11 @@ if (isset($_GET['c'], $_GET['f'])) {
                         </tr>
                     </thead>
                 <?php endif; ?>
-                <tr<?php if ($count % 2): ?> class="alt"<?php endif; ?>>
+                <tr>
                     <td><code><?php echo e($shortcut['trigger']) ?></code></td>
                     <td><?php echo e($shortcut['title']) ?><?php if ($shortcut['search']): ?> <span class="highlight">*</span><?php endif; ?></td>
                 </tr>
-                <?php $count++; $previous = $shortcut['group']; ?>
+                <?php $first = false; $previous = $shortcut['group']; ?>
             <?php endforeach; ?>
             </table>
         <?php else: ?>
