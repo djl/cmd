@@ -152,7 +152,7 @@ if (isset($_GET['c'], $_GET['f'])) {
     .highlight{color:#<?php echo e(COLOR); ?> !important;font-size:1.5em;}
     .alt{background:#eee;}
     </style>
-    <script type="text/javascript">window.onload = function() { document.getElementById("custom").onkeyup = function () { document.getElementById('link').href = document.getElementById('link').href.replace(/&f=(.*?)'/,'&f='+this.value+"'")}; }</script>
+    <?php if (!show_help()): ?><script type="text/javascript">window.onload = function() { document.getElementById("custom").onkeyup = function () { document.getElementById('link').href = document.getElementById('link').href.replace(/&f=(.*?)'/,'&f='+this.value+"'")}; }</script><?php endif; ?>
 </head>
 <body>
     <h1><a href="<?php echo url() ?>"><?php echo e(NAME); ?></a> <em><?php echo e(show_help() ? HELP_TITLE : TITLE); ?></em></h1>
