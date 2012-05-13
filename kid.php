@@ -163,7 +163,7 @@ if (isset($_GET['c'], $_GET['f'])) {
             <p><span class="highlight">*</span> triggers may be followed by a search term</p>
             <?php $first = true; $previous = null; ?>
             <?php foreach($shortcuts as $shortcut): ?>
-                <?php if ($shortcut['group'] != $previous || $first == true): ?>
+                <?php if ($first || $shortcut['group'] != $previous): ?>
                     <?php if ($shortcut['group'] != $previous): ?></table><?php endif; ?>
                     <?php if ($shortcut['group'] != "" ): ?><h2><?php echo e($shortcut['group']); ?></h2><?php endif; ?>
                     <table>
