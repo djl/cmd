@@ -24,7 +24,7 @@ Syntax
 
 kid features the standard Shortwave/Quix tokens:
 
-* `%s` - will be replaced by any arguments you provide.
+* `%s` - will be replaced by any provided search terms.
 * `%d` - the domain of the current site.
 * `%r` - the full URL of the current site.
 * `%t` - the title of the current page
