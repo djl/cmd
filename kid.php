@@ -85,7 +85,7 @@ function parse_shortcut_file($file) {
 }
 
 function show_help() {
-    if (isset($_GET['c']) && isset($_GET['f'])) {
+    if (isset($_GET['c'], $_GET['f'])) {
         $parts = explode(' ', clean($_GET['c']), 2);
         return strtolower($parts[0]) == strtolower(HELP_TRIGGER);
     }
