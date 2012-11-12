@@ -8,7 +8,7 @@ define('PROTOCOLS', CURLPROTO_HTTP|CURLPROTO_HTTPS);
 define('TITLE', 'bookmarklet shortcuts');
 define('USERAGENT', 'kid (https://github.com/djl/kid)');
 
-function build_url($url, $arg, $command) {
+function build_url($url, $arg) {
     $url = str_replace('%s', $arg, $url);
     foreach (array('c', 'd', 'r', 't') as $a) {
         $url = str_replace('%' . $a, $_GET[$a], $url);
@@ -73,6 +73,7 @@ function parse_shortcut_file($file) {
             continue;
         }
         $segments = explode(' ', $line, 3);
+        if (count($segments) != 3) continue;
         $takes_search = (preg_match('/(%{.*})|%s/', $segments[1]) && $segments[0] != '*');
         $segments[0] = strtolower($segments[0]);
         $shortcuts[$segments[0]] = array('trigger' => $segments[0],
@@ -116,7 +117,7 @@ if (isset($_GET['c'], $_GET['f'])) {
             @list($trigger, $argument) = explode(' ', $command, 2);
             $trigger = strtolower($trigger);
             $shortcut = get_shortcut($shortcuts, $trigger);
-            $url = build_url($shortcut['url'], urlencode($argument), $command);
+            $url = build_url($shortcut['url'], urlencode($argument));
             if (!show_help()) {
                 header('Location: ' . $url, true, 301);
             }
