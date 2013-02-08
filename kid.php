@@ -11,7 +11,9 @@ define('USERAGENT', 'kid (https://github.com/djl/kid)');
 function build_url($url, $arg) {
     $url = str_replace('%s', $arg, $url);
     foreach (array('c', 'd', 'r', 't') as $a) {
-        $url = str_replace('%' . $a, $_GET[$a], $url);
+        if (isset($_GET[$a])) {
+            $url = str_replace('%' . $a, $_GET[$a], $url);
+        }
     }
     $replace = $arg != '' ? $arg : '$2';
     $url = preg_replace('/(%{)(.*)(})/', $replace, $url);
