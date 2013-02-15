@@ -12,7 +12,8 @@ function build_url($url, $arg) {
     $url = str_replace('%s', $arg, $url);
     foreach (array('c', 'd', 'r', 't') as $a) {
         if (isset($_GET[$a])) {
-            $url = str_replace('%' . $a, $_GET[$a], $url);
+            $b = urldecode(base64_decode($_GET[$a]));
+            $url = str_replace('%' . $a, $b, $url);
         }
     }
     $replace = $arg != '' ? $arg : '$2';
@@ -26,12 +27,6 @@ function clean($str) {
 
 function e($output) {
     return htmlspecialchars($output, ENT_NOQUOTES);
-}
-
-function error($error) {
-    $message = sprintf("<p><strong>%s couldn't grab your shortcuts file because:</strong></p>", e(NAME));
-    $message = sprintf("%s<p><code>%s</code></p>", $message, e($error));
-    echo $message;
 }
 
 function get_file($url) {
@@ -90,7 +85,7 @@ function parse_shortcut_file($file) {
 
 function show_help() {
     if (isset($_GET['c'], $_GET['f'])) {
-        $parts = explode(' ', clean($_GET['c']), 2);
+        $parts = explode(' ', clean(urldecode(base64_decode($_GET['c']))), 2);
         return strtolower($parts[0]) == strtolower(HELP_TRIGGER);
     }
     return false;
@@ -111,7 +106,7 @@ function url() {
 // GO!
 $error = null;
 if (isset($_GET['c'], $_GET['f'])) {
-    $command = clean($_GET['c']);
+    $command = clean(urldecode(base64_decode($_GET['c'])));
     $file = $_GET['f'];
     $shortcuts = array();
     try {
@@ -161,7 +156,8 @@ if (isset($_GET['c'], $_GET['f'])) {
 <body>
     <h1><a href="<?php echo url() ?>"><?php echo e(NAME); ?></a> <em><?php echo e(show_help() ? HELP_TITLE : TITLE); ?></em></h1>
     <?php if ($error): ?>
-        <?php error($error->getMessage()); ?>
+      <p><strong>Couldn't grab your shortcuts file because:</strong></p>
+      <p><code><?php echo $error->getMessage(); ?></code></p>
     <?php else: ?>
         <?php if (show_help()): ?>
             <p><span class="highlight">*</span> triggers may be followed by a search term</p>
@@ -189,7 +185,7 @@ if (isset($_GET['c'], $_GET['f'])) {
             <form action="." onsubmit="javascript:alert('Drag the link below to your bookmarks bar!'); return false;">
                 <label for="custom" id="label" class="out">shortcuts file:</label><input type="text" name="custom" value="http://" id="custom">
             </form>
-            <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo e(HELP_TRIGGER); ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t;if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo e(NAME); ?></a>
+            <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo e(HELP_TRIGGER); ?>`%20for%20a%20list%20of%20commands:');var%20d='';try{d=window.btoa(encodeURIComponent(window.location.hostname));}catch(e){d='about:blank'};var%20u=window.btoa(encodeURIComponent(window.location));var%20t=window.btoa(encodeURIComponent(document.title));if(c){if(c.substring(0,1)=='%20'){nw=true;}c=window.btoa(encodeURIComponent(c));var%20url='<?php echo url() ?>?c='+c+'&d='+d+'&r='+u+'&t='+t+'&f=';if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo e(NAME); ?></a>
         <?php endif; ?>
     <?php endif; ?>
 </body>
