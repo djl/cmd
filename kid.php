@@ -28,12 +28,6 @@ function e($output) {
     return htmlspecialchars($output, ENT_NOQUOTES);
 }
 
-function error($error) {
-    $message = sprintf("<p><strong>%s couldn't grab your shortcuts file because:</strong></p>", e(NAME));
-    $message = sprintf("%s<p><code>%s</code></p>", $message, e($error));
-    echo $message;
-}
-
 function get_file($url) {
     $ch = curl_init();
     curl_setopt_array($ch, array(CURLOPT_CONNECTTIMEOUT => 60,
@@ -161,7 +155,8 @@ if (isset($_GET['c'], $_GET['f'])) {
 <body>
     <h1><a href="<?php echo url() ?>"><?php echo e(NAME); ?></a> <em><?php echo e(show_help() ? HELP_TITLE : TITLE); ?></em></h1>
     <?php if ($error): ?>
-        <?php error($error->getMessage()); ?>
+        <p><strong>Couldn't grab your shortcuts file because:</strong></p>
+        <p><code><?php echo $error->getMessage(); ?></code></p>
     <?php else: ?>
         <?php if (show_help()): ?>
             <p><span class="highlight">*</span> triggers may be followed by a search term</p>
