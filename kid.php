@@ -11,8 +11,8 @@ define('USERAGENT', 'kid (https://github.com/djl/kid)');
 function build_url($url, $arg) {
     $url = str_replace('%s', $arg, $url);
     foreach (array('c', 'd', 'r', 't') as $a) {
-        if (isset($_GET[$a])) {
-            $url = str_replace('%' . $a, $_GET[$a], $url);
+        if (isset($_POST[$a])) {
+            $url = str_replace('%' . $a, $_POST[$a], $url);
         }
     }
     $replace = $arg != '' ? $arg : '$2';
@@ -83,8 +83,8 @@ function parse_shortcut_file($file) {
 }
 
 function show_help() {
-    if (isset($_GET['c'], $_GET['f'])) {
-        $parts = explode(' ', clean($_GET['c']), 2);
+    if (isset($_POST['c'], $_POST['f'])) {
+        $parts = explode(' ', clean(urldecode($_POST['c'])), 2);
         return strtolower($parts[0]) == strtolower(HELP_TRIGGER);
     }
     return false;
@@ -104,12 +104,11 @@ function url() {
 
 // GO!
 $error = null;
-if (isset($_GET['c'], $_GET['f'])) {
-    $command = clean($_GET['c']);
-    $file = $_GET['f'];
+if (isset($_POST['c'], $_POST['f'])) {
+    $command = clean(urldecode($_POST['c']));
     $shortcuts = array();
     try {
-        $shortcuts = parse_shortcut_file($file);
+        $shortcuts = parse_shortcut_file($_POST['f']);
         if ($shortcuts) {
             @list($trigger, $argument) = explode(' ', $command, 2);
             $trigger = strtolower($trigger);
@@ -150,7 +149,7 @@ if (isset($_GET['c'], $_GET['f'])) {
     .highlight{color:#<?php echo e(COLOR); ?> !important;font-size:1.5em;}
     tr:nth-child(even){background:#eee;}
     </style>
-    <?php if (!show_help()): ?><script type="text/javascript">window.onload = function() { document.getElementById("custom").onkeyup = function () { document.getElementById('link').href = document.getElementById('link').href.replace(/&f=(.*?)'/,'&f='+this.value+"'")}; }</script><?php endif; ?>
+    <?php if (!show_help()): ?><script type="text/javascript">window.onload = function() { document.getElementById("custom").onkeyup = function () { document.getElementById('link').href = document.getElementById('link').href.replace(/'f':'(.*?)'/,"'f':'"+this.value+"'")}; }</script><?php endif; ?>
 </head>
 <body>
     <h1><a href="<?php echo url() ?>"><?php echo e(NAME); ?></a> <em><?php echo e(show_help() ? HELP_TITLE : TITLE); ?></em></h1>
@@ -184,7 +183,7 @@ if (isset($_GET['c'], $_GET['f'])) {
             <form action="." onsubmit="javascript:alert('Drag the link below to your bookmarks bar!'); return false;">
                 <label for="custom" id="label" class="out">shortcuts file:</label><input type="text" name="custom" value="http://" id="custom">
             </form>
-            <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo e(HELP_TRIGGER); ?>`%20for%20a%20list%20of%20commands:');var%20h='';try{h=encodeURIComponent(window.location.hostname);}catch(e){h='about:blank'};var%20u=encodeURIComponent(window.location);var%20t=encodeURIComponent(document.title);if(c){if(c.substring(0,1)=='%20'){nw=true;}c=encodeURIComponent(c);var%20url='<?php echo url() ?>?c='+c+'&f='+'&d='+h+'&r='+u+'&t='+t;if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo e(NAME); ?></a>
+            <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20url='<?php echo url() ?>';var params={'f':'','c':window.prompt('Type%20`<?php echo e(HELP_TRIGGER); ?>`%20for%20a%20list%20of%20commands:'),'u':encodeURIComponent(window.location),'t':encodeURIComponent(document.title),};try{params['h']=encodeURIComponent(window.location.hostname);}catch(e){params['h']='about:blank';}if(params['c']){if(params['c'].substring(0,1)=='%20'){nw=true;}params['c']=encodeURIComponent(params['c']);var%20form=document.createElement('form');form.setAttribute('method','post');form.setAttribute('action',url);if(nw){form.setAttribute('target','_blank');}for(var%20key%20in%20params){if(params.hasOwnProperty(key)){var%20hiddenField=document.createElement('input');hiddenField.setAttribute('type','hidden');hiddenField.setAttribute('name',key);hiddenField.setAttribute('value',params[key]);form.appendChild(hiddenField);}}}document.body.appendChild(form);form.submit();};"><?php echo e(NAME); ?></a>
         <?php endif; ?>
     <?php endif; ?>
 </body>
