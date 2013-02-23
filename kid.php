@@ -1,6 +1,5 @@
 <?php
 define('COLOR', 'c86f4d');
-define('DEFAULT_URL', 'https://www.google.com/search?q=%c');
 define('HELP_TITLE', 'your shortcuts');
 define('HELP_TRIGGER', 'help');
 define('NAME', 'kid');
@@ -53,7 +52,7 @@ function get_shortcut($shortcuts, $trigger) {
     } else if (array_key_exists('*', $shortcuts)) {
         return $shortcuts['*'];
     } else {
-        return DEFAULT_URL;
+        return null;
     }
 }
 
@@ -113,7 +112,13 @@ if (isset($_POST['c'], $_POST['f'])) {
             @list($trigger, $argument) = explode(' ', $command, 2);
             $trigger = strtolower($trigger);
             $shortcut = get_shortcut($shortcuts, $trigger);
+
+            if ($shortcut === null) {
+                throw new Exception(sprintf("Unknown trigger '%s'", e($trigger)));
+            }
+
             $url = build_url($shortcut['url'], urlencode($argument));
+
             if (!show_help()) {
                 header('Location: ' . $url, true, 301);
             }
@@ -154,8 +159,7 @@ if (isset($_POST['c'], $_POST['f'])) {
 <body>
     <h1><a href="<?php echo url() ?>"><?php echo e(NAME); ?></a> <em><?php echo e(show_help() ? HELP_TITLE : TITLE); ?></em></h1>
     <?php if ($error): ?>
-        <p><strong>Couldn't grab your shortcuts file because:</strong></p>
-        <p><code><?php echo $error->getMessage(); ?></code></p>
+        <p><strong><?php echo $error->getMessage(); ?></strong></p>
     <?php else: ?>
         <?php if (show_help()): ?>
             <p><span class="highlight">*</span> triggers may be followed by a search term</p>
