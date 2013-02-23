@@ -180,7 +180,7 @@ if (isset($_POST['c'], $_POST['f'])) {
             <?php endforeach; ?>
             </table>
         <?php else: ?>
-            <form action="." onsubmit="javascript:alert('Drag the link below to your bookmarks bar!'); return false;">
+            <form action="." onsubmit="javascript:document.getElementById('link').click();return false;">
                 <label for="custom" id="label" class="out">shortcuts file:</label><input type="text" name="custom" value="http://" id="custom">
             </form>
             <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20url='<?php echo url() ?>';var params={'f':'','c':window.prompt('Type%20`<?php echo e(HELP_TRIGGER); ?>`%20for%20a%20list%20of%20commands:'),'u':encodeURIComponent(window.location),'t':encodeURIComponent(document.title),};try{params['d']=encodeURIComponent(window.location.hostname);}catch(e){params['d']='about:blank';}if(params['c']){if(params['c'].substring(0,1)=='%20'){nw=true;}params['c']=encodeURIComponent(params['c']);var%20form=document.createElement('form');form.setAttribute('method','post');form.setAttribute('action',url);if(nw){form.setAttribute('target','_blank');}for(var%20key%20in%20params){if(params.hasOwnProperty(key)){var%20hiddenField=document.createElement('input');hiddenField.setAttribute('type','hidden');hiddenField.setAttribute('name',key);hiddenField.setAttribute('value',params[key]);form.appendChild(hiddenField);}}}document.body.appendChild(form);form.submit();};"><?php echo e(NAME); ?></a>
