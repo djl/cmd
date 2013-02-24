@@ -64,10 +64,6 @@ function parse_shortcut_file($file) {
     foreach ($lines as $line) {
         $line = clean($line);
         if (!$line || strpos($line, '>') === 0) continue;
-        if (strpos($line, '@') === 0)  {
-            $group = str_replace('@', '', $line);
-            continue;
-        }
         $segments = explode(' ', $line, 3);
         if (count($segments) != 3) continue;
         $takes_search = (preg_match('/(%{.*})|%s/', $segments[1]) && $segments[0] != '*');
@@ -75,8 +71,7 @@ function parse_shortcut_file($file) {
         $shortcuts[$segments[0]] = array('trigger' => $segments[0],
                                          'url' => $segments[1],
                                          'title' => $segments[2],
-                                         'search' => $takes_search,
-                                         'group' => $group);
+                                         'search' => $takes_search);
     }
     return $shortcuts;
 }
@@ -149,7 +144,6 @@ if (isset($_POST['c'], $_POST['f'])) {
     h1{font-size:3em;line-height:3em;margin-bottom:1em;text-shadow: 0 -1px 1px #FFF;}
     h1 a:link,h1 a:visited{color:black;text-decoration:none;}
     h1 a:hover,h1 a:active,h1 a:focus{color:#<?php echo e(COLOR); ?>;}
-    h2{font-size:3em;font-weight:bold;margin:3em 0 0.5em;}
     input{font:1.4em Helvetica,sans-serif;margin:0 0 2em;padding:0.2em;width:100%;}
     label{color:#bbb;float:left;font-size:1.6em;font-weight:bold;line-height:1.8em !important;margin-left:-220px;text-align:right;text-shadow: 0 -1px 1px #FFF;width:200px;}
     em{color:#bbb;font-style:normal;font-weight:normal;}
@@ -174,23 +168,18 @@ if (isset($_POST['c'], $_POST['f'])) {
         <?php if (show_help()): ?>
             <p><span class="highlight">*</span> triggers may be followed by a search term</p>
             <?php $first = true; $previous = null; ?>
+            <table>
+            <thead>
+                <tr>
+                    <th>Trigger</th>
+                    <th>Title</th>
+                </tr>
+            </thead>
             <?php foreach($shortcuts as $shortcut): ?>
-                <?php if ($first || $shortcut['group'] != $previous): ?>
-                    <?php if ($shortcut['group'] != $previous): ?></table><?php endif; ?>
-                    <?php if ($shortcut['group'] != "" ): ?><h2><?php echo e($shortcut['group']); ?></h2><?php endif; ?>
-                    <table>
-                    <thead>
-                        <tr>
-                            <th>Trigger</th>
-                            <th>Title</th>
-                        </tr>
-                    </thead>
-                <?php endif; ?>
                 <tr>
                     <td><code><?php echo e($shortcut['trigger']) ?></code></td>
                     <td><?php echo e($shortcut['title']) ?><?php if ($shortcut['search']): ?> <span class="highlight">*</span><?php endif; ?></td>
                 </tr>
-                <?php $first = false; $previous = $shortcut['group']; ?>
             <?php endforeach; ?>
             </table>
         <?php else: ?>
