@@ -1,5 +1,5 @@
 kid
-===
+---
 
 kid is an extensible bookmarklet command thing. It's similar to
 [Shortwave][shortwave] and [Quix][quix].
@@ -33,7 +33,4 @@ kid features the standard Shortwave/Quix tokens:
 
 Plus some extras:
 
-* `%{kittens}` - a default argument.
-
-  If no search string is given, `kittens` will be used in it's
-  place. Other tokens can be nested inside of these (e.g. `%{%d}`).
+* `%{foo}` - a default argument. Supports nested tokens (e.g. `%{%d}`)
