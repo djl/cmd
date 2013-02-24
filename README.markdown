@@ -2,10 +2,7 @@ kid
 ---
 
 kid is an extensible bookmarklet command thing. It's similar to
-[Shortwave][shortwave] and [Quix][quix].
-
-[shortwave]: http://shortwaveapp.com
-[quix]: http://quixapp.com
+[Shortwave](http://shortwaveapp.com).
 
 
 
@@ -22,7 +19,7 @@ Usage
 Syntax
 ------
 
-kid features the standard Shortwave/Quix tokens:
+kid features the standard Shortwave tokens:
 
 * `%s` - the provided search string.
 * `%d` - the domain of the current site.
