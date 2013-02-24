@@ -24,7 +24,7 @@ Syntax
 
 kid features the standard Shortwave/Quix tokens:
 
-* `%s` - will be replaced by any provided search terms.
+* `%s` - the provided search string.
 * `%d` - the domain of the current site.
 * `%r` - the full URL of the current site.
 * `%t` - the title of the current page.
@@ -33,12 +33,7 @@ kid features the standard Shortwave/Quix tokens:
 
 Plus some extras:
 
-* `%{kittens}` - a default search term. If no search term is given,
-`kittens` will be used in it's place.
+* `%{kittens}` - a default argument.
 
-
-
-Examples
---------
-
-See examples.txt.
+  If no search string is given, `kittens` will be used in it's
+  place. Other tokens can be nested inside of these (e.g. `%{%d}`).
