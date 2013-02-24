@@ -9,7 +9,7 @@ define('USERAGENT', 'kid (https://github.com/djl/kid)');
 
 function build_url($url, $arg) {
     $url = str_replace('%s', $arg, $url);
-    foreach (array('c', 'd', 'r', 't') as $a) {
+    foreach (array('d', 'r', 't') as $a) {
         if (isset($_POST[$a])) {
             $url = str_replace('%' . $a, $_POST[$a], $url);
         }
@@ -48,9 +48,9 @@ function get_file($url) {
 
 function get_shortcut($shortcuts, $trigger) {
     if (array_key_exists($trigger, $shortcuts)) {
-        return $shortcuts[$trigger];
+        return array($shortcuts[$trigger], false);
     } else if (array_key_exists('*', $shortcuts)) {
-        return $shortcuts['*'];
+        return array($shortcuts['*'], true);
     } else {
         return null;
     }
@@ -111,15 +111,25 @@ if (isset($_POST['c'], $_POST['f'])) {
         if ($shortcuts) {
             @list($trigger, $argument) = explode(' ', $command, 2);
             $trigger = strtolower($trigger);
-            $shortcut = get_shortcut($shortcuts, $trigger);
 
-            if ($shortcut === null) {
+            // get the shortcut URL and whether or not it's the
+            // untriggered shortcut
+            @list($shortcut, $untriggered) = get_shortcut($shortcuts, $trigger);
+
+            // we didn't find a shortcut
+            if ($shortcut == null) {
                 throw new Exception(sprintf("Unknown trigger '%s'", e($trigger)));
             }
 
-            $url = build_url($shortcut['url'], urlencode($argument));
+            // if we got the "untriggered" search, make the search
+            // term the full command
+            if ($untriggered) {
+                $argument = $command;
+            }
 
+            // only redirect if we're not showing the help page
             if (!show_help()) {
+                $url = build_url($shortcut['url'], urlencode($argument));
                 header('Location: ' . $url, true, 301);
             }
         }

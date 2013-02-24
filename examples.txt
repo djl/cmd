@@ -17,4 +17,4 @@ w     https://en.wikipedia.org/w/index.php?search=%s                  Wikipedia 
 wb    http://web.archive.org/web/*/http://%{%d}                       Wayback Machine
 whois http://whois.domaintools.com/%{%d}                              Whois
 y     https://www.youtube.com/results.php?search_query=%s             YouTube Search
-*     https://www.google.com/search?q=%c                              Untriggered search
+*     https://www.google.com/search?q=%s                              Untriggered search

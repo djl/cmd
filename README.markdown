@@ -27,14 +27,14 @@ kid features the standard Shortwave/Quix tokens:
 * `%s` - will be replaced by any provided search terms.
 * `%d` - the domain of the current site.
 * `%r` - the full URL of the current site.
-* `%t` - the title of the current page
+* `%t` - the title of the current page.
 * `>` - comment to the end of the line.
+
 
 Plus some extras:
 
-* `%c` - the full given command.
-* `%{kittens}` - a default argument. If no argument is passed, `kittens` will
-be used.
+* `%{kittens}` - a default search term. If no search term is given,
+`kittens` will be used in it's place.
 
 
 
