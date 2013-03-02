@@ -10,8 +10,9 @@ define('USERAGENT', 'kid (https://github.com/djl/kid)');
 function build_url($url, $arg) {
     $url = str_replace('%s', $arg, $url);
     foreach (array('d', 'r', 't') as $a) {
-        if (isset($_POST[$a])) {
-            $url = str_replace('%' . $a, $_POST[$a], $url);
+        if (isset($_GET[$a])) {
+            $b = urldecode(base64_decode($_GET[$a]));
+            $url = str_replace('%' . $a, $b, $url);
         }
     }
     $replace = $arg != '' ? $arg : '$2';
@@ -77,8 +78,8 @@ function parse_shortcut_file($file) {
 }
 
 function show_help() {
-    if (isset($_POST['c'], $_POST['f'])) {
-        $parts = explode(' ', clean(urldecode($_POST['c'])), 2);
+    if (isset($_GET['c'], $_GET['f'])) {
+        $parts = explode(' ', clean(urldecode(base64_decode($_GET['c']))), 2);
         return strtolower($parts[0]) == strtolower(HELP_TRIGGER);
     }
     return false;
@@ -98,11 +99,11 @@ function url() {
 
 // GO!
 $error = null;
-if (isset($_POST['c'], $_POST['f'])) {
-    $command = clean(urldecode($_POST['c']));
+if (isset($_GET['c'], $_GET['f'])) {
+    $command = clean(urldecode(base64_decode($_GET['c'])));
     $shortcuts = array();
     try {
-        $shortcuts = parse_shortcut_file($_POST['f']);
+        $shortcuts = parse_shortcut_file($_GET['f']);
         if ($shortcuts) {
             @list($trigger, $argument) = explode(' ', $command, 2);
             $trigger = strtolower($trigger);
@@ -158,7 +159,7 @@ if (isset($_POST['c'], $_POST['f'])) {
     .highlight{color:#<?php echo e(COLOR); ?> !important;font-size:1.5em;}
     tr:nth-child(even){background:#eee;}
     </style>
-    <?php if (!show_help()): ?><script type="text/javascript">window.onload = function() { document.getElementById("custom").onkeyup = function () { document.getElementById('link').href = document.getElementById('link').href.replace(/'f':'(.*?)'/,"'f':'"+this.value+"'")}; }</script><?php endif; ?>
+    <?php if (!show_help()): ?><script type="text/javascript">window.onload = function() { document.getElementById("custom").onkeyup = function () { document.getElementById('link').href = document.getElementById('link').href.replace(/&f=(.*?)'/,'&f='+this.value+"'")}; }</script><?php endif; ?>
 </head>
 <body>
     <h1><a href="<?php echo url() ?>"><?php echo e(NAME); ?></a> <em><?php echo e(show_help() ? HELP_TITLE : TITLE); ?></em></h1>
@@ -167,7 +168,6 @@ if (isset($_POST['c'], $_POST['f'])) {
     <?php else: ?>
         <?php if (show_help()): ?>
             <p><span class="highlight">*</span> triggers may be followed by a search term</p>
-            <?php $first = true; $previous = null; ?>
             <table>
             <thead>
                 <tr>
@@ -186,7 +186,7 @@ if (isset($_POST['c'], $_POST['f'])) {
             <form action="." onsubmit="javascript:document.getElementById('link').click();return false;">
                 <label for="custom" id="label" class="out">shortcuts file:</label><input type="text" name="custom" value="http://" id="custom">
             </form>
-            <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20url='<?php echo url() ?>';var params={'f':'','c':window.prompt('Type%20`<?php echo e(HELP_TRIGGER); ?>`%20for%20a%20list%20of%20commands:'),'u':encodeURIComponent(window.location),'t':encodeURIComponent(document.title),};try{params['d']=encodeURIComponent(window.location.hostname);}catch(e){params['d']='about:blank';}if(params['c']){if(params['c'].substring(0,1)=='%20'){nw=true;}params['c']=encodeURIComponent(params['c']);var%20form=document.createElement('form');form.setAttribute('method','post');form.setAttribute('action',url);if(nw){form.setAttribute('target','_blank');}for(var%20key%20in%20params){if(params.hasOwnProperty(key)){var%20hiddenField=document.createElement('input');hiddenField.setAttribute('type','hidden');hiddenField.setAttribute('name',key);hiddenField.setAttribute('value',params[key]);form.appendChild(hiddenField);}}}document.body.appendChild(form);form.submit();};"><?php echo e(NAME); ?></a>
+            <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo e(HELP_TRIGGER); ?>`%20for%20a%20list%20of%20commands:');var%20d='';try{d=window.btoa(encodeURIComponent(window.location.hostname));}catch(e){d='about:blank'};var%20u=window.btoa(encodeURIComponent(window.location));var%20t=window.btoa(encodeURIComponent(document.title));if(c){if(c.substring(0,1)=='%20'){nw=true;}c=window.btoa(encodeURIComponent(c));var%20url='<?php echo url() ?>?c='+c+'&d='+d+'&r='+u+'&t='+t+'&f=';if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo e(NAME); ?></a>
         <?php endif; ?>
     <?php endif; ?>
 </body>
