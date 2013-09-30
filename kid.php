@@ -61,7 +61,6 @@ function parse_shortcut_file($file) {
     $file = get_file($file);
     $lines = explode("\n", $file);
     $shortcuts = array();
-    $group = null;
     foreach ($lines as $line) {
         $line = clean($line);
         if (!$line || strpos($line, '>') === 0) continue;
