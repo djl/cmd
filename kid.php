@@ -185,7 +185,7 @@ if (isset($_GET['c'], $_GET['f'])) {
             <form action="." onsubmit="javascript:document.getElementById('link').click();return false;">
                 <label for="custom" id="label" class="out">shortcuts file:</label><input type="text" name="custom" value="http://" id="custom">
             </form>
-            <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo e(HELP_TRIGGER); ?>`%20for%20a%20list%20of%20commands:');var%20d='';try{d=window.btoa(encodeURIComponent(window.location.hostname));}catch(e){d='about:blank'};var%20u=window.btoa(encodeURIComponent(window.location));var%20t=window.btoa(encodeURIComponent(document.title));if(c){if(c.substring(0,1)=='%20'){nw=true;}c=window.btoa(encodeURIComponent(c));var%20url='<?php echo url() ?>?c='+c+'&d='+d+'&r='+u+'&t='+t+'&f=';if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo e(NAME); ?></a>
+            <a id="link" href="javascript:kid();function%20kid(){var%20nw=false;var%20c=window.prompt('Type%20`<?php echo e(HELP_TRIGGER); ?>`%20for%20a%20list%20of%20commands:');var%20d='';try{d=window.btoa(encodeURIComponent(window.location.hostname));}catch(e){d=window.btoa(encodeURIComponent('about:blank'))};var%20u=window.btoa(encodeURIComponent(window.location));var%20t=window.btoa(encodeURIComponent(document.title));if(c){if(c.substring(0,1)=='%20'){nw=true;}c=window.btoa(encodeURIComponent(c));var%20url='<?php echo url() ?>?c='+c+'&d='+d+'&r='+u+'&t='+t+'&f=';if(nw){var%20w=window.open(url);w.focus();}else{window.location.href=url;};};};"><?php echo e(NAME); ?></a>
         <?php endif; ?>
     <?php endif; ?>
 </body>
