@@ -2,6 +2,7 @@
 define('COLOR', 'c86f4d');
 define('HELP_TITLE', 'your shortcuts');
 define('HELP_TRIGGER', 'help');
+define('MAX_FILESIZE', 100 * 1024);
 define('NAME', 'kid');
 define('PROTOCOLS', CURLPROTO_HTTP|CURLPROTO_HTTPS);
 define('TITLE', 'bookmarklet shortcuts');
@@ -30,15 +31,20 @@ function e($output) {
 
 function get_file($url) {
     $ch = curl_init();
-    curl_setopt_array($ch, array(CURLOPT_CONNECTTIMEOUT => 60,
-                                 CURLOPT_FAILONERROR => true,
-                                 CURLOPT_HEADER => false,
-                                 CURLOPT_RETURNTRANSFER => 1,
-                                 CURLOPT_TIMEOUT => 60,
-                                 CURLOPT_URL => $url,
-                                 CURLOPT_USERAGENT => USERAGENT,
-                                 CURLOPT_PROTOCOLS => PROTOCOLS,
-                                 CURLOPT_REDIR_PROTOCOLS => PROTOCOLS));
+    curl_setopt($ch, CURLOPT_BUFFERSIZE, 128);
+    curl_setopt($ch, CURLOPT_NOPROGRESS, false);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
+    curl_setopt($ch, CURLOPT_FAILONERROR, true);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_USERAGENT, USERAGENT);
+    curl_setopt($ch, CURLOPT_PROTOCOLS, PROTOCOLS);
+    curl_setopt($ch, CURLOPT_REDIR_PROTOCOLS, PROTOCOLS);
+    curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function($dls, $dld, $uls, $uld){
+        return ($dld > MAX_FILESIZE) ? 1 : 0;
+    });
     $data = curl_exec($ch);
     if (curl_error($ch)) {
         throw new Exception(curl_error($ch));
