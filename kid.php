@@ -109,30 +109,31 @@ if (isset($_GET['c'], $_GET['f'])) {
     $shortcuts = array();
     try {
         $shortcuts = parse_shortcut_file($_GET['f']);
-        if ($shortcuts) {
-            @list($trigger, $argument) = explode(' ', $command, 2);
-            $trigger = strtolower($trigger);
+        if (count($shortcuts) === 0) {
+            throw new Exception("No shortcuts found. Blank file or incorrect format?");
+        }
+        @list($trigger, $argument) = explode(' ', $command, 2);
+        $trigger = strtolower($trigger);
 
-            // get the shortcut URL and whether or not it's the
-            // untriggered shortcut
-            @list($shortcut, $untriggered) = get_shortcut($shortcuts, $trigger);
+        // get the shortcut URL and whether or not it's the
+        // untriggered shortcut
+        @list($shortcut, $untriggered) = get_shortcut($shortcuts, $trigger);
 
-            // we didn't find a shortcut
-            if ($shortcut == null) {
-                throw new Exception(sprintf("Unknown trigger '%s'", e($trigger)));
-            }
+        // we didn't find a shortcut
+        if ($shortcut == null) {
+            throw new Exception(sprintf("Unknown trigger '%s'", e($trigger)));
+        }
 
-            // if we got the "untriggered" search, make the search
-            // term the full command
-            if ($untriggered) {
-                $argument = $command;
-            }
+        // if we got the "untriggered" search, make the search
+        // term the full command
+        if ($untriggered) {
+            $argument = $command;
+        }
 
-            // only redirect if we're not showing the help page
-            if (!show_help()) {
-                $url = build_url($shortcut['url'], urlencode($argument));
-                header('Location: ' . $url, true, 301);
-            }
+        // only redirect if we're not showing the help page
+        if (!show_help()) {
+            $url = build_url($shortcut['url'], urlencode($argument));
+            header('Location: ' . $url, true, 301);
         }
     } catch (Exception $e) {
         $error = $e;
