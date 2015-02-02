@@ -3,10 +3,10 @@ define('COLOR', 'c86f4d');
 define('HELP_TITLE', 'your shortcuts');
 define('HELP_TRIGGER', 'help');
 define('MAX_FILESIZE', 100 * 1024);
-define('NAME', 'kid');
+define('NAME', 'cmd');
 define('PROTOCOLS', CURLPROTO_HTTP|CURLPROTO_HTTPS);
 define('TITLE', 'bookmarklet shortcuts');
-define('USERAGENT', 'kid (https://github.com/djl/kid)');
+define('USERAGENT', 'cmd (https://github.com/djl/cmd)');
 
 function build_url($url, $arg) {
     $url = str_replace('%s', $arg, $url);
